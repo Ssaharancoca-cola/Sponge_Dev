@@ -1,0 +1,139 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "SPONGE_Context",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "DAL",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[SPG_APPROVALSTATUS]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_CONFIG_FILTERS]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_CONFIG_FILTERS_VALUE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_CONFIG_STRUCTURE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_CONFIGDATA]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_CONFIGURATION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_DOCUMENT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_GETTIMECODE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_MPP_MASTER]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_ROLE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_SENDORRESENDTASK]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_SUBFUNCTION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_SUBJECT_DATACOLLECTION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_SUBJECT_DIMENSION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_SUBJECT_MASTER]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_SUBJECTAREA]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_TEMPLATE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_TIMECODE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_TIMELEVEL]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_UOM]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_USERS]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_USERS_FUNCTION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SP_GET_MPP_DIMENSIONS]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_GET_MPP_MASTERS]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_GETMASTEREMAIL]",
+         "ObjectType": 1
+      }
+   ],
+   "UiHint": "zwdmyad0001.SPONGE_DEV.dbo",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

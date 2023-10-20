@@ -1,0 +1,63 @@
+@font-face {
+    font-family: "Unity";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityText-Light.woff") format("woff");
+    font-weight: 300;
+  }
+  @font-face {
+    font-family: "Unity";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityText-Regular.woff") format("woff");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "Unity";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityText-Medium.woff") format("woff");
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: "Unity";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityText-Bold.woff") format("woff");
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: "Unity";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityText-Black.woff") format("woff");
+    font-weight: 900;
+  }
+  @font-face {
+    font-family: "UnityCondensed";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityCondensed-Medium.woff") format("woff");
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: "UnityCondensed";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityCondensed-Bold.woff") format("woff");
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: "UnityHeadline";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityHeadline-Light.woff") format("woff");
+    font-weight: 300;
+  }
+  @font-face {
+    font-family: "UnityHeadline";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityHeadline-Regular.woff") format("woff");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "UnityHeadline";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityHeadline-Medium.woff") format("woff");
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: "UnityHeadline";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityHeadline-Bold.woff") format("woff");
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: "UnityHeadline";
+    src: url("https://static.coke.com/fonts/nagbrands/unity/TCCC-UnityHeadline-Black.woff") format("woff");
+    font-weight: 900;
+  }
+  :root {    
+    --font-family: Unity, 'Gotham A', 'Gotham B';  
+  }

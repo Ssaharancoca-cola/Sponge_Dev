@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="~/assists/images/favicon.png" />
+    <title>Cocacola</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="~/assists/vendors/feather/feather.css">
+    <link rel="stylesheet" href="~/assists/vendors/ti-icons/css/themify-icons.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="~/assists/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" type="text/css" href="~/assists/js/select.dataTables.min.css">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="~/assists/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <!-- End Override:css -->
+</head>
+<body>
+
+    <div class="container-scroller">
+        <!-- partial:../../partials/_navbar.html -->
+        <partial name="_nav" />
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial -->
+            <partial name="_side" />
+            <!-- partial:../../partials/_sidebar.html -->
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    @RenderBody()
+                </div>
+                <!-- content-wrapper ends -->
+                <!-- partial:../../partials/_footer.html -->
+                <partial name="_footer" />
+                <!-- partial -->
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="~/assists/vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="~/assists/vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/assists/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+    <script src="~/assists/js/dataTables.select.min.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="~/assists/js/hoverable-collapse.js"></script>
+    <script src="~/assists/js/template.js"></script>
+
+    <!-- endinject -->
+
+</body>
+
+</html>
