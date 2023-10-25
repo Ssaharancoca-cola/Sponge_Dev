@@ -61,13 +61,22 @@ namespace Sponge.Controllers
                         SearchFunctionData = SearchFunctionData.Where(s => s.SubFunctionName == function["SubFunctionName"]).ToList();
                         if (SearchFunctionData.Count <= 0)
                         {
+                            string activeFlag;
+                            if (function["ActiveFlag"] == "on")
+                            {
+                                activeFlag = "Y";
+                            }
+                            else
+                            {
+                                activeFlag = "N";
+                            }
                             SPG_SUBFUNCTION spg = new SPG_SUBFUNCTION()
                             {
                                 COUNTRY_NAME = function["Country"],
                                 FUNCTION_NAME = function["FunctionName"],
                                 SUBFUNCTION_NAME = function["SubFunctionName"],
-                                ACTIVE_FLAG = function["ActiveFlag"],
-                                CREATED_BY = userName[1].ToString(),
+                                ACTIVE_FLAG = activeFlag,
+                                CREATED_BY = userName[1].ToString(),                                
                                 CREATED_DATE = DateTime.Now
                             };                            
                             sPONGE_Context.SPG_SUBFUNCTION.Add(spg);
@@ -88,6 +97,15 @@ namespace Sponge.Controllers
             }
             else if (Command == "Update")
             {
+                string activeFlag;
+                if (function["ActiveFlag"] == "on")
+                {
+                    activeFlag = "Y";
+                }
+                else
+                {
+                    activeFlag = "N";
+                }
                 using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
                 {
                     SPG_SUBFUNCTION function2 = sPONGE_Context.SPG_SUBFUNCTION.Where(x => x.SUBFUNCTION_ID == Convert.ToInt16(function["SUBFUNCTION_ID"])).FirstOrDefault();
@@ -96,8 +114,7 @@ namespace Sponge.Controllers
                     function2.FUNCTION_NAME = function["FunctionName"];
                     function2.COUNTRY_NAME = function["Country"];
                     function2.SUBFUNCTION_NAME = function["SubFunctionName"];
-
-                    function2.ACTIVE_FLAG = function["ActiveFlag"];
+                    function2.ACTIVE_FLAG = activeFlag;
                     sPONGE_Context.SaveChanges();
                 }
 

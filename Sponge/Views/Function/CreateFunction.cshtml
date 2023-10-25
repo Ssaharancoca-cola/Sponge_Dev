@@ -47,7 +47,8 @@
                                 <div class="form-check form-check-flat form-check-primary">
                                     <label class="form-check-label">
                                         <input type="checkbox"
-                                               id="activeFlag" name="ActiveFlag" class="form-check-input" checked="@Model?.ACTIVE_FLAG">
+                                               id="activeFlag" name="ActiveFlag" class="form-check-input"
+                                               checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)">
                                     </label>
                                 </div>
                             </div>
