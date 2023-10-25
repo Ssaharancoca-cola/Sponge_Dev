@@ -30,6 +30,14 @@ namespace Sponge.Controllers
         {
             return View("Views\\Landing\\CreateRole.cshtml");
         }
+        public IActionResult ManageSubjectArea()
+        {
+            return View("Views\\SubjectArea\\ManageSubjectArea.cshtml");
+        }
+        public IActionResult CreateSubjectArea()
+        {
+            return View("Views\\SubjectArea\\CreateSubjectArea.cshtml");
+        }
         public IActionResult CreateFunction()
         {
             return View("Views\\Landing\\CreateFunction.cshtml");
