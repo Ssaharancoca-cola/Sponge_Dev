@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<DAL.Models.SPG_SUBFUNCTION>
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="row">
@@ -22,41 +23,29 @@
                     <table id="example" class="display expandable-table" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Country</th>
+                                <th>Country </th>
                                 <th>Function Name</th>
-                                <th>Sub Function Name</th>
+                                <th>SubFunction Name</th>
                                 <th>Active Flag</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach(var item in Model)
+                            {
                             <tr>
-                                <td>India</td>
-                                <td>Operation</td>
-                                <td>Quality</td>
-                                <td>Y</td>
+                                <td>@item.COUNTRY_NAME</td>
+                                <td>@item.FUNCTION_NAME</td>
+                                <td>@item.SUBFUNCTION_NAME</td>
+                                <td>@item.ACTIVE_FLAG</td>
                                 <td>
-                                    <button type="button"
-                                            class="btn btn-outline-primary btn-icon-text">
-                                        <i class="ti-file btn-icon-prepend"></i>
-                                        Edit
-                                    </button>
+                                        <a href="@Url.Action("EditFunction", "Function", new {id = item.SUBFUNCTION_ID})" class="btn btn-outline-primary btn-icon-text">
+                                            <i class="ti-file btn-icon-prepend"></i>
+                                            Edit
+                                        </a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>India</td>
-                                <td>Sales</td>
-                                <td>Sales</td>
-                                <td>Y</td>
-                                <td>
-                                    <button type="button"
-                                            class="btn btn-outline-primary btn-icon-text">
-                                        <i class="ti-file btn-icon-prepend"></i>
-                                        Edit
-                                    </button>
-                                </td>
-                            </tr>
-
+                            }
                         </tbody>
                     </table>
                 </div>

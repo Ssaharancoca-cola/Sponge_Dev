@@ -18,10 +18,10 @@ namespace Sponge.Controllers
             return View();
         }
 
-        public IActionResult ManageFunction()
-        {
-            return View("Views\\Landing\\ManageFunction.cshtml");
-        }
+        //public IActionResult ManageFunction()
+        //{
+        //    return View("Views\\Landing\\ManageFunction.cshtml");
+        //}
         public IActionResult ManageRole()
         {
             return View("Views\\Landing\\ManageRole.cshtml");
@@ -30,18 +30,10 @@ namespace Sponge.Controllers
         {
             return View("Views\\Landing\\CreateRole.cshtml");
         }
-        public IActionResult ManageSubjectArea()
-        {
-            return View("Views\\SubjectArea\\ManageSubjectArea.cshtml");
-        }
-        public IActionResult CreateSubjectArea()
-        {
-            return View("Views\\SubjectArea\\CreateSubjectArea.cshtml");
-        }
-        public IActionResult CreateFunction()
-        {
-            return View("Views\\Landing\\CreateFunction.cshtml");
-        }
+        //public IActionResult CreateFunction()
+        //{
+        //    return View("Views\\Landing\\CreateFunction.cshtml");
+        //}
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

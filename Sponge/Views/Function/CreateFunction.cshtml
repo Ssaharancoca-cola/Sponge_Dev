@@ -1,0 +1,100 @@
+﻿@model DAL.Models.SPG_SUBFUNCTION;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("SaveFunction", "Function", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Create Function</p>
+                    <div class="forms-sample">
+                        <div class="form-group row ">
+
+                            <div class="col">
+                                <label for="Country">Country</label>
+                                <select class="form-control" name="Country" id="Country">
+                                    <option value="">Select Country</option>
+                                    @if (Model != null && Model.COUNTRY_NAME != null)
+                                    {
+                                        <option value="@Model.COUNTRY_NAME" selected>@Model.COUNTRY_NAME</option>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var country in ViewBag.Country)
+                                        {
+                                            <option value="@country.Value">@country.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="FunctionName">Function Name</label>
+                                <input type="text" class="form-control" id="functionName"
+                                       name="FunctionName" value="@Model?.FUNCTION_NAME"
+                                       placeholder="Function Name">
+                            </div>
+                            <div class="col">
+                                <label for="subFunctionName">Subfunction</label>
+                                @Html.HiddenFor(m => m.SUBFUNCTION_ID)
+                                <input type="text" class="form-control" id="subFunctionName"
+                                       name="SubFunctionName" value="@Model?.SUBFUNCTION_NAME"
+                                       placeholder="Sub function name">
+                            </div>
+                            <div class="col">
+                                <label for="activeFlag">Active Flag</label>
+                                <div class="form-check form-check-flat form-check-primary">
+                                    <label class="form-check-label">
+                                        <input type="checkbox"
+                                               id="activeFlag" name="ActiveFlag" class="form-check-input"
+                                               checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageFunction", "Home")'">Cancel</button>
+                        @if(Model != null)
+                        {
+                        <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
+
+                        }
+                        else
+                        {
+                        <button type="submit" name="Command" value="Save" class="btn btn-primary">Save</button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+@* <script>
+    $('#formid').on('submit', submitFormWithAjax);
+
+    function submitFormWithAjax(event) {
+        
+        let commandValue = $(document.activeElement).attr("value");
+        // Declare an object to store the form data
+        let form = {};
+        // Loop through form elements and collect the data
+        $('#formid input, #formid select').each(function () {
+            form[$(this).attr('name')] = $(this).val();
+        });
+        form['Command'] = commandValue;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SaveFunction", "Function")',
+            data: form,
+            success: function (data) {
+                // Update your DOM based on the received data.
+                onSuccess(data);
+            },
+            error: function (err) {
+                console.error("Error", err);
+            }
+        });
+    }
+</script> *@
