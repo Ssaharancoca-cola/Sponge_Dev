@@ -18,8 +18,15 @@ namespace Sponge.Controllers
         return View();
     }
 
-
-    public IActionResult Cancel()
+        public IActionResult ManageSubjectArea()
+        {
+            return View("Views\\SubjectArea\\ManageSubjectArea.cshtml");
+        }
+        public IActionResult CreateSubjectArea()
+        {
+            return View("Views\\SubjectArea\\CreateSubjectArea.cshtml");
+        }
+        public IActionResult Cancel()
     {
         return View("Views\\SubjectArea\\ManageSubjectArea.cshtml");
     }
