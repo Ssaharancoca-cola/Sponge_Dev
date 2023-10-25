@@ -41,13 +41,14 @@ namespace Sponge.Controllers
         public IActionResult SaveFunction(IFormCollection function, string Command)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-
+           
             if (Command == "Save")
             {
                 try
                 {
                     if (ModelState.IsValid)
                     {
+
                         SPONGE_Context sPONGE_Context = new SPONGE_Context();
                         var SearchFunctionData = (from func in sPONGE_Context.SPG_SUBFUNCTION
                                                   select new SearchFunctionList
@@ -84,8 +85,8 @@ namespace Sponge.Controllers
                             return RedirectToAction("Function");
                         }
                         else
-                        {
-                            return RedirectToAction("SaveFunction", new { InvalidEntry = 1 });
+                        {                                                     
+                            return RedirectToAction("CreateFunction", new { InvalidEntry = 1 });
                         }
                     }
 
