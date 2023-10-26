@@ -1,6 +1,7 @@
 ﻿using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Sponge.ViewModel;
 
 namespace Sponge.Controllers
@@ -25,7 +26,7 @@ namespace Sponge.Controllers
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             var lst = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.COUNTRY_NAME }).Distinct();
             ViewBag.Country = new SelectList(lst.ToList(), "COUNTRY_NAME", "COUNTRY_NAME");
-            ViewBag.ErrorMsg = InvalidEntry == 1 ? "This entry aleardy exist, use edit or try with another value." : "";
+            ViewBag.ErrorMsg = InvalidEntry == 1 ? "Subfunction aleardy exist" : "";
             return View();
         }
 
@@ -38,16 +39,17 @@ namespace Sponge.Controllers
             return View("~/Views/Function/CreateFunction.cshtml", function);
         }
         [HttpPost]
-        public IActionResult SaveFunction(IFormCollection function, string Command)
+        public IActionResult SaveFunction(SPG_SUBFUNCTION data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-
-            if (Command == "Save")
+           
+            if (Request.Form["Command"]=="Save")
             {
                 try
                 {
                     if (ModelState.IsValid)
                     {
+
                         SPONGE_Context sPONGE_Context = new SPONGE_Context();
                         var SearchFunctionData = (from func in sPONGE_Context.SPG_SUBFUNCTION
                                                   select new SearchFunctionList
@@ -56,36 +58,39 @@ namespace Sponge.Controllers
                                                       FunctionName = func.FUNCTION_NAME,
                                                       SubFunctionName = func.SUBFUNCTION_NAME
                                                   }).ToList();
-                        SearchFunctionData = SearchFunctionData.Where(s => s.CountryName == function["Country"]).ToList();
-                        SearchFunctionData = SearchFunctionData.Where(s => s.FunctionName == function["FunctionName"]).ToList();
-                        SearchFunctionData = SearchFunctionData.Where(s => s.SubFunctionName == function["SubFunctionName"]).ToList();
+                        SearchFunctionData = SearchFunctionData.Where(s => s.CountryName == data.COUNTRY_NAME).ToList();
+                        SearchFunctionData = SearchFunctionData.Where(s => s.FunctionName == data.FUNCTION_NAME).ToList();
+                        SearchFunctionData = SearchFunctionData.Where(s => s.SubFunctionName == data.SUBFUNCTION_NAME).ToList();
                         if (SearchFunctionData.Count <= 0)
                         {
                             string activeFlag;
-                            if (function["ActiveFlag"] == "on")
+                            if (data.ACTIVE_FLAG == "on")
                             {
-                                activeFlag = "Y";
+                                data.ACTIVE_FLAG = "Y";
                             }
                             else
                             {
-                                activeFlag = "N";
+                                data.ACTIVE_FLAG = "N";
                             }
-                            SPG_SUBFUNCTION spg = new SPG_SUBFUNCTION()
-                            {
-                                COUNTRY_NAME = function["Country"],
-                                FUNCTION_NAME = function["FunctionName"],
-                                SUBFUNCTION_NAME = function["SubFunctionName"],
-                                ACTIVE_FLAG = activeFlag,
-                                CREATED_BY = userName[1].ToString(),                                
-                                CREATED_DATE = DateTime.Now
-                            };                            
-                            sPONGE_Context.SPG_SUBFUNCTION.Add(spg);
+                            data.CREATED_DATE = DateTime.Now;
+                            data.CREATED_BY = userName[1].ToString();
+                            //SPG_SUBFUNCTION spg = new SPG_SUBFUNCTION()
+                            //{
+                            //    COUNTRY_NAME = function["Country"],
+                            //    FUNCTION_NAME = function["FunctionName"],
+                            //    SUBFUNCTION_NAME = function["SubFunctionName"],
+                            //    ACTIVE_FLAG = activeFlag,
+                            //    CREATED_BY = userName[1].ToString(),                                
+                            //    CREATED_DATE = DateTime.Now
+                            //};                            
+                            sPONGE_Context.SPG_SUBFUNCTION.Add(data);
+
                             sPONGE_Context.SaveChanges();
                             return RedirectToAction("Function");
                         }
                         else
-                        {
-                            return RedirectToAction("SaveFunction", new { InvalidEntry = 1 });
+                        {                                                     
+                            return RedirectToAction("CreateFunction", new { InvalidEntry = 1 });
                         }
                     }
 
@@ -95,26 +100,24 @@ namespace Sponge.Controllers
 
                 }
             }
-            else if (Command == "Update")
-            {
-                string activeFlag;
-                if (function["ActiveFlag"] == "on")
+            else if (Request.Form["Command"] == "Update")
                 {
-                    activeFlag = "Y";
+               
+                if (data.ACTIVE_FLAG == "on")
+                {
+                    data.ACTIVE_FLAG = "Y";
                 }
                 else
                 {
-                    activeFlag = "N";
+                    data.ACTIVE_FLAG = "N";
                 }
                 using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
                 {
-                    SPG_SUBFUNCTION function2 = sPONGE_Context.SPG_SUBFUNCTION.Where(x => x.SUBFUNCTION_ID == Convert.ToInt16(function["SUBFUNCTION_ID"])).FirstOrDefault();
+                    SPG_SUBFUNCTION function2 = sPONGE_Context.SPG_SUBFUNCTION.Where(x => x.SUBFUNCTION_ID == Convert.ToInt16(data.SUBFUNCTION_ID)).FirstOrDefault();
                     function2.MODIFIED_BY = userName[1].ToString();
                     function2.MODIFIED_DATE = DateTime.Now;
-                    function2.FUNCTION_NAME = function["FunctionName"];
-                    function2.COUNTRY_NAME = function["Country"];
-                    function2.SUBFUNCTION_NAME = function["SubFunctionName"];
-                    function2.ACTIVE_FLAG = activeFlag;
+                    function2.ACTIVE_FLAG = data.ACTIVE_FLAG;
+                    
                     sPONGE_Context.SaveChanges();
                 }
 

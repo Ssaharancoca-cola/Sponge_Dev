@@ -1,0 +1,55 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("SaveUsers", "SubjectArea", FormMethod.Post))
+{
+<div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Assign Users</p>
+                <div class="table-responsive">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>
+                                    <input type="checkbox" id="=Select">
+                                </th>
+                                <th>User Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <input type="checkbox" id="=select">
+                                </td>
+                                <td>Kundan</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <input type="checkbox" id="=select">
+                                </td>
+                                <td>Navni</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>
+                                    <input type="checkbox" id="=select">
+                                </td>
+                                <td>RajaniKant</td>
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-light mr-2">Cancel</button>
+                <button type="submit" class="btn btn-primary ">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+}

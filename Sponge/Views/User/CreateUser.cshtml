@@ -10,49 +10,39 @@
                     <div class="form-group row ">
                         <div class="col">
                             <label for="exampleInputUsername1">User ID</label>
-                            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="User ID">
-                        </div>
-                        <div class="col">
-                            <label for="exampleInputUsername1">User Name</label>
-                            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="User Name">
-                        </div>
-                        <div class="col">
-                            <label for="exampleInputUsername1">Phone No.</label>
-                            <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Phone No.">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="exampleInputEmail1">Email</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-                        </div>
-                        <div class="col">
-                            <label for="exampleInputPassword1">Manager Email</label>
-                            <input type="email" class="form-control" id="exampleInputPassword1" placeholder="Manager Email">
-                        </div>
-                        <div class="col">
-                            <label for="exampleInputConfirmPassword1">Active</label>
-                            <select class="form-control">
-                                <option selected>Active</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>
+                            <input type="text" class="form-control" id="txtUserIdForNewUser" placeholder="User ID">
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" id="btnSearch" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
 
                         </div>
+
+
+                        <div class="col">
+                            <label for="UserName">User Name</label>
+                            <input type="text" class="form-control" readonly id="UserName" placeholder="User Name">
+                        </div>
+                        <div class="col">
+                            <label for="exampleInputEmail1">Email</label>
+                            <input type="email" class="form-control" readonly id="email" placeholder="Email">
+                        </div>
                     </div>
+
                     <div class="form-group row">
                         <div class="col">
                             <label for="exampleInputConfirmPassword1">Role</label>
                             <select class="form-control">
                                 <option selected>Role</option>
-                                <option value="1">Admin</option>
-                                <option value="2">Data Approver</option>
-                                <option value="3">Data Configure</option>
+                                @foreach (var country in ViewBag.Role)
+                                {
 
-                                <option value="4">Data Uploader</option>
+                                    <option value="@country.Value">@country.Text</option>
+                                }
                             </select>
                         </div>
-                       
+
                         <div class="col">
                             <label for="">SubFunction</label>
                             <div class="dropdown">
@@ -61,33 +51,26 @@
                                     Select
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
-                                    <li>
+                                    @foreach (var subfunction in ViewBag.SubFunction)
+                                    {
+                                        <li>
                                         <label>
-                                            <input type="checkbox" value="Far Sub Func"> Far_Sub_Func
+                                                <input type="checkbox" value=@subfunction.Text> @subfunction.Value
                                         </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="Quality"> Quality
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="Sales"> Sales
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="Engineering"> Engineering
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="Supply Chaing Managment"> Supply Chaing Managment
-                                        </label>
-                                    </li>
+                                        </li>
+                                    }
                                 </ul>
                             </div>
+                        </div>
+
+                        <div class="col">
+                            <label for="exampleInputConfirmPassword1">Active</label>
+                            <select class="form-control">
+                                <option selected>Select</option>
+                                <option value="1">Active</option>
+                                <option value="2">Inactive</option>
+                            </select>
+
                         </div>
                     </div>
                     <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageUser", "Home")'">Cancel</button>
@@ -96,7 +79,7 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
 <script>
@@ -138,4 +121,36 @@
     chBoxes.forEach((checkbox) => {
         checkbox.addEventListener('change', handleCB);
     });
+
+    $(document).ready(function () {
+        $("#btnSearch").click(function (event) {
+            event.preventDefault();
+
+            var userId = $('#txtUserIdForNewUser').val();
+            if (userId.trim(' ') == "") {
+                alert("Please enter User Id");
+                return false;
+            };
+            $.ajax({
+                url: '/User/GetUserInfo',
+                data: { userId: userId },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    debugger;
+                    $('#email').val(data.userEmail);
+                    $('#UserName').val(data.userName);
+                    if (data.errorMsg != "" && data.errorMsg != null)
+                    {
+                        alert(data.errorMsg);
+                        return false;
+                    }
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                }
+            });
+        });
+    });
+
 </script>

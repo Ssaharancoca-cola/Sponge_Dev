@@ -1,0 +1,144 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("SaveDataCollection", "SubjectArea", FormMethod.Post))
+{
+<div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Setup Data Collection </p>
+                <div class="table-responsive">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Display Name</th>
+                                <th>Field Name</th>
+                                <th>Is Look Up</th>
+                                <th>Lookup Type</th>
+                                <th>Data Type</th>
+                                <th>UOM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" id="displayName" value="Remarks">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="fieldName" value="Remarks">
+                                </td>
+                                <td>
+                                    <select class="form-control" id="isLookUp">
+                                        <option selected>Select Is Look Up</option>
+                                        <option value="1">Yes</option>
+                                        <option value="2">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="LookUpType">
+                                        <option selected>Select</option>
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="DataType">
+                                        <option selected>Select</option>
+                                        <option value="1">String</option>
+                                        <option value="2">Number</option>
+                                        <option value="2">Date</option>
+                                    </select>
+                                </td>
+                            
+                                <td>
+                                    <select class="form-control" id="UOM">
+                                        <option selected>Select</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" id="displayName" value="">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="fieldName" value="">
+                                </td>
+                                <td>
+                                    <select class="form-control" id="isLookUp">
+                                        <option selected>Select Is Look Up</option>
+                                        <option value="1">Yes</option>
+                                        <option value="2">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="LookUpType">
+                                        <option selected>Select</option>
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="DataType">
+                                        <option selected>Select</option>
+                                        <option value="1">String</option>
+                                        <option value="2">Number</option>
+                                        <option value="2">Date</option>
+                                    </select>
+                                </td>
+                              
+                                <td>
+                                    <select class="form-control" id="UOM">
+                                        <option selected>Select</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+                       
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" id="displayName" value="">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="fieldName" value="">
+                                </td>
+                                <td>
+                                    <select class="form-control" id="isLookUp">
+                                        <option selected>Select Is Look Up</option>
+                                        <option value="1">Yes</option>
+                                        <option value="2">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="LookUpType">
+                                        <option selected>Select</option>
+
+                                    </select>
+                                </td>
+                               
+                                <td>
+                                    <select class="form-control" id="DataType">
+                                        <option selected>Select</option>
+                                        <option value="1">String</option>
+                                        <option value="2">Number</option>
+                                        <option value="2">Date</option>
+                                    </select>
+                               
+                                </td>
+                               
+                                <td>
+                                    <select class="form-control" id="UOM">
+                                        <option selected>Select</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-light mr-2">Cancel</button>
+                <button type="submit" class="btn btn-primary ">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
