@@ -2,7 +2,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveFunction", "Function", FormMethod.Post))
+@using (Html.BeginForm("SaveFunction", "Function",Model, FormMethod.Post))
 {
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
@@ -14,17 +14,20 @@
 
                             <div class="col">
                                 <label for="Country">Country</label>
-                                <select class="form-control" name="Country" id="Country">
+                                <select class="form-control" name="COUNTRY_NAME" id="Country">
                                     <option value="">Select Country</option>
                                     @if (Model != null && Model.COUNTRY_NAME != null)
                                     {
                                         <option value="@Model.COUNTRY_NAME" selected>@Model.COUNTRY_NAME</option>
+                                       
                                     }
                                     else
                                     {
                                         @foreach (var country in ViewBag.Country)
                                         {
+
                                             <option value="@country.Value">@country.Text</option>
+                                            @Html.ValidationMessageFor(model => model.COUNTRY_NAME)
                                         }
                                     }
                                 </select>
@@ -32,22 +35,30 @@
                             <div class="col">
                                 <label for="FunctionName">Function Name</label>
                                 <input type="text" class="form-control" id="functionName"
-                                       name="FunctionName" value="@Model?.FUNCTION_NAME"
+                                       name="FUNCTION_NAME" value="@Model?.FUNCTION_NAME"
                                        placeholder="Function Name">
+                                @Html.ValidationMessageFor(model => model.FUNCTION_NAME)
                             </div>
                             <div class="col">
                                 <label for="subFunctionName">Subfunction</label>
+                                @if (Model != null)
+
+                                {
+
+
                                 @Html.HiddenFor(m => m.SUBFUNCTION_ID)
+                                }
                                 <input type="text" class="form-control" id="subFunctionName"
-                                       name="SubFunctionName" value="@Model?.SUBFUNCTION_NAME"
+                                       name="SUBFUNCTION_NAME" value="@Model?.SUBFUNCTION_NAME"
                                        placeholder="Sub function name">
+                                @Html.ValidationMessageFor(model => model.SUBFUNCTION_NAME)
                             </div>
                             <div class="col">
                                 <label for="activeFlag">Active Flag</label>
                                 <div class="form-check form-check-flat form-check-primary">
                                     <label class="form-check-label">
                                         <input type="checkbox"
-                                               id="activeFlag" name="ActiveFlag" class="form-check-input"
+                                               id="activeFlag" name="ACTIVE_FLAG" class="form-check-input"
                                                checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)">
                                     </label>
                                 </div>
@@ -58,7 +69,7 @@
                                 <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
                             </div>
                         </div>
-                        <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageFunction", "Home")'">Cancel</button>
+                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("Function", "Function")'">Cancel</button>
                         @if(Model != null)
                         {
                         <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
