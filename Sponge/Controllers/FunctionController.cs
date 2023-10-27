@@ -123,25 +123,5 @@ namespace Sponge.Controllers
             return RedirectToAction("Function");
         }
 
-        public JsonResult GetAllFunction(string namePrefix)
-        {
-            List<string>? list = null;
-            using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
-            {
-                list = sPONGE_Context.SPG_SUBFUNCTION.Where(s => s.FUNCTION_NAME.ToUpper().Contains(namePrefix.ToUpper())).Select(y => y.FUNCTION_NAME).Distinct().ToList();
-            }
-            return Json(list);
-        }
-
-        public JsonResult IsSubFunctionAlreadyExist(string functionName, string subFunctionName, int subFunctionId)
-        {
-            bool result = false;
-            using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
-            {
-                result = sPONGE_Context.SPG_SUBFUNCTION.Where(s => s.FUNCTION_NAME.ToUpper() == functionName.ToUpper() && s.SUBFUNCTION_NAME.ToUpper() == subFunctionName.ToUpper() && s.SUBFUNCTION_ID != subFunctionId).Any();
-            }
-            return Json(result);
-        }
-
     }
 }
