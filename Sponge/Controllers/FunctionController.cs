@@ -49,7 +49,6 @@ namespace Sponge.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-
                         SPONGE_Context sPONGE_Context = new SPONGE_Context();
                         var SearchFunctionData = (from func in sPONGE_Context.SPG_SUBFUNCTION
                                                   select new SearchFunctionList

@@ -1,6 +1,9 @@
-﻿@{
+﻿@model Sponge.ViewModel.GetUserinfo;
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<form id="Userform">
 <div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
@@ -10,76 +13,118 @@
                     <div class="form-group row ">
                         <div class="col">
                             <label for="exampleInputUsername1">User ID</label>
-                            <input type="text" class="form-control" id="txtUserIdForNewUser" placeholder="User ID">
-                            <div class="row">
-                                <div class="col">
-                                    <button type="button" id="btnSearch" class="btn btn-primary">Search</button>
-                                </div>
-                            </div>
-
+                                @if (Model != null && Model.UserId != null)
+                                {
+                                    <input type="text" class="form-control" id="txtUserIdForNewUser" name="userId" placeholder="User ID" value="@Model.UserId">
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" id="txtUserIdForNewUser" name="userId" placeholder="User ID">
+                                    <div class="row">
+                                    <div class="col">
+                                        <button type="button" id="btnSearch" class="btn btn-primary">Search</button>
+                                    </div>
+                                    </div>
+                                }                               
+                            
                         </div>
-
-
                         <div class="col">
                             <label for="UserName">User Name</label>
-                            <input type="text" class="form-control" readonly id="UserName" placeholder="User Name">
-                        </div>
+                            @if(Model != null && Model.UserName != null)
+                                {
+                                    <input type="text" class="form-control" readonly id="UserName" name="userName" placeholder="User Name" value="@Model.UserName">
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" readonly id="UserName" name="userName" placeholder="User Name">
+                                }
+                            </div>
                         <div class="col">
                             <label for="exampleInputEmail1">Email</label>
-                            <input type="email" class="form-control" readonly id="email" placeholder="Email">
+                                @if (Model != null && Model.UserName != null)
+                                {
+                                    <input type="email" class="form-control" readonly id="email" name="email" placeholder="Email" value="@Model.Email">
+                                }
+                                else
+                                {
+                                    <input type="email" class="form-control" readonly id="email" name="email" placeholder="Email">
+                                }
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <div class="col">
                             <label for="exampleInputConfirmPassword1">Role</label>
-                            <select class="form-control">
+                                <select class="form-control" name="role">
                                 <option selected>Role</option>
-                                @foreach (var country in ViewBag.Role)
+                                @if(Model !=null && Model.Role != null)
                                 {
+                                    @foreach (var role in Model.Role) 
+                                    {
+                                           @* <option value="@role.Text">@role.Value</option> *@
 
-                                    <option value="@country.Value">@country.Text</option>
+                                    }    
                                 }
+                                else{
+                                @foreach (var role in ViewBag.Role)
+                                {
+                                    <option value="@role.Text">@role.Value</option>
+                                }
+                                    }
                             </select>
                         </div>
 
                         <div class="col">
                             <label for="">SubFunction</label>
                             <div class="dropdown">
-                                <button class="btn dropdown-toggle bth-custom-multi" type="button" id="multiSelectDropdown"
+                                    <button class="btn dropdown-toggle bth-custom-multi" name="subFunction" type="button" id="multiSelectDropdown"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                     Select
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
-                                    @foreach (var subfunction in ViewBag.SubFunction)
+                                        @if(Model != null && Model.SubFunction != null)
+                                        {
+                                            
+                                        }
+                                        else
                                     {
-                                        <li>
-                                        <label>
-                                                <input type="checkbox" value=@subfunction.Text> @subfunction.Value
-                                        </label>
-                                        </li>
+                                        @foreach (var subfunction in ViewBag.SubFunction)
+                                        {
+                                            <li>
+                                            <label>
+                                                        <input type="checkbox" name="subFunction" value=@subfunction.Text>@subfunction.Value
+                                            </label>
+                                            </li>
+                                        }
                                     }
                                 </ul>
                             </div>
                         </div>
 
                         <div class="col">
-                            <label for="exampleInputConfirmPassword1">Active</label>
-                            <select class="form-control">
+                            <label for="exampleInputConfirmPassword1">Status</label>
+                                <select class="form-control" name="status">
                                 <option selected>Select</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
+                                <option value="Y">Active</option>
+                                <option value="N">Inactive</option>
                             </select>
 
                         </div>
-                    </div>
-                    <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageUser", "Home")'">Cancel</button>
-                    <button type="submit" class="btn btn-primary ">Submit</button>
+                    </div>                    
+                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageUser", "User")'">Cancel</button>
+                        @if (Model != null)
+                        {
+                            <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="Command" id="btnSave" value="Save" class="btn btn-primary">Save</button>
+                        }
                 </form>
             </div>
         </div>
     </div>
 </div>
+</form>
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
 <script>
@@ -122,7 +167,8 @@
         checkbox.addEventListener('change', handleCB);
     });
 
-    $(document).ready(function () {
+    $(document).ready(function () {        
+
         $("#btnSearch").click(function (event) {
             event.preventDefault();
 
@@ -145,6 +191,22 @@
                         alert(data.errorMsg);
                         return false;
                     }
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                }
+            });
+        });
+        $("#btnSave").click(function (event) {
+            event.preventDefault();
+            var form = $('#Userform').serialize();
+            $.ajax({
+                url: '@Url.Action("SaveUser", "User")',
+                data: form,
+                type: 'POST',
+                success: function (data) {
+                    debugger;
+                    onSuccess(data);
                 },
                 error: function (error) {
                     console.log('Error: ', error);

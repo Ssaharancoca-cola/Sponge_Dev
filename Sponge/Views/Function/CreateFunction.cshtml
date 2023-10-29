@@ -25,7 +25,6 @@
                                     {
                                         @foreach (var country in ViewBag.Country)
                                         {
-
                                             <option value="@country.Value">@country.Text</option>
                                             @Html.ValidationMessageFor(model => model.COUNTRY_NAME)
                                         }

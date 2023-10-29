@@ -1,6 +1,8 @@
-﻿@{
+﻿@model IEnumerable<Sponge.ViewModel.GetUserinfo>
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
@@ -24,36 +26,33 @@
                             <tr>
                                 <th>UserID</th>
                                 <th>User Name</th>
-                                <th>Phone Number</th>
-                                <th>Email Id</th>
+                                <th>Email</th>
                                 <th>Role</th>
                                 <th>Subfunction</th>
-                                <th>Active</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                              <td>
-                                  
-                              </td>
-                                <td>
-                                </td>
-                                <td>
-                                     
-                                  </td>
-                                <td>
-                                </td>
-                                <td>
-                                </td><td>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
-                           
-
+                            @foreach (var userInfo in Model)
+                            {
+                                <tr>
+                                    <td>@userInfo.UserId</td>
+                                    <td>@userInfo.UserName</td>
+                                    <td>@userInfo.Email</td>
+                                    <td>@userInfo.Role</td>
+                                    <td>@userInfo.SubFunction</td>
+                                    <td>@userInfo.Status</td>
+                                    <td>                                       
+                                        <a href="@Url.Action("EditUser", "User", new {id = userInfo.UserId})" class="btn btn-outline-primary btn-icon-text">
+                                            <i class="ti-file btn-icon-prepend"></i>
+                                            Edit
+                                        </a>
+                                          
+                                    </td>
+                                </tr>
+                            }
+          
                         </tbody>
                     </table>
                 </div>
