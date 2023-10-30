@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<DAL.Models.SPG_ROLE>
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="row">
@@ -22,27 +24,16 @@
                     <table id="example" class="display expandable-table" style="width:100%">
                         <thead>
                             <tr>
-
                                 <th>Role Name</th>
-
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Admin</td>
-                        
-                            </tr>
-                            <tr>
-                                <td>Data Approver</td>
-                            </tr>
-                            <tr>
-                                <td>Data Configure</td>
-                            </tr>
-                            <tr>
-                                <td>Data Uploader</td>
-
-                            </tr>
-
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.ROLE_NAME</td>                                                                       
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

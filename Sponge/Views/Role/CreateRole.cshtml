@@ -1,29 +1,43 @@
-﻿@{
+﻿@model DAL.Models.SPG_ROLE;
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Create Role</p>
-                <div class="forms-sample">
-                    <div class="form-group row ">
-
-
-                        <div class="col">
-                            <label for="FunctionName">Role Name</label>
-                            <input type="text" class="form-control" id="functionName"
-                                   placeholder="Role Name">
+@using (Html.BeginForm("SaveRole", "Role", Model, FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Create Role</p>
+                    <div class="forms-sample">
+                        <div class="form-group row ">
+                            <div class="col">
+                                <label for="RoleName">Role Name</label>
+                                @Html.TextBoxFor(m => m.ROLE_NAME, new { @class = "form-control", @id="roleName", @placeholder = "Role Name"})
+                            </div>
+                            <div class="col">
+                                <label for="activeFlag">Active Flag</label>
+                                <div class="form-check form-check-flat form-check-primary">
+                                    <label class="form-check-label">
+                                        <input type="checkbox"
+                                               id="activeFlag" name="ACTIVE_FLAG" class="form-check-input"
+                                               checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)">
+                                    </label>
+                                </div>
+                            </div>
                         </div>
+                        <div class="row">
+                            <div>
+                                <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageRole", "Role")'">Cancel</button>
+                        <button type="submit" class="btn btn-primary ">Save</button>
 
                     </div>
-
-                    <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageRole", "Role")'">Cancel</button>
-                    <button type="submit" class="btn btn-primary ">Submit</button>
-
                 </div>
             </div>
-        </div>
 
     </div>
 </div>
+}

@@ -72,16 +72,7 @@ namespace Sponge.Controllers
                                 data.ACTIVE_FLAG = "N";
                             }
                             data.CREATED_DATE = DateTime.Now;
-                            data.CREATED_BY = userName[1].ToString();
-                            //SPG_SUBFUNCTION spg = new SPG_SUBFUNCTION()
-                            //{
-                            //    COUNTRY_NAME = function["Country"],
-                            //    FUNCTION_NAME = function["FunctionName"],
-                            //    SUBFUNCTION_NAME = function["SubFunctionName"],
-                            //    ACTIVE_FLAG = activeFlag,
-                            //    CREATED_BY = userName[1].ToString(),                                
-                            //    CREATED_DATE = DateTime.Now
-                            //};                            
+                            data.CREATED_BY = userName[1].ToString();                                                      
                             sPONGE_Context.SPG_SUBFUNCTION.Add(data);
 
                             sPONGE_Context.SaveChanges();
