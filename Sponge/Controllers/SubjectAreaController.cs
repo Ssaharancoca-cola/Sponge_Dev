@@ -1,5 +1,6 @@
 ﻿using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Sponge.Models;
 using Sponge.ViewModel;
 using System.Diagnostics;
@@ -22,11 +23,21 @@ namespace Sponge.Controllers
 
         public IActionResult ManageSubjectArea()
         {
-            return View("Views\\SubjectArea\\ManageSubjectArea.cshtml");
+            SPONGE_Context sPONGE_Context = new SPONGE_Context();
+            var viewmodel = from sp in sPONGE_Context.SPG_SUBJECTAREA
+                            join p in sPONGE_Context.SPG_SUBFUNCTION on sp.SUBFUNCTION_ID equals p.SUBFUNCTION_ID
+                            select new SubjectArea { SpgSubjectArea = sp, SpgSubfunction = p };
+            return View(viewmodel);           
         }
-        public IActionResult CreateSubjectArea()
+        public IActionResult CreateSubjectArea(int? InvalidEntry)
         {
-            return View("Views\\SubjectArea\\CreateSubjectArea.cshtml");
+            SPONGE_Context spONGE_Context = new SPONGE_Context();
+            var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME }).Distinct();
+            ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
+            var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.FUNCTION_NAME }).Distinct();
+            ViewBag.SubjectArea = new SelectList(lst.ToList(), "FUNCTION_NAME", "FUNCTION_ID");
+            ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubJectArea aleardy exist" : "";
+            return View();            
         }
         public IActionResult ConfigureSubjectArea()
         {

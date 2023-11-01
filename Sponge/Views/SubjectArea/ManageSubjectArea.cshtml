@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<Sponge.ViewModel.SubjectArea>
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="row">
@@ -32,36 +33,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Quality</td>
-                                <td>Primary Sales Business Plan- Brand</td>
-                                <td>Next</td>
-                                <td>Yearly</td>
-                                <td>Monthly</td>
-                                <td>Y</td>
-                                <td>
-                                    <button type="button"
-                                            class="btn btn-outline-primary btn-icon-text">
-                                        <i class="ti-file btn-icon-prepend"></i>
-                                        Edit
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Quality</td>
-                                <td>Primary Sales Business Plan- Pack</td>
-                                <td>Next</td>
-                                <td>Yearly</td>
-                                <td>Monthly</td>
-                                <td>Y</td>
-                                <td>
-                                    <button type="button"
-                                            class="btn btn-outline-primary btn-icon-text">
-                                        <i class="ti-file btn-icon-prepend"></i>
-                                        Edit
-                                    </button>
-                                </td>
-                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.SpgSubfunction.SUBFUNCTION_NAME</td>
+                                    <td>@item.SpgSubjectArea.SUBJECTAREA_NAME</td>
+                                    <td>@item.SpgSubjectArea.REPORTING_PERIOD</td>
+                                    <td>@item.SpgSubjectArea.FREQUENCY</td>
+                                    <td>@item.SpgSubjectArea.ONTIMELEVEL</td>
+                                    <td>@item.SpgSubjectArea.ACTIVE_FLAG</td>
+                                    <td>
+                                        <a href="@Url.Action("EditSubjectArea", "SubjectArea", new {id = item.SpgSubfunction.SUBFUNCTION_ID})" class="btn btn-outline-primary btn-icon-text">
+                                            <i class="ti-file btn-icon-prepend"></i>
+                                            Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            
                         </tbody>
                     </table>
                 </div>
