@@ -32,10 +32,12 @@ namespace Sponge.Controllers
         public IActionResult CreateSubjectArea(int? InvalidEntry)
         {
             SPONGE_Context spONGE_Context = new SPONGE_Context();
-            var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME }).Distinct();
-            ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
-            var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.FUNCTION_NAME }).Distinct();
-            ViewBag.SubjectArea = new SelectList(lst.ToList(), "FUNCTION_NAME", "FUNCTION_ID");
+            //var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME }).Distinct();
+            //ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
+            var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
+            ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
+            var time = spONGE_Context.SPG_TIMELEVEL.Select(o => new { o.DESCRIPTION, o.ID }).Distinct();
+            ViewBag.Timelevel = new SelectList(time.ToList(), "DESCRIPTION", "ID");
             ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubJectArea aleardy exist" : "";
             return View();            
         }

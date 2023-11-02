@@ -1,0 +1,228 @@
+﻿@model Sponge.ViewModel.GetUserinfo;
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form id="Userform">
+
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Edit User</p>
+                 
+                        <div class="form-group row ">
+                            <div class="col">
+                                <label for="exampleInputUsername1">User ID</label>
+                                @if (Model != null && Model.UserId != null)
+                                {
+                                    <input type="text" readonly class="form-control" id="txtUserIdForNewUser" name="userId" placeholder="User ID" value="@Model.UserId">
+                                }
+
+
+                            </div>
+                            <div class="col">
+                                <label for="UserName">User Name</label>
+                                @if (Model != null && Model.UserName != null)
+                                {
+                                    <input type="text" class="form-control" readonly id="UserName" name="userName" placeholder="User Name" value="@Model.UserName">
+                                }
+
+                            </div>
+                            <div class="col">
+                                <label for="exampleInputEmail1">Email</label>
+                                @if (Model != null && Model.Email != null)
+                                {
+                                    <input type="email" class="form-control" readonly id="email" name="email" placeholder="Email" value="@Model.Email">
+                                }
+
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="exampleInputConfirmPassword1">Role</label>
+                                <label for="">Role</label>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle bth-custom-multi" name="Role" type="button" id="Role"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        Select
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
+
+                                        @foreach (var Role in @Model.RoleList)
+                                        {
+                                            <li>
+
+                                                <label for=@Role.RoleId>
+
+                                                    <input type="checkbox" readonly=@Role.Selected checked=@Role.Selected name="Role" value=@Role.RoleId>@Role.RoleName
+                                                </label>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <label for="">SubFunction</label>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle bth-custom-multi" name="subFunction" type="button" id="multiSelectDropdown"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        Select
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
+                                       
+                                            @foreach (var subfunction in @Model.SubfunctionList)
+                                            {
+                                                <li>
+                                                   
+                                                    <label for=@subfunction.SubFunctionId>
+
+                                                    <input type="checkbox" readonly=@subfunction.Selected checked=@subfunction.Selected name="subFunction" value=@subfunction.SubFunctionId>@subfunction.SubfunctionName
+                                                </label>
+                                                </li>
+                                            }
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <label for="Status">Status</label>
+                                <select class="form-control" name="status" asp-for="@Model.Status">
+                                    <option>Select</option>
+                                    <option value="Y">Active</option>
+                                    <option value="N">Inactive</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageUser", "User")'">Cancel</button>
+                        @if (Model != null)
+                        {
+                            <button type="submit" name="Command" id="btnUpdate" value="Update" class="btn btn-primary">Update</button>
+                        }
+
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+<script>
+
+</script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<script src="~/assists/js/template.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<script src="~/assists/js/template.js"></script>
+
+<!-- endinject -->
+<script>
+    const chBoxes = document.querySelectorAll('.dropdown-menu input[name="subFunction"]');
+    const chRoleBoxes = document.querySelectorAll('.dropdown-menu input[name="Role"]');
+    const dpBtn = document.getElementById('multiSelectDropdown');
+    const dpRole = document.getElementById('Role');
+    let mySelectedListItems = [];
+
+    function handleCB() {
+        mySelectedListItems = [];
+        let mySelectedListItemsText = '';
+
+        chBoxes.forEach((checkbox) => {
+            debugger;
+            if (checkbox.checked) {
+                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
+                mySelectedListItems.push(checkbox.value);
+                mySelectedListItemsText += checkboxText.trim() + ', ';
+            }
+        });
+
+        dpBtn.innerText =
+            mySelectedListItems.length > 0
+                ? mySelectedListItemsText.slice(0, -2) : 'Select';
+    }
+    function handleRoleCB() {
+        mySelectedListItems = [];
+        let mySelectedListItemsText = '';
+
+        chRoleBoxes.forEach((checkbox) => {
+            debugger;
+            if (checkbox.checked) {
+                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
+                mySelectedListItems.push(checkbox.value);
+                mySelectedListItemsText += checkboxText.trim() + ', ';
+            }
+        });
+
+        dpRole.innerText =
+            mySelectedListItems.length > 0
+                ? mySelectedListItemsText.slice(0, -2) : 'Select';
+    }
+
+    chBoxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', handleCB);
+    });
+    chRoleBoxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', handleRoleCB);
+    });
+
+
+    $(document).ready(function () {
+        handleCB();
+        handleRoleCB();
+        $("#btnSearch").click(function (event) {
+            event.preventDefault();
+
+            var userId = $('#txtUserIdForNewUser').val();
+            if (userId.trim(' ') == "") {
+                alert("Please enter User Id");
+                return false;
+            };
+            $.ajax({
+                url: '/User/GetUserInfo',
+                data: { userId: userId },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    debugger;
+                    $('#email').val(data.userEmail);
+                    $('#UserName').val(data.userName);
+                    if (data.errorMsg != "" && data.errorMsg != null) {
+                        alert(data.errorMsg);
+                        return false;
+                    }
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                }
+            });
+        });
+        $("#btnUpdate").click(function (event) {
+            event.preventDefault();
+            var form = $('#Userform').serialize();
+            $.ajax({
+                url: '@Url.Action("UpdateUser", "User")',
+                data: form,
+                type: 'POST',
+                success: function (data) {
+                    debugger;
+                    onSuccess(data);
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                }
+            });
+        });
+    });
+
+</script>

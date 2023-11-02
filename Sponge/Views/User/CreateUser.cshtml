@@ -36,7 +36,7 @@
                                 }
                                 else
                                 {
-                                    <input type="text" class="form-control" readonly id="UserName" name="userName" placeholder="User Name">
+                                    <input type="text" class="form-control"  id="UserName" name="userName" placeholder="User Name">
                                 }
                             </div>
                         <div class="col">
@@ -47,7 +47,7 @@
                                 }
                                 else
                                 {
-                                    <input type="email" class="form-control" readonly id="email" name="email" placeholder="Email">
+                                    <input type="email" class="form-control"  id="email" name="email" placeholder="Email">
                                 }
                         </div>
                     </div>
@@ -83,15 +83,20 @@
                                 <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
                                         @if(Model != null && Model.SubFunction != null)
                                         {
-                                            
+                                            @foreach (var subfunction in ViewBag.SubFunction)
+                                            {
+                                                 <label for=@subfunction.Text>
+                                                     </label>
+                                            }
+
                                         }
                                         else
                                     {
                                         @foreach (var subfunction in ViewBag.SubFunction)
                                         {
                                             <li>
-                                            <label>
-                                                        <input type="checkbox" name="subFunction" value=@subfunction.Text>@subfunction.Value
+                                                    <label for=@subfunction.Value>
+                                                        <input type="checkbox" name="subFunction" value=@subfunction.Value>@subfunction.Text
                                             </label>
                                             </li>
                                         }
@@ -152,9 +157,11 @@
         let mySelectedListItemsText = '';
 
         chBoxes.forEach((checkbox) => {
+            debugger;
             if (checkbox.checked) {
-                mySelectedListItems.push(checkbox.value);
-                mySelectedListItemsText += checkbox.value + ', ';
+                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
+                mySelectedListItems.push(checkbox.value);     
+                mySelectedListItemsText += checkboxText.trim() + ', ';
             }
         });
 

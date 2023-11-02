@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Sponge.ViewModel.SubjectArea>
+﻿@model Sponge.ViewModel.SubjectArea
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -10,20 +10,15 @@
                 <form class="forms-sample">
                     <div class="form-group row ">
 
+                       
                         <div class="col">
-                            <label for="function">Function</label>
-                            <select class="form-control" id="function">
-                                <option selected>Select</option>
-                                <option value="1">Operations</option>
-                                <option value="2">Sales</option>
-                            </select>
-                        </div>
-                        <div class="col">
+
                             <label for="subfunction">Sub Function</label>
-                            <select class="form-control" id="subfunction">
-                                <option selected>Select</option>
-                                <option value="1">Quality</option>
-                                <option value="2">Sales</option>
+                            <select class="form-control" name="SubFunction">
+                                @foreach (var f in ViewBag.SubFunction)
+                            {
+                                <option value="@f.Text">@f.Value</option>
+                            }
                             </select>
                         </div>
                         <div class="col">
@@ -47,14 +42,12 @@
 
                         <div class="col-sm-4">
                             <label for="frequency">Frequency</label>
-                            <select class="form-control" id="frequency">
+                            <select class="form-control" name="Timelevel">
                                 <option selected>Select</option>
-                                <option value="1">Yearly</option>
-                                <option value="2">Half Yearly</option>
-                                <option value="2">Quarterly</option>
-                                <option value="2">Monthly</option>
-                                <option value="2">Weekly</option>
-                                <option value="2">Daily</option>
+                                @foreach (var f in ViewBag.Timelevel)
+                                {
+                                    <option value="@f.Text">@f.Value</option>
+                                }
                             </select>
                         </div>
                         <div class="col-sm-4">
