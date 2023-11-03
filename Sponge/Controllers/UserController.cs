@@ -223,7 +223,7 @@ namespace Sponge.Controllers
                                     UserId = u.USER_ID,
                                     UserName = u.Name,
                                     Email = u.EMAIL_ID,
-                                    Role = f.ROLE_ID.ToString(),
+                                    Role =  f.ROLE_ID.ToString(),
                                     Status = f.ACTIVE_FLAG
                                 }).FirstOrDefault();
                 userInfo.SubfunctionList = subFnList.ToList();

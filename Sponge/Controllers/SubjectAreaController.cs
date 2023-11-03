@@ -41,32 +41,19 @@ namespace Sponge.Controllers
             ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubJectArea aleardy exist" : "";
             return View();            
         }
-        public IActionResult ConfigureSubjectArea()
+        public IActionResult EditSubjectArea(int? InvalidEntry)
         {
-            return View("Views\\SubjectArea\\ConfigureSubjectArea.cshtml");
+            SPONGE_Context spONGE_Context = new SPONGE_Context();
+            //var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME }).Distinct();
+            //ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
+            var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
+            ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
+            var time = spONGE_Context.SPG_TIMELEVEL.Select(o => new { o.DESCRIPTION, o.ID }).Distinct();
+            ViewBag.Timelevel = new SelectList(time.ToList(), "DESCRIPTION", "ID");
+            ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubJectArea aleardy exist" : "";
+            return View();
         }
-        public IActionResult SaveMastersGroup()
-        {
-            return View("Views\\SubjectArea\\ConfigureMasters.cshtml");
-        }
-        public IActionResult SaveMasters()
-        {
-            return View("Views\\SubjectArea\\ConfigureDataCollection.cshtml");
-        }
-        public IActionResult SaveDataCollection()
-        {
-            return View("Views\\SubjectArea\\AssignUsers.cshtml");
-        }
-        public IActionResult SaveUsers()
-        {
-            return View("Views\\Home\\Index.cshtml");
-        }
-        [HttpPost]
-        public IActionResult ConfigureMasterGroup(IFormCollection function, string Command)
-        {
-          
-            return RedirectToAction("Function");
-        }
+     
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

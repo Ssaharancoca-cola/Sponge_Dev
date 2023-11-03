@@ -15,6 +15,7 @@
 
                             <label for="subfunction">Sub Function</label>
                             <select class="form-control" name="SubFunction">
+                                <option selected >Select</option>
                                 @foreach (var f in ViewBag.SubFunction)
                             {
                                 <option value="@f.Text">@f.Value</option>
