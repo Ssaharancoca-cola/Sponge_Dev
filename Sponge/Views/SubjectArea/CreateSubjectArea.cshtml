@@ -2,97 +2,168 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Create Subject Area</p>
-                <form class="forms-sample">
-                    <div class="form-group row ">
-
-                       
-                        <div class="col">
-
-                            <label for="subfunction">Sub Function</label>
-                            <select class="form-control" name="SubFunction">
-                                <option selected >Select</option>
-                                @foreach (var f in ViewBag.SubFunction)
-                            {
-                                <option value="@f.Text">@f.Value</option>
-                            }
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label for="subjectArea">Subject Area Name</label>
-                            <input type="text" class="form-control" id="subjectArea" />
-                        </div>
-                    </div>
-                    <div class="form-group row">
-
-
-                        <div class="col">
-                            <label for="reportperiod">Report Period</label>
-                            <select class="form-control" id="reportperiod">
-                                <option selected>Select</option>
-                                <option value="1">Current</option>
-                                <option value="2">Next</option>
-                                <option value="2">Previous</option>
-                            </select>
-
-                        </div>
-
-                        <div class="col-sm-4">
-                            <label for="frequency">Frequency</label>
-                            <select class="form-control" name="Timelevel">
-                                <option selected>Select</option>
-                                @foreach (var f in ViewBag.Timelevel)
-                                {
-                                    <option value="@f.Text">@f.Value</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="forTime">For Time</label>
-                            <select class="form-control" id="fortime">
-                                <option selected>Select</option>
-                                <option value="1">Yearly</option>
-                                <option value="2">Half Yearly</option>
-                                <option value="2">Quarterly</option>
-                                <option value="2">Monthly</option>
-                                <option value="2">Weekly</option>
-                                <option value="2">Daily</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">
-                            <label for="active">Active</label>
-                            <select class="form-control" id="active">
-                                <option selected>Select</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="Version">Version</label>
-                            <div class="form-check form-check-flat form-check-primary">
-                                <label class="form-check-label">
-
-                                    <input type="checkbox"
-                                           id="version" class="form-check-input">
-                                </label>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+@using (Html.BeginForm("SaveSubjectArea", "SubjectArea", Model, FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Create Subject Area</h4>
+                    <form class="forms-sample">
+                        <div class="form-group row ">
+                            <div class="col">
+                                <label for="SubFunction">Sub Function</label>
+                                <select class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
+                                    <option selected>Select</option>
+                                    @foreach (var f in ViewBag.SubFunction)
+                                    {
+                                        <option value="@f.Text">@f.Value</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="SubjectAreaName">Subject Area Name</label>
+                                <input type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" />
                             </div>
                         </div>
-
-                    </div>
-
-
-                    <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
-
-                    <button type="submit" class="btn btn-primary ">Save</button>
-                </form>
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="ReportPeriod">Report Period</label>
+                                <select class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
+                                    <option selected>Select</option>
+                                    <option value="CURRENT">Current</option>
+                                    <option value="NEXT">Next</option>
+                                    <option value="PREVIOUS">Previous</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="Frequency">Frequency</label>
+                                <select class="form-control" id="Frequency" name="Frequency">
+                                    <option selected>Select</option>                                    
+                                    <option value="YEARLY">Yearly</option>
+                                    <option value="HALF_YEARLY">Half Yearly</option>
+                                    <option value="QUARTERLY">Quarterly</option>
+                                    <option value="MONTHLY">Monthly</option>
+                                    <option value="WEAKLY">Weekly</option>
+                                    <option value="DAILY">Daily</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="ForTime">For Time</label>
+                                <select class="form-control" id="ForTime" name="TIME_LEVEL">
+                                    @if (Model != null)
+                                    {
+                                        @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="Active">Active</label>
+                                <select class="form-control" id="Active" name="ACTIVE_FLAG">
+                                    <option selected>Select</option>
+                                    <option value="Y">Active</option>
+                                    <option value="N">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="Version">Version</label>
+                                <div class="form-check form-check-flat form-check-primary">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" id="Version" name="Version" class="form-check-input">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4" id="OnTimeDiv" style="display:none;">
+                                <label for="OnTime">On Time</label>
+                                <select class="form-control" id="OnTime" name="ONTIMELEVEL"></select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div>
+                                <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
+                        
+                        <button type="submit" name="Command" value="Save" class="btn btn-primary">Save</button>
+                        
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
 
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#Frequency").change(function () {
+            var selectedFrequency = $(this).val();
+            if (selectedFrequency) {
+                $("#ForTime").prop("disabled", false);
+                $.ajax({
+                    url: '@Url.Action("BindGranularity", "SubjectArea")',
+                    type: 'GET',
+                    data: { frequency: selectedFrequency },
+                    success: function (data) {
+                        debugger;
+                        var options = '';
+                        $.each(data, function (i, item) {
+                            options += '<option value="' + item.value + '">' + item.text + '</option>';
+                        });
+                        $('#ForTime').html(options);
+                    }
+                });
+                if ($("#Version").is(":checked")) {
+                    $.ajax({
+                        url: '@Url.Action("BindTimeLevel", "SubjectArea")',
+                        type: 'GET',
+                        data: { frequency: selectedFrequency },
+                        success: function (data) {
+                            var options = '';
+                            $.each(data, function (i, item) {
+                                options += '<option value="' + item.value + '">' + item.text + '</option>';
+                            });
+                            $('#OnTime').html(options);
+                        }
+                    });
+                }
+            } else {
+                $("#ForTime").prop("disabled", true);
+            }
+        });
+
+        $("#Version").change(function () {
+            if ($(this).is(":checked")) {
+                $("#OnTimeDiv").show();
+                var selectedFrequency = $("#Frequency").val();
+                if (selectedFrequency) {
+                    $.ajax({
+                        url: '@Url.Action("BindTimeLevel", "SubjectArea")',
+                        type: 'GET',
+                        data: { frequency: selectedFrequency },
+                        success: function (data) {
+                            
+                            var options = '';
+                            $.each(data, function (i, item) {
+                                options += '<option value="' + item.value + '">' + item.text + '</option>';
+                            });
+                            $('#OnTime').html(options);
+                        }
+                    });
+                }
+            } else {
+                $("#OnTimeDiv").hide();
+            }
+        });
+    });
+
+</script>

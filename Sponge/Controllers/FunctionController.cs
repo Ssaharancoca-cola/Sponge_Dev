@@ -61,8 +61,7 @@ namespace Sponge.Controllers
                         SearchFunctionData = SearchFunctionData.Where(s => s.FunctionName == data.FUNCTION_NAME).ToList();
                         SearchFunctionData = SearchFunctionData.Where(s => s.SubFunctionName == data.SUBFUNCTION_NAME).ToList();
                         if (SearchFunctionData.Count <= 0)
-                        {
-                            string activeFlag;
+                        {                            
                             if (data.ACTIVE_FLAG == "on")
                             {
                                 data.ACTIVE_FLAG = "Y";
