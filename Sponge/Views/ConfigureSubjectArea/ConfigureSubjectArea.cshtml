@@ -1,7 +1,8 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<form id="ConfigureSubjectAreaform">
+@using (Html.BeginForm("SaveMastersGroup", "ConfigureSubjectArea"))
+{
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
@@ -45,29 +46,7 @@
             </div>
         </div>
     </div>
-    </form>
+}
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    $(document).ready(function () {
-        debugger;
-        $("#btnSave").click(function (event) {
-            debugger;
-            event.preventDefault();
-            var form = $('#ConfigureSubjectAreaform').serialize();
-            $.ajax({
-                url: '@Url.Action("SaveMastersGroup", "ConfigureSubjectArea")',
-                data: form,
-                type: 'POST',
-                success: function (data) {
-                    debugger;
-                    onSuccess(data);
-                },
-                error: function (error) {
-                    console.log('Error: ', error);
-                }
-            });
-        });
-    });
-</script>

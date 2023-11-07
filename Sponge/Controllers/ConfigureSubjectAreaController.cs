@@ -1,12 +1,15 @@
 ﻿using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Sponge.Models;
 using Sponge.ViewModel;
+using System.Data;
 using System.Diagnostics;
 
 namespace Sponge.Controllers
-{ 
+{
+    
     public class ConfigureSubjectAreaController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -25,6 +28,7 @@ namespace Sponge.Controllers
 
             return View();
         }
+        [HttpPost]
         public IActionResult SaveMastersGroup(IFormCollection data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
@@ -47,11 +51,14 @@ namespace Sponge.Controllers
 
             sPONGE_Context.SaveChanges();
             
+            var SPG_MASTER = sPONGE_Context.SPG_MPP_MASTER.Select(o => new { o.MASTER_NAME, o.MASTER_DISPLAY_NAME }).Distinct();
+            ViewBag.SPG_MASTER = new SelectList(SPG_MASTER.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
 
             return View("Views\\ConfigureSubjectArea\\ConfigureMasters.cshtml");
-        }
+        }        
         public IActionResult SaveMasters()
         {
+           
             return View("Views\\ConfigureSubjectArea\\ConfigureDataCollection.cshtml");
         }
         public IActionResult SaveDataCollection()
