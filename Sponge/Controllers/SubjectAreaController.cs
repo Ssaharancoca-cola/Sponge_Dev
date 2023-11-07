@@ -45,8 +45,8 @@ namespace Sponge.Controllers
             SPONGE_Context spONGE_Context = new SPONGE_Context();          
             var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
             ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
-            //var time = spONGE_Context.SPG_TIMELEVEL.Select(o => new { o.DESCRIPTION, o.ID }).Distinct();
-            //ViewBag.Timelevel = new SelectListItem();
+            List<SelectListItem> timelvl = new List<SelectListItem>();
+            ViewBag.Timelevel = timelvl;
             ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubjectArea aleardy exist" : "";
             return View("~/Views/SubjectArea/CreateSubjectArea.cshtml");
         }

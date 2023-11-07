@@ -1,116 +1,60 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveMasters", "SubjectArea", FormMethod.Post))
-{
-    <div class="row">
-        <div class="col-md-12 stretch-card grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-title">Manage Master setup</p>
-                    <div class="table-responsive">
-                        <table id="example" class="display expandable-table" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Masters</th>
-                                    <th>Field Name</th>
-                                    <th>Display Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+
+<div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Manage Master setup</p>
+                <div class="table-responsive">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Masters</th>
+                                <th>Field Name</th>
+                                <th>Display Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= 5; i++)
+                            {
                                 <tr>
                                     <td>
-                                        <select class="form-control" id="master">
+                                        <select class="form-control" id="@i+Master>
                                             <option selected>Select Master</option>
-                                            <option value="1">Brand</option>
-                                            <option value="2">Category</option>
-                                            <option value="2">Entity</option>
+                                            @foreach (var f in ViewBag.SPG_MASTER)
+                                            {
+                                                <option value="@f.Value">@f.Text</option>
+                                            }
                                         </select>
                                     </td>
                                     <td>
                                         <select class="form-control" id="fieldName">
-                                            <option selected>Select Field Name</option>
-                                            <option value="1">Brand Short Name</option>
-                                            <option value="2">Brand Long Name</option>
-                                            <option value="2">Brand Code</option>
+                                         
                                         </select>
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" id="displayName" placeholder="Display Name">
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <select class="form-control" id="master">
-                                            <option selected>Category</option>
-                                            <option value="1">Brand</option>
-                                            <option value="2">Option 2</option>
-                                            <option value="2">Option 3</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="form-control" id="fieldName">
-                                            <option selected>Select Field Name</option>
-                                            <option value="1">Category Long Name</option>
-                                            <option value="2">Category Short Name</option>
-                                            <option value="2">Category Code</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" id="displayName" placeholder="Display Name">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <select class="form-control" id="master">
-                                            <option selected>Entity</option>
-                                            <option value="1">Entity</option>
-                                            <option value="2">Option 2</option>
-                                            <option value="2">Option 3</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="form-control" id="fieldName">
-                                            <option selected>Select Field Name</option>
-                                            <option value="1">Entity Long Name</option>
-                                            <option value="2">Entity Short Name</option>
-                                            <option value="2">Entity Code</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" id="displayName" placeholder="Display Name">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <select class="form-control" id="master">
-                                            <option selected>Select</option>
-                                           
-                                            <option value="2">Brand</option>
-                                            <option value="2">Category</option>
-                                            <option value="1">Entity</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="form-control" id="fieldName">
-                                            <option selected>Select Field Name</option>
-                                            <option value="1">Entity Long Name</option>
-                                            <option value="2">Entity Short Name</option>
-                                            <option value="2">Entity Code</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" id="displayName" placeholder="Display Name">
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <button class="btn btn-light mr-2">Cancel</button>
-                    <button type="submit" class="btn btn-primary ">Next</button>
+
+                            }
+
+
+                        </tbody>
+                    </table>
                 </div>
+                <button class="btn btn-light mr-2">Cancel</button>
+                <button type="submit" class="btn btn-primary ">Next</button>
             </div>
         </div>
     </div>
+</div>
 
-}
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+        </script>
