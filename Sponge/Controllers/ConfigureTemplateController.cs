@@ -11,6 +11,7 @@ using System.Diagnostics;
 namespace Sponge.Controllers
 {
     [AccessFilters]
+    [SessionTimeOut]
     public class ConfigureTemplateController : Controller
 {
     private readonly ILogger<HomeController> _logger;

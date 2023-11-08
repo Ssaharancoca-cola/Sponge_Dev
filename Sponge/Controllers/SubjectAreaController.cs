@@ -10,6 +10,7 @@ using System.Diagnostics;
 namespace Sponge.Controllers
 {
     [AccessFilters]
+    [SessionTimeOut]
     public class SubjectAreaController : Controller
     {
     private readonly ILogger<HomeController> _logger;

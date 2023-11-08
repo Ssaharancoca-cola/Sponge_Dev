@@ -6,6 +6,7 @@ using Sponge.ViewModel;
 namespace Sponge.Controllers
 {
     [AccessFilters]
+    [SessionTimeOut]
     public class RoleController : Controller
     {
         public IActionResult CreateRole(int? InvalidEntry)

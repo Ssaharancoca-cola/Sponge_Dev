@@ -17,6 +17,7 @@ using static System.Reflection.Metadata.BlobBuilder;
 namespace Sponge.Controllers
 {
     [AccessFilters]
+    [SessionTimeOut]
     public class UserController : Controller
     {
         public IActionResult CreateUser()

@@ -44,7 +44,10 @@ namespace Sponge.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
+        public ViewResult SessionTimeOut()
+        {
+            return View("~/Views/Shared/SessionTimeOut.cshtml");
+        }
         public ViewResult AccessDenied()
         {
             return View("~/Views/Shared/AccessDenied.cshtml");

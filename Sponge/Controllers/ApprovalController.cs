@@ -4,6 +4,7 @@ using Sponge.Common;
 namespace Sponge.Controllers
 {
     [AccessFilters]
+    [SessionTimeOut]
     public class ApprovalController : Controller
     {
         public IActionResult Index()
