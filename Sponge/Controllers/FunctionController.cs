@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Sponge.Common;
 using Sponge.ViewModel;
 
 namespace Sponge.Controllers
 {
+    [AccessFilters]
     public class FunctionController : Controller
     {
         private readonly IHttpContextAccessor _httpSession;

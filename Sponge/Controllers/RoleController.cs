@@ -1,9 +1,11 @@
 ﻿using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Sponge.Common;
 using Sponge.ViewModel;
 
 namespace Sponge.Controllers
 {
+    [AccessFilters]
     public class RoleController : Controller
     {
         public IActionResult CreateRole(int? InvalidEntry)
@@ -63,6 +65,7 @@ namespace Sponge.Controllers
             }
             return RedirectToAction("ManageRole");
         }
+
 
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
 using System.Data;
@@ -9,7 +10,7 @@ using System.Diagnostics;
 
 namespace Sponge.Controllers
 {
-    
+    [AccessFilters]
     public class ConfigureTemplateController : Controller
 {
     private readonly ILogger<HomeController> _logger;

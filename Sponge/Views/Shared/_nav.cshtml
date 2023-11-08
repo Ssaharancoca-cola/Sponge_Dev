@@ -1,7 +1,7 @@
-﻿
-@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@{
+    var role = Context.Session.GetString("ROLE");
+    var name = Context.Session.GetString("NAME");
+}
 <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
         <a class="navbar-brand brand-logo mr-5" href="index.html">
@@ -24,12 +24,9 @@
 
                         <a class="nav-link" href="#">
 
-                            <a class="nav navbar-text">Hello, @User.Identity?.Name!</a>
-
+                            <a class="nav navbar-text">Hello, @name</a>
 
                         </a>
-
-
 
                     </li>
 
