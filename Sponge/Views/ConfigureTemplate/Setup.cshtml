@@ -1,0 +1,86 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Setup</p>
+                <div class="forms-sample">
+                    <div class="form-group row ">
+                        <div class="col">
+                            <label for="assetMaster">Assigned To</label>
+                            <input type="text" class="form-control" id="assetMaster"
+                                placeholder="Surendra" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="subjectAreaName">Subject Area Name</label>
+                            <input type="text" class="form-control" id="subjectAreaName"
+                                placeholder="Asset_Master" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="frequency">Frequency</label>
+                            <input type="text" class="form-control" id="frequency"
+                                placeholder="Yearly" readonly>
+                        </div>                                            
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="active">Active</label>
+                            <select class="form-control">
+                                <option selected>Active</option>
+                                <option value="1">Active</option>
+                            </select>
+                        </div>                                            
+                        <div class="col">
+                            <label for="scheduled">Scheduled</label>
+                            <select class="form-control">
+                                <option selected>Scheduled</option>
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="lockDate">Lock Date</label>
+                            <input type="text" class="form-control" id="lockDate"
+                           >days after template generation date
+                        </div>                                            
+                    </div>
+                    <h6 class="mt-5 mb-3">Add Approver Details</h6>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="approverID">Approver Email ID</label>
+                            <input type="text" class="form-control" id="approverID"
+                            placeholder="search">
+                        </div>
+                        <div class="col btn-align">
+                            <button class="btn btn-primary">Get Approver Info</button>
+                        </div>  
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="approverName">Approver Name</label>
+                            <input type="text" class="form-control" id="approverName"
+                                readonly>
+                        </div>
+                        <div class="col">
+                            <label for="approverEmailID">Approver ID</label>
+                            <input type="email" class="form-control" id="approverEmailID"
+                                 readonly>
+                        </div>                                            
+                    </div>
+                    <button class="btn btn-light mr-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+

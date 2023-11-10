@@ -46,7 +46,12 @@ namespace Sponge.Controllers
             }
             return View(GUi);
         }
-    
+        public IActionResult SetUp()
+        {
+
+            return View("Views\\ConfigureTemplate\\Setup.cshtml");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
