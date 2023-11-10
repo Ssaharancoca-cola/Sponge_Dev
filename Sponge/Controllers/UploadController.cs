@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sponge.Common;
 using Sponge.Models;
 using System.Diagnostics;
 
 namespace Sponge.Controllers
 {
+    [AccessFilters]
+    [SessionTimeOut]
     public class UploadController : Controller
     {
         private readonly ILogger<HomeController> _logger;

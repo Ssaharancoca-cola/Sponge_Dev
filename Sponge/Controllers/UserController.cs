@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NuGet.Protocol.Plugins;
+using Sponge.Common;
 using Sponge.ViewModel;
 using System.Data;
 using System.DirectoryServices.AccountManagement;
@@ -15,6 +16,8 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Sponge.Controllers
 {
+    [AccessFilters]
+    [SessionTimeOut]
     public class UserController : Controller
     {
         public IActionResult CreateUser()
