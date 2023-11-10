@@ -15,5 +15,9 @@ namespace Sponge.Controllers
         {
             return View();
         }
+        public IActionResult SearchTemplate()
+        {
+            return View("Views\\Upload\\SearchTemplate.cshtml");
+        }
     }
 }
