@@ -24,6 +24,10 @@ namespace Sponge.Controllers
         {
             return View();
         }
+        public IActionResult SearchTemplate()
+        {
+            return View("Views\\Upload\\SearchTemplate.cshtml");
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

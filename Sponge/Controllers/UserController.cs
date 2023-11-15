@@ -201,8 +201,6 @@ namespace Sponge.Controllers
                                      SubfunctionName = f.SUBFUNCTION_NAME,
                                      SubFunctionId =f.SUBFUNCTION_ID,
                                      Selected = c.SUB_FUNCTION_ID.HasValue,
-                                     
-
                                  });
 
                 var RoleList = (from f in sPONGE_Context.SPG_ROLE
@@ -213,9 +211,7 @@ namespace Sponge.Controllers
                                      RoleName = f.ROLE_NAME,
                                      RoleId = f.ROLE_ID,
                                      Selected = c.ROLE_ID.HasValue,
-                                    
-
-                                 }).Distinct();
+                                    }).Distinct();
 
 
                 userInfo = (from u in sPONGE_Context.SPG_USERS
