@@ -37,7 +37,7 @@
                         </div>                                            
                         <div class="col">
                             <label for="scheduled">Scheduled</label>
-                            <select class="form-control">
+                            <select class="form-control" id="Scheduled">
                                 <option selected>Scheduled</option>
                                 <option value="Y">Yes</option>
                                 <option value="N">No</option>
@@ -48,6 +48,18 @@
                             <input type="text" class="form-control" id="lockDate"
                            >days after template generation date
                         </div>                                            
+                    </div>
+                   
+                    <div class="form-group row" id="IsScheduled" style="display:none">
+                        
+                        <div class="col">
+                            <label for="lockDate">Upload Reminder Date</label>
+                            <input type="text" class="form-control" id="uploadreminder">days after template generation date
+                        </div>
+                        <div class="col">
+                            <label for="EscalationDate">Escalation  Date</label>
+                            <input type="text" class="form-control" id="Escalation">days after template generation date
+                        </div>
                     </div>
                     <h6 class="mt-5 mb-3">Add Approver Details</h6>
                     <div class="form-group row">
@@ -84,3 +96,23 @@
 </div>
 
 
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#Scheduled").change(function () {
+            debugger;
+            var Scheduled = $(this).val();
+           if (Scheduled=="Y")
+           {
+                $("#IsScheduled").show();
+
+            }
+            else 
+            {
+                $("#IsScheduled").hide();
+            }
+        });
+    });
+    
+
+</script>
