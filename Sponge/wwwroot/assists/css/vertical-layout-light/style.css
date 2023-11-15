@@ -1,5 +1,6 @@
 @import url(mixins/_mixins.css);
 @import url(fonts/_fonts.css);
+/* @import url(component/_virtual-select.min.css); */
 
 
 /*-------------------------------------------------------------------*/
@@ -13972,6 +13973,7 @@ code {
 
 .dropdown .dropdown-menu {
   margin-top: 2px;
+  padding: 10px;
   font-size: 0.875rem;
   box-shadow: 0px 1px 15px 1px rgba(230, 234, 236, 0.35);
 }

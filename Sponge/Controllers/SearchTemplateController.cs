@@ -7,11 +7,11 @@ namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
-    public class UploadController : Controller
+    public class SearchTemplateController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 
-        public UploadController(ILogger<HomeController> logger)
+        public SearchTemplateController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
@@ -20,16 +20,15 @@ namespace Sponge.Controllers
         {
             return View();
         }
-        public IActionResult Upload()
+        public IActionResult SearchTemplate()
         {
             return View();
         }
-        public IActionResult SearchTemplate()
+
+        public IActionResult ManualSend()
         {
-            return View("Views\\Upload\\SearchTemplate.cshtml");
+            return View("Views\\SearchTemplate\\ManualSendResend.cshtml");
         }
-
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

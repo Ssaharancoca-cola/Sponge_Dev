@@ -16,56 +16,62 @@
                 <span class="menu-title">Home</span>
             </a>
         </li>
-    
+
         @if (role == "Data Uploader" || role == "Data Approver" || role == "Data Configure" || role == "Admin")
         {
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false"
-               aria-controls="form-elements">
-                <i class="menu-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-                         stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                        <polyline points="16 16 12 12 8 16"></polyline>
-                        <line x1="12" y1="12" x2="12" y2="21"></line>
-                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                        <polyline points="16 16 12 12 8 16"></polyline>
-                    </svg>
-                </i>
-                <span class="menu-title">Uploads</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="form-elements">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Upload","Upload")">Upload Excel</a>
-                        <a class="nav-link" href="#">Search Template</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
+                   aria-controls="form-elements">
+                    <i class="menu-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                        </svg>
+                    </i>
+                    <span class="menu-title">Uploads</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="form-elements">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Upload","Upload")">Upload Excel</a>
+
+                        </li>
+                        <li class="nav-item">
+
+
+                            <a class="nav-link" href="@Url.Action("SearchTemplate","SearchTemplate")">Search Template</a>
+
+                        </li>
+                    </ul>
+                </div>
+            </li>
         }
         @if (role == "Data Approver" || role == "Data Configure" || role == "Admin")
         {
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-                <i class="menu-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-                         stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <polyline points="17 11 19 13 23 9"></polyline>
-                    </svg>
-                </i>
-                <span class="menu-title">Approvals</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="charts">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("MyApproval","Approval")">My Approvals</a></li>
-                    <li class="nav-item">  <a class="nav-link" href="#">Search Template</a></li>
-                </ul>
-            </div>
-        </li>
+                    <i class="menu-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                    </i>
+                    <span class="menu-title">Approvals</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="charts">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="@Url.Action("MyApproval","Approval")">My Approvals</a></li>
+                        <a class="nav-link" href="@Url.Action("SearchTemplate","SearchTemplate")">Search Template</a>
+                    </ul>
+                </div>
+            </li>
         }
 
         <li class="nav-item">
@@ -96,54 +102,54 @@
         {
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
-                <i class="menu-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-                         stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-                        </path>
-                    </svg>
-                </i>
-                <span class="menu-title">Configuration</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="icons">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("ManageSubjectArea","SubjectArea")">Manage Subject Area</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("ConfigureSubjectArea","ConfigureSubjectArea")">Configure Subject Area</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("ConfigureTemplate","ConfigureTemplate")">Configure Template</a></li>
-                </ul>
-            </div>
-        </li>      
+                    <i class="menu-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </i>
+                    <span class="menu-title">Configuration</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="icons">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="@Url.Action("ManageSubjectArea","SubjectArea")">Manage Subject Area</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="@Url.Action("ConfigureSubjectArea","ConfigureSubjectArea")">Configure Subject Area</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="@Url.Action("ConfigureTemplate","ConfigureTemplate")">Configure Template</a></li>
+                    </ul>
+                </div>
+            </li>
         }
         @if (role == "Admin")
         {
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <i class="menu-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-                         stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </i>
-                <span class="menu-title">Administration</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("ManageRole","Role")">Manage Role</a>
-                    </li>
+                    <i class="menu-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </i>
+                    <span class="menu-title">Administration</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="ui-basic">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ManageRole","Role")">Manage Role</a>
+                        </li>
 
-                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Function","Function")">Manage Function</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("ManageUser","User")">Manage User</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="@Url.Action("Function","Function")">Manage Function</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="@Url.Action("ManageUser","User")">Manage User</a></li>
 
 
 
-                </ul>
-            </div>
-        </li>
+                    </ul>
+                </div>
+            </li>
         }
     </ul>
 </nav>
