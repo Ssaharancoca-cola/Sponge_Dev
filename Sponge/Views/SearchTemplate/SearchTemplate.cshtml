@@ -1,0 +1,108 @@
+﻿<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Search Template</p>
+                <form class="forms-sample">
+                    <div class="form-group row ">
+                       
+                        <div class="col">
+                            <label for="subjectArea">Subject Area</label>
+                            <select class="form-control">
+                                <option value="0">Select</option>
+                                <option value="1">Subject Area</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="assignToUser">Assign To User</label>
+                            <select class="form-control">
+                                <option value="0">Select</option>
+                                <option value="1">Assign To User</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label for="dateFrom">Date From</label>
+                            <input type="date" class="form-control" id="dateFrom"
+                                   placeholder="DD/MM>/YY">
+
+                        </div>
+                        <div class="col-md-4">
+                            <label for="dateTo">Date To</label>
+                            <input type="date" class="form-control" id="dateTo"
+                                   placeholder="DD/MM>/YY">
+
+                        </div>
+                        <div class="col">
+                            <label for="active">Active</label>
+                            <select class="form-control">
+                                <option value="0">Select</option>
+                                <option value="1">Active</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-light mr-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary ">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title"></p>
+                <div class="table-responsive">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Subject Area</th>
+                                <th>Effective Date</th>
+                                <th>Assigned User</th>
+                                <th>Active</th>
+                                <th>Manual Send / Resend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PGWA_CROSS_AUDIT</td>
+                                <td>22-08-2023</td>
+                                <td></td>
+                                <td>Y</td>
+                                <td>
+                                    <a href="#">Configuration in Progress</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PGWA_CROSS_AUDIT</td>
+                                <td>22-08-2023</td>
+                                <td></td>
+                                <td>Y</td>
+                                <td>
+                                    <a href="@Url.Action("ManualSend", "SearchTemplate")" >Generate Template</a>
+
+                                </td>
+                            </tr>
+                           
+                          
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    new DataTable('#example', {
+        order: [[3, 'desc']]
+    });
+        //Initialize the Multiselect Dropdown:
+
+</script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<script src="~/assists/js/template.js"></script>

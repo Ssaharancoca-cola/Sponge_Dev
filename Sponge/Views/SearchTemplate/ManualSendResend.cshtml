@@ -1,0 +1,73 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Manually Send/Resend Excel</p>
+                <div class="forms-sample">
+                    <div class="form-group row ">
+                        <div class="col">
+                            <label for="subjectArea">Subject Area</label>
+                            <input type="text" class="form-control" id="subjectArea"
+                                   placeholder="FGWA_CROSS_AUDIT" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="assignToUser">Assign To User</label>
+                            <input type="text" class="form-control" id="assignToUser"
+                                   placeholder="Piyush Sharma" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="frequency">Frequency</label>
+                            <input type="text" class="form-control" id="frequency"
+                                   placeholder="Half Yearly" readonly>
+                        </div>
+                    </div>
+                     <div class="form-group row">
+                        <div class="col">
+                            <label for="onTime">On Time</label>
+                            <select class="form-control" readonly>
+                                <option>Select</option>
+                             
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="lockDate">Granularity</label>
+                            <select class="form-control" readonly>
+                                <option>Select</option>
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="uploadReminderDate">Upload Reminder Date</label>
+                            <input type="date" class="form-control" id="uploadReminderDate"
+                                   placeholder="DD/MM/YYYY">
+                        </div>
+                        <div class="col">
+                            <label for="escalationAlertDate">Escalation Alert Date</label>
+                            <input type="date" class="form-control" id="escalationAlertDate"
+                                   placeholder="DD/MM/YYYY">
+                        </div>
+                        <div class="col">
+                            <label for="lockDate">Lock Date</label>
+                            <input type="date" class="form-control" id="lockDate"
+                                   placeholder="DD/MM/YYYY">
+                        </div>
+                    </div>
+                    <button class="btn btn-light mr-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
