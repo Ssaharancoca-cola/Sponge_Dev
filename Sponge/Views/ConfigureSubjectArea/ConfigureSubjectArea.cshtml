@@ -1,7 +1,9 @@
-﻿@{
+﻿@model Sponge.Models.Dimension
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var dimensionsJson = ViewBag.lstDimensions;
 }
-@using (Html.BeginForm("SaveMastersGroup", "ConfigureSubjectArea"))
+@using (Html.BeginForm("SaveMastersGroup", "ConfigureSubjectArea", FormMethod.Post))
 {
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
@@ -10,10 +12,9 @@
                     <p class="card-title">Configure Subject Area</p>
                     <div class="forms-sample">
                         <div class="form-group row">
-
                             <div class="col">
                                 <label for="subjectAreaName">Subject Area Name</label>
-                                <select class="form-control" name="SubjectArea">
+                                <select class="form-control" id="subjectArea" name="SUBJECTAREA_ID">
                                     <option selected>Select</option>
                                     @foreach (var f in ViewBag.SubjectArea)
                                     {
@@ -22,25 +23,16 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row dimensions" style="display: none;">
                             <div class="col ">
                                 <label for="version">Selected Masters Group</label>
                                 <div class="form-check-row">
-                                    @foreach (var Dimension in ViewBag.lstDimensions)
-                                    {
-                                        <div class="form-check form-check-flat form-check-primary">
-                                            <label class="form-check-label">
-                                                @Dimension.Text
-                                                <input type="checkbox"
-                                                       class="form-check-input" value="@Dimension.Text" name="Dimension">
-                                            </label>
-                                        </div>
-                                    }
+                                    <!-- dimensions will be dynamically loaded here -->
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-light mr-2">Cancel</button>
-                        <button type="submit" id="btnSave" class="btn btn-primary ">Next</button>
+                        <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ConfigureSubjectArea", "ConfigureSubjectArea")'">Cancel</button>
+                        <button type="submit" id="btnSave" class="btn btn-primary" disabled>Next</button>
                     </div>
                 </div>
             </div>
@@ -50,3 +42,111 @@
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#subjectArea').change(function () {
+            var subjectArea = $(this).val();
+            if (subjectArea && subjectArea != 'Select') {
+                $.ajax({
+                    url: '@Url.Action("SelectedDimension", "ConfigureSubjectArea")',
+                    type: 'GET',
+                    data: { subjectAreaId: subjectArea },
+                    success: function (data) {
+                        var content = '';
+                        if (!data || !data.length) {
+                            data = @Html.Raw(Json.Serialize(dimensionsJson));
+                            $.each(data, function (i, dimension) {
+                                debugger;
+                                content += `
+                                                              <div class="form-check form-check-flat form-check-primary">
+                                                                  <label class="form-check-label">
+                                                                      ${dimension.text}
+                                                                      <input type="hidden" value="${dimension.value}" name="MPP_DIMENSION_NAME">
+                                                                          <input type="checkbox" class="form-check-input black-border" value="${dimension.text}" name="DIMENSION_TABLE">
+                                                                  </label>
+                                                              </div>
+                                                          `;
+                            });
+                            $('#btnSave').prop('disabled', false);
+                        } else {
+                            $.each(data, function (i, dimension) {
+                                debugger;
+                                content += `
+                                                              <div class="form-check form-check-flat form-check-primary">
+                                                                  <label class="form-check-label">
+                                                                          ${dimension.dimensioN_NAME}
+                                                                      <input type="hidden" value="${dimension.value}" name="MPP_DIMENSION_NAME">
+                                                                             <input type="hidden" value="${dimension.dimensiontablename}" name="DIMENSION_TABLE">
+                                                                  </label>
+                                                              </div>
+                                                          `;
+                            });
+                            $('#btnSave').prop('disabled', false);
+                        }
+                        $('.form-check-row').html(content);
+                        $('.dimensions').show();
+                    }
+                });
+            }
+        });
+        $('#btnSave').click(function (e) {
+            e.preventDefault();
+
+            // Get the selected dimensions
+            var selectedDimensions = $('input[name="DIMENSION_TABLE"]:checked');
+            if (!selectedDimensions.length) {
+                alert('Please select at least one dimension');
+                return;
+            }
+            // Get the selected subjectArea value
+            var selectedSubjectArea = $('#subjectArea').val();
+
+            // Create a key-value pair array of dimensions
+            var dimensionsKeyValuePair = [];
+            selectedDimensions.each(function () {
+                var dimensionName = $(this).parent().find('input[type="hidden"]').val();
+                var dimensionValue = $(this).val();
+                var isSelected = $(this).prop('disabled'); // Here we check if the checkbox is disabled, which means this dimension is already selected
+                dimensionsKeyValuePair.push({
+                    name: dimensionName,
+                    value: dimensionValue,
+                    isSelected: isSelected // This property will have 'true' if the dimension is already selected, 'false' otherwise
+                });
+            });
+
+            // Add the dimensions to the form as hidden inputs
+            $.each(dimensionsKeyValuePair, function (i, dimension) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'dimensions[' + i + '].Key',
+                    value: dimension.name
+                }).appendTo('form');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'dimensions[' + i + '].Value',
+                    value: dimension.value
+                }).appendTo('form');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'dimensions[' + i + '].IsSelected',
+                    value: dimension.isSelected
+                }).appendTo('form');
+            });
+            // Add the selected subjectArea value to the form as a hidden input
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'selectedSubjectArea',
+                value: selectedSubjectArea
+            }).appendTo('form');
+
+            // Submit the form
+            $(this).closest('form').submit();
+        });
+    });
+</script>
+<style>
+    .black-border {
+        border: 1px solid black !important;
+    }
+</style>

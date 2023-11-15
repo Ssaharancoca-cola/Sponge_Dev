@@ -45,7 +45,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn btn-light mr-2">Cancel</button>
+                <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ConfigureSubjectArea", "ConfigureSubjectArea")'">Cancel</button>
                 <button type="submit" class="btn btn-primary ">Next</button>
             </div>
         </div>
@@ -56,5 +56,26 @@
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
-  $(document).ready(function () {
-        </script>
+    $(document).ready(function () {
+        $('select.form-control').change(function () {
+            var selectedMaster = $(this).val();
+            var fieldNameDropdown = $(this).closest('tr').find('#fieldName');
+
+            $.ajax({
+                url: '@Url.Action("GetFieldName", "ConfigureSubjectArea")',
+                type: 'GET',
+                data: { masterName: selectedMaster },
+                dataType: 'JSON',
+                success: function (data) {
+                    $(fieldNameDropdown).empty();
+                    $.each(data, function (i, item) {
+                        $(fieldNameDropdown).append('<option value="' + item.COLUMN_NAME + '">' + item.COLUMN_DISPLAY_NAME + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve field names.' + ex);
+                }
+            });
+        });
+    });
+</script>
