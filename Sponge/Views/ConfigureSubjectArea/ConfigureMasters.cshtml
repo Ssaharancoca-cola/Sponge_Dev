@@ -1,13 +1,12 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea"))
-{
+
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
             <div class="card-body">
-                <p class="card-title">Manage Masters</p>
+                <p class="card-title">Manage Master </p>
                 <div class="table-responsive">
                     <table id="example" class="display expandable-table" style="width:100%">
                         <thead>
@@ -23,7 +22,7 @@
                                 <tr>
                                     <td>
                                         <select class="form-control">
-                                       <option selected>Select Master</option>
+                                            <option selected>Select Master</option>
                                             @foreach (var f in ViewBag.SPG_MASTER)
                                             {
                                                 <option value="@f.Value">@f.Text</option>
@@ -32,7 +31,6 @@
                                     </td>
                                     <td>
                                         <select class="form-control" id="fieldName">
-                                         
                                         </select>
                                     </td>
                                     <td>
@@ -46,16 +44,37 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn btn-light mr-2">Cancel</button>
-                <button type="submit" class="btn btn-primary">Next</button>
+                <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ConfigureSubjectArea", "ConfigureSubjectArea")'">Cancel</button>
+                <button type="submit" class="btn btn-primary ">Next</button>
             </div>
         </div>
     </div>
 </div>
-}
+
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
-  $(document).ready(function () {
-        </script>
+    $(document).ready(function () {
+        $('select.form-control').change(function () {
+            var selectedMaster = $(this).val();
+            var fieldNameDropdown = $(this).closest('tr').find('#fieldName');
+
+            $.ajax({
+                url: '@Url.Action("GetFieldName", "ConfigureSubjectArea")',
+                type: 'GET',
+                data: { masterName: selectedMaster },
+                dataType: 'JSON',
+                success: function (data) {
+                    $(fieldNameDropdown).empty();
+                    $.each(data, function (i, item) {
+                        $(fieldNameDropdown).append('<option value="' + item.COLUMN_NAME + '">' + item.COLUMN_DISPLAY_NAME + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve field names.' + ex);
+                }
+            });
+        });
+    });
+</script>
