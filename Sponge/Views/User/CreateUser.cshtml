@@ -53,24 +53,27 @@
                     </div>
                     <div class="form-group row">
                         <div class="col">
-                            <label for="exampleInputConfirmPassword1">Role</label>
-                                <select class="form-control" name="role">
-                                <option selected>Role</option>
-                                @if(Model !=null && Model.Role != null)
-                                {
-                                    @foreach (var role in Model.Role) 
-                                    {
-                                           @* <option value="@role.Text">@role.Value</option> *@
+                            <label for="Role">Role</label>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle bth-custom-multi" name="Role" type="button" id="Role"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        Select
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
 
-                                    }    
-                                }
-                                else{
-                                @foreach (var role in ViewBag.Role)
-                                {
-                                    <option value="@role.Text">@role.Value</option>
-                                }
-                                    }
-                            </select>
+                                        @foreach (var Role in ViewBag.Role)
+                                        {
+                                            <li>
+
+                                                <label for=@Role.Value>
+
+                                                    <input type="checkbox" name="Role" value=@Role.Value>@Role.Text
+                                                </label>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
                         </div>
 
                         <div class="col">
@@ -81,26 +84,17 @@
                                     Select
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
-                                        @if(Model != null && Model.SubFunction != null)
-                                        {
-                                            @foreach (var subfunction in ViewBag.SubFunction)
-                                            {
-                                                 <label for=@subfunction.Text>
-                                                     </label>
-                                            }
-
-                                        }
-                                        else
-                                    {
+                                      
                                         @foreach (var subfunction in ViewBag.SubFunction)
                                         {
                                             <li>
-                                                    <label for=@subfunction.Value>
+                                                    <label id="@("S"+subfunction.Value)">
+
                                                         <input type="checkbox" name="subFunction" value=@subfunction.Value>@subfunction.Text
                                             </label>
                                             </li>
                                         }
-                                    }
+                                    
                                 </ul>
                             </div>
                         </div>
@@ -148,9 +142,12 @@
 
 <!-- endinject -->
 <script>
-    const chBoxes = document.querySelectorAll('.dropdown-menu input[type="checkbox"]');
+    const chBoxes = document.querySelectorAll('.dropdown-menu input[name="subFunction"]');
+    const chRoleBoxes = document.querySelectorAll('.dropdown-menu input[name="Role"]');
     const dpBtn = document.getElementById('multiSelectDropdown');
+    const dpRole = document.getElementById('Role');
     let mySelectedListItems = [];
+    let mySelectedListItemsRole = [];
 
     function handleCB() {
         mySelectedListItems = [];
@@ -159,8 +156,9 @@
         chBoxes.forEach((checkbox) => {
             debugger;
             if (checkbox.checked) {
-                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
-                mySelectedListItems.push(checkbox.value);     
+                let checkboxvalue = "S" + checkbox.value;
+                let checkboxText = $(`label[id="${checkboxvalue}"]`).text();
+                mySelectedListItems.push(checkbox.value);
                 mySelectedListItemsText += checkboxText.trim() + ', ';
             }
         });
@@ -169,13 +167,34 @@
             mySelectedListItems.length > 0
                 ? mySelectedListItemsText.slice(0, -2) : 'Select';
     }
+    function handleRoleCB() {
+        mySelectedListItemsRole = [];
+        let mySelectedListItemsTextRole = '';
+        debugger;
+        chRoleBoxes.forEach((checkbox) => {
+            debugger;
+            if (checkbox.checked) {
+                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
+                mySelectedListItemsRole.push(checkbox.value);
+                mySelectedListItemsTextRole += checkboxText.trim() + ', ';
+            }
+        });
+
+        dpRole.innerText =
+            mySelectedListItemsRole.length > 0
+                ? mySelectedListItemsTextRole.slice(0, -2) : 'Select';
+    }
 
     chBoxes.forEach((checkbox) => {
         checkbox.addEventListener('change', handleCB);
     });
+    chRoleBoxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', handleRoleCB);
+    });
 
-    $(document).ready(function () {        
-
+    $(document).ready(function () {
+        handleCB();
+        handleRoleCB();
         $("#btnSearch").click(function (event) {
             event.preventDefault();
 
@@ -212,7 +231,7 @@
                 data: form,
                 type: 'POST',
                 success: function (data) {
-                    debugger;
+                   
                     onSuccess(data);
                 },
                 error: function (error) {

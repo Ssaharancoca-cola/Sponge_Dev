@@ -40,8 +40,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col">
-                                <label for="exampleInputConfirmPassword1">Role</label>
-                                <label for="">Role</label>
+                                <label for="Role">Role</label>
                                 <div class="dropdown">
                                     <button class="btn dropdown-toggle bth-custom-multi" name="Role" type="button" id="Role"
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -76,8 +75,8 @@
                                             @foreach (var subfunction in @Model.SubfunctionList)
                                             {
                                                 <li>
-                                                   
-                                                    <label for=@subfunction.SubFunctionId>
+
+                                            <label id="@("S"+subfunction.SubFunctionId)">
 
                                                     <input type="checkbox" readonly=@subfunction.Selected checked=@subfunction.Selected name="subFunction" value=@subfunction.SubFunctionId>@subfunction.SubfunctionName
                                                 </label>
@@ -133,6 +132,7 @@
     const dpBtn = document.getElementById('multiSelectDropdown');
     const dpRole = document.getElementById('Role');
     let mySelectedListItems = [];
+    let mySelectedListItemsRole = [];
 
     function handleCB() {
         mySelectedListItems = [];
@@ -141,7 +141,8 @@
         chBoxes.forEach((checkbox) => {
             debugger;
             if (checkbox.checked) {
-                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
+                let checkboxvalue = "S" + checkbox.value;
+                let checkboxText = $(`label[id="${checkboxvalue}"]`).text();
                 mySelectedListItems.push(checkbox.value);
                 mySelectedListItemsText += checkboxText.trim() + ', ';
             }
@@ -152,21 +153,21 @@
                 ? mySelectedListItemsText.slice(0, -2) : 'Select';
     }
     function handleRoleCB() {
-        mySelectedListItems = [];
-        let mySelectedListItemsText = '';
-
+        mySelectedListItemsRole = [];
+        let mySelectedListItemsTextRole = '';
+        debugger;
         chRoleBoxes.forEach((checkbox) => {
             debugger;
             if (checkbox.checked) {
                 let checkboxText = $(`label[for="${checkbox.value}"]`).text();
-                mySelectedListItems.push(checkbox.value);
-                mySelectedListItemsText += checkboxText.trim() + ', ';
+                mySelectedListItemsRole.push(checkbox.value);
+                mySelectedListItemsTextRole += checkboxText.trim() + ', ';
             }
         });
 
         dpRole.innerText =
-            mySelectedListItems.length > 0
-                ? mySelectedListItemsText.slice(0, -2) : 'Select';
+            mySelectedListItemsRole.length > 0
+                ? mySelectedListItemsTextRole.slice(0, -2) : 'Select';
     }
 
     chBoxes.forEach((checkbox) => {
@@ -216,7 +217,9 @@
                 type: 'POST',
                 success: function (data) {
                     debugger;
+                   
                     onSuccess(data);
+                    alert("Update Successfully");
                 },
                 error: function (error) {
                     console.log('Error: ', error);

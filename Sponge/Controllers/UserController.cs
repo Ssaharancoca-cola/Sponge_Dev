@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using NuGet.Protocol.Plugins;
 using Sponge.Common;
 using Sponge.ViewModel;
@@ -12,6 +13,7 @@ using System.Data;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Security.Policy;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Sponge.Controllers
@@ -25,7 +27,7 @@ namespace Sponge.Controllers
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             var lst = spONGE_Context.SPG_ROLE.Select(o => new { o.ROLE_NAME, o.ROLE_ID }).Distinct();
             var subFnList = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
-            ViewBag.Role = new SelectList(lst.ToList(), "ROLE_NAME", "ROLE_ID");
+            ViewBag.Role = new SelectList(lst.ToList(), "ROLE_ID", "ROLE_NAME");
             ViewBag.SubFunction = new SelectList(subFnList.ToList(), "SUBFUNCTION_ID", "SUBFUNCTION_NAME");
             return View();
         }
@@ -90,23 +92,37 @@ namespace Sponge.Controllers
                 string subFunctions = data["subFunction"];
                 string[] subFunctionArr = subFunctions.Split(',');
 
-                int roleId = 0;
-                Int32.TryParse(data["role"], out roleId);
-
-                foreach (string subFunction in subFunctionArr)
+                string Role = data["Role"];
+                string[] RoleArr = Role.Split(',');
+                
+                foreach (string role in RoleArr)
                 {
-                    SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
+                   
+                    foreach (string subFunction in subFunctionArr)
                     {
-                        sPG_1.ACTIVE_FLAG = data["status"];
-                        sPG_1.USER_ID = data["userId"];
                         int subFunctionId = 0;
                         Int32.TryParse(subFunction, out subFunctionId);
-                        sPG_1.SUB_FUNCTION_ID = subFunctionId;
-                        sPG_1.ROLE_ID = roleId;
-                    }
-                    sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
-                }
+                        int roleid = 0;
+                        Int32.TryParse(role, out roleid);
+                        int userid = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() &&  o.SUB_FUNCTION_ID==subFunctionId).Count();
+                      if(userid==0)
+                        { 
+                        SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
+                            {
+                                sPG_1.ACTIVE_FLAG = data["status"];
+                                sPG_1.USER_ID = data["userId"];
+                              
+                                sPG_1.SUB_FUNCTION_ID = subFunctionId;
+                               
+                                sPG_1.ROLE_ID = roleid;
 
+                            }
+                            sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
+                        }
+                        
+                    }
+                    
+                }
                 sPONGE_Context.SaveChanges();
             } catch (Exception ex) { }
 
@@ -120,38 +136,44 @@ namespace Sponge.Controllers
             {
                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
 
-                SPG_USERS sPG_ = new SPG_USERS();
-                {
-                    sPG_.USER_ID = data["userId"];
-                    sPG_.Name = data["userName"];
-                    sPG_.EMAIL_ID = data["email"];
-                    sPG_.ACTIVE_FLAG = data["status"];
-                    sPG_.CREATED_DATE = DateTime.Now;
-                    sPG_.CREATED_BY = userName[1].ToString();
-                }
-                sPONGE_Context.SPG_USERS.Add(sPG_);
+               
 
                 string subFunctions = data["subFunction"];
                 string[] subFunctionArr = subFunctions.Split(',');
 
-                int roleId = 0;
-                Int32.TryParse(data["role"], out roleId);
-
-                foreach (string subFunction in subFunctionArr)
+                string Roles = data["Role"];
+                string[] RolesArr = Roles.Split(',');
+                int countRoleSub = 0;
+                foreach (string role in RolesArr)
                 {
-                    SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
+                    foreach (string subFunction in subFunctionArr)
                     {
-                        sPG_1.ACTIVE_FLAG = data["status"];
-                        sPG_1.USER_ID = data["userId"];
                         int subFunctionId = 0;
                         Int32.TryParse(subFunction, out subFunctionId);
-                        sPG_1.SUB_FUNCTION_ID = subFunctionId;
-                        sPG_1.ROLE_ID = roleId;
-                    }
-                    sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
-                }
+                        int Roleid = 0;
+                        Int32.TryParse(role, out Roleid);
+                        int countSub = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() && o.SUB_FUNCTION_ID == subFunctionId && o.ROLE_ID==Roleid).Count();
+                        countRoleSub++;
+                        if ((Roleid!=1 && (countRoleSub ==0 && countSub==0)) || (Roleid==1 && countSub == 0))
+                        { 
+                        SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
+                        {
+                            sPG_1.ACTIVE_FLAG = data["status"];
+                            sPG_1.USER_ID = data["userId"];
+                            
+                            sPG_1.SUB_FUNCTION_ID = subFunctionId;
+                           
+                            sPG_1.ROLE_ID = Roleid;
+                        }
+                        sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
 
-                sPONGE_Context.SaveChanges();
+                            sPONGE_Context.SaveChanges();
+                            
+
+                        }
+                    }
+
+                }
             }
             catch (Exception ex) { }
 
@@ -159,33 +181,30 @@ namespace Sponge.Controllers
         }
 
         public IActionResult ManageUser() {
-            SPONGE_Context sPONGE_Context = new SPONGE_Context();
+            SPONGE_Context context = new SPONGE_Context();
+            List<GetUserinfo> UserInfo = new List<GetUserinfo>();
+            var query = from U in context.SPG_USERS
+                        join UF in context.SPG_USERS_FUNCTION on U.USER_ID equals UF.USER_ID
+                        join SF in context.SPG_SUBFUNCTION on UF.SUB_FUNCTION_ID equals SF.SUBFUNCTION_ID
+                        join R in context.SPG_ROLE on UF.ROLE_ID equals R.ROLE_ID
+                        group new { U, UF, SF, R } by
+                            new { U.USER_ID, U.EMAIL_ID, U.Name, U.ACTIVE_FLAG }
+            into g
+                        select new    GetUserinfo
+                        {
+                         UserId  = g.Key.USER_ID,
+                         Email= g.Key.EMAIL_ID,
+                         UserName=  g.Key.Name,
+                         Status=  g.Key.ACTIVE_FLAG,
+                         SubFunction = string.Join(", ", g.Select(x => x.SF.SUBFUNCTION_NAME)),
+                         Role = string.Join(", ", g.Select(x => x.R.ROLE_NAME).Distinct()),
+                        };
 
-            using var cmd = sPONGE_Context.Database.GetDbConnection().CreateCommand();
-            cmd.CommandText = "[dbo].[SP_GET_USERS_DETAILS]";
+             UserInfo = query.ToList();
 
-            //common
-            cmd.CommandType = CommandType.StoredProcedure;
-            if (cmd.Connection.State != System.Data.ConnectionState.Open) cmd.Connection.Open();
-           
-            List<GetUserinfo> GUi = new List<GetUserinfo>();
-           
-            using (var reader = cmd.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    GetUserinfo ui = new GetUserinfo();
+            
+            return View(UserInfo);
 
-                    ui.UserId = (string)reader["User_Id"];
-                    ui.UserName = (string)reader["NAME"];
-                    ui.Email = (string)reader["EMAIL_ID"];
-                    ui.Role = (string)reader["ROLE_NAME"];
-                    ui.SubFunction = (string)reader["SUBFUNCTION"];
-                    ui.Status = (string)reader["ACTIVE_FLAG"];
-                    GUi.Add(ui);
-                }
-            }
-            return View(GUi);
         }
 
         public IActionResult EditUser(string id)
@@ -194,17 +213,17 @@ namespace Sponge.Controllers
             using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
             {
                 var subFnList = (from f in sPONGE_Context.SPG_SUBFUNCTION
-                                 from c in sPONGE_Context.SPG_USERS_FUNCTION.Where(user => user.SUB_FUNCTION_ID == f.SUBFUNCTION_ID).DefaultIfEmpty()
+                                 from c in sPONGE_Context.SPG_USERS_FUNCTION.Where(user => user.SUB_FUNCTION_ID == f.SUBFUNCTION_ID && user.USER_ID==id).DefaultIfEmpty()
 
                                  select new  SPGSubfuncion
                                  {
                                      SubfunctionName = f.SUBFUNCTION_NAME,
                                      SubFunctionId =f.SUBFUNCTION_ID,
                                      Selected = c.SUB_FUNCTION_ID.HasValue,
-                                 });
+                                 }).Distinct();
 
                 var RoleList = (from f in sPONGE_Context.SPG_ROLE
-                                 from c in sPONGE_Context.SPG_USERS_FUNCTION.Where(user => user.ROLE_ID == f.ROLE_ID).DefaultIfEmpty()
+                                 from c in sPONGE_Context.SPG_USERS_FUNCTION.Where(user => user.ROLE_ID == f.ROLE_ID && user.USER_ID == id).DefaultIfEmpty()
 
                                  select new SPGRole
                                  {
@@ -222,7 +241,7 @@ namespace Sponge.Controllers
                                     UserId = u.USER_ID,
                                     UserName = u.Name,
                                     Email = u.EMAIL_ID,
-                                    Role =  f.ROLE_ID.ToString(),
+                                   
                                     Status = f.ACTIVE_FLAG
                                 }).FirstOrDefault();
                 userInfo.SubfunctionList = subFnList.ToList();
