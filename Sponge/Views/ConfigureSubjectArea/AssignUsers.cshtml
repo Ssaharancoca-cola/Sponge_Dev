@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveUsers", "SubjectArea", FormMethod.Post))
+@using (Html.BeginForm("SaveUsers", "ConfigureSubjectArea", FormMethod.Post))
 {
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
@@ -12,30 +12,19 @@
                     <table id="example" class="display expandable-table" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Sr. No.</th>
                                 <th>
                                     <input type="checkbox" id="=Select">
                                 </th>
                                 <th>User Name</th>
                             </tr>
                         </thead>
-                        <tbody>
-                          
+                        <tbody>                        
                            
                             <tr>
-                                <td>1</td>
                                 <td>
-                                    <input type="checkbox" id="=select">
                                 </td>
-                                <td>Navni</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>
-                                    <input type="checkbox" id="=select">
-                                </td>
-                                <td>RajaniKant</td>
-                            </tr>
+                                
+                            </tr>                           
                            
                         </tbody>
                     </table>
@@ -47,3 +36,22 @@
     </div>
 </div>
 }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
+            var tableBody = $("#example tbody");
+            usernames.forEach(function (username) {
+                var row = `
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedUsers" value="${username}">
+                            </td>
+                            <td>${username}</td>
+                        </tr>
+                    `;
+                tableBody.append(row);
+            });
+        });
+    });
+</script>
