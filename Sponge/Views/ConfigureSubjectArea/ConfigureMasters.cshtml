@@ -1,7 +1,11 @@
-﻿@{
+﻿@model Sponge.Models.SaveMaster;
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
+    TempData.Keep();
 }
-
+@using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea",Model, FormMethod.Post))
+{
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
@@ -17,48 +21,64 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for (int i = 0; i <= 5; i++)
-                            {
-                                <tr>
-                                    <td>
-                                        <select class="form-control">
-                                            <option selected>Select Master</option>
-                                            @foreach (var f in ViewBag.SPG_MASTER)
-                                            {
-                                                <option value="@f.Value">@f.Text</option>
-                                            }
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="form-control" id="fieldName">
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" id="displayName" placeholder="Display Name">
-                                    </td>
-                                </tr>
-
-                            }
-
-
+                            <tr>
+                                <td>
+                                    <select class="form-control master" name="data[0].Master">
+                                        <option>Select Master</option>
+                                        @foreach (var f in ViewBag.SPG_MASTER)
+                                        {
+                                            <option value="@f.Value">@f.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                        <select class="form-control fieldName" id="fieldName" name="data[0].FieldName"></select>
+                                </td>
+                                <td>
+                                        <input type="text" class="form-control" id="displayName" name="data[0].DisplayName" placeholder="Display Name">
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
+                        <button type="button" id="addRow" disabled>Add Row</button>
+
                 </div>
                 <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ConfigureSubjectArea", "ConfigureSubjectArea")'">Cancel</button>
-                <button type="submit" class="btn btn-primary ">Next</button>
-            </div>
+                    <button type="submit" class="btn btn-primary" id="nextButton">Next</button>
+                </div>
         </div>
     </div>
 </div>
-
+}
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('select.form-control').change(function () {
+        var rowIndex = 1;
+
+        $(document).on('change', '.master', function () {
+            if ($(this).val() !== "Select Master") {
+                $('#addRow').prop('disabled', false);
+            } else {
+                $('#addRow').prop('disabled', true);
+            }
+        });
+
+        $('#addRow').click(function () {
+            var newRow = '<tr><td><select class="form-control master" name="data[' + rowIndex + '].Master"><option>Select Master</option></select></td><td><select class="form-control fieldName" id="fieldName' + rowIndex + '" name="data[' + rowIndex + '].fieldName"></select></td><td><input type="text" class="form-control" id="displayName' + rowIndex + '" name="data[' + rowIndex + '].DisplayName" placeholder="Display Name"></td></tr>'; $('#example tbody').append(newRow); // Append the new row to the table's body, not the non-existing 'tableBody'
+
+            // Clone options from the original dropdown to the new one
+            $('select.master:first option:not(:first)').clone().appendTo('select.master:last');
+
+            $(this).prop('disabled', true); // disable "Add Row" button again
+
+            rowIndex++;
+        });
+
+        function dropdownChangeHandler() {
             var selectedMaster = $(this).val();
-            var fieldNameDropdown = $(this).closest('tr').find('#fieldName');
+            var fieldNameDropdown = $(this).closest('tr').find('.fieldName');
 
             $.ajax({
                 url: '@Url.Action("GetFieldName", "ConfigureSubjectArea")',
@@ -68,13 +88,17 @@
                 success: function (data) {
                     $(fieldNameDropdown).empty();
                     $.each(data, function (i, item) {
-                        $(fieldNameDropdown).append('<option value="' + item.COLUMN_NAME + '">' + item.COLUMN_DISPLAY_NAME + '</option>');
+                        $(fieldNameDropdown).append('<option value="' + item.columN_DISPLAY_NAME + '">' + item.columN_DISPLAY_NAME + '</option>');
                     });
                 },
                 error: function (ex) {
                     alert('Failed to retrieve field names.' + ex);
                 }
             });
-        });
+        }
+
+        // Attach the handler to the all dropdowns
+        $(document).on('change', 'select.master', dropdownChangeHandler);
     });
+   
 </script>

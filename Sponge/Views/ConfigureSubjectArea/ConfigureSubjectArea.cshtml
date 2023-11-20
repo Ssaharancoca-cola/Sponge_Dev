@@ -69,7 +69,8 @@
                                                               `;
                             });
                             $('#btnSave').prop('disabled', false);
-                        } else {
+                        } 
+                        else {
                             $.each(data, function (i, dimension) {
                                 debugger;
                                 content += `
@@ -92,10 +93,9 @@
         });
         $('#btnSave').click(function (e) {
             e.preventDefault();
-
-            // Get the selected dimensions
             var selectedDimensions = $('input[name="DIMENSION_TABLE"]:checked');
-            if (!selectedDimensions.length) {
+            var alreadySelectedDimensions = $('input[name="DIMENSION_TABLE"]:disabled');
+            if (!selectedDimensions.length && !alreadySelectedDimensions.length) {
                 alert('Please select at least one dimension');
                 return;
             }

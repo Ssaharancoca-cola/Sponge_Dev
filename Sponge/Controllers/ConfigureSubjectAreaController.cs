@@ -52,7 +52,7 @@ namespace Sponge.Controllers
         public IActionResult SaveMastersGroup(List<Dimension> dimensions, int? selectedSubjectArea)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-
+            TempData["selectedSubjectArea"] = selectedSubjectArea;
             SPONGE_Context sPONGE_Context = new();
 
             foreach (var Dimension in dimensions)
@@ -71,7 +71,7 @@ namespace Sponge.Controllers
                     sPONGE_Context.SPG_SUBJECT_DIMENSION.Add(sPG_1);
                     sPONGE_Context.SaveChanges();
                     var spg_Master = sPONGE_Context.SPG_MPP_MASTER
-                        .Where(o => o.MPP_DIMENSION_NAME == Dimension.Value && o.IS_KEY != "Y")
+                        .Where(o => o.MPP_DIMENSION_NAME == Dimension.Value)
                         .Select(o => new { o.MASTER_NAME, o.MASTER_DISPLAY_NAME })
                         .Distinct();
                     ViewBag.SPG_MASTER = new SelectList(spg_Master.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
@@ -79,7 +79,7 @@ namespace Sponge.Controllers
                 else
                 {
                     var spg_Master = sPONGE_Context.SPG_MPP_MASTER
-                                            .Where(o => o.MPP_DIMENSION_NAME == Dimension.Value && o.IS_KEY != "Y")
+                                            .Where(o => o.MPP_DIMENSION_NAME == Dimension.Value )
                                             .Select(o => new { o.MASTER_NAME, o.MASTER_DISPLAY_NAME })
                                             .Distinct();
                     ViewBag.SPG_MASTER = new SelectList(spg_Master.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
@@ -92,17 +92,66 @@ namespace Sponge.Controllers
         public IActionResult GetFieldName(string? masterName)
         {
             SPONGE_Context sPONGE_Context = new();
-            var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.COLUMN_NAME == masterName)
+            var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.MASTER_NAME == masterName && o.IS_KEY != "Y")
                 .Select(o => new { o.COLUMN_DISPLAY_NAME }).Distinct();
-            ViewBag.FieldName = new SelectList(fieldName.ToList(), "FILED NAME", "FILED_DISPLAY_NAME");
+            ViewBag.FieldName = new SelectList(fieldName.ToList(), "FILED_NAME", "FILED_DISPLAY_NAME");
             return Json(fieldName);
         }
-        public IActionResult SaveMasters()
+
+        [HttpPost]       
+        public IActionResult SaveMasters(List<SaveMaster> data)
         {
+            var resultData = new List<SPG_SUBJECT_MASTER>();
+            SPONGE_Context sPONGE_Context = new();
+            var selectedSubjectArea = TempData["selectedSubjectArea"] as int?; 
+            foreach (var master in data)
+            {
+                var dimensionData = sPONGE_Context.SPG_MPP_MASTER
+                    .Where(x => x.MASTER_NAME == master.Master && x.IS_KEY == "Y")
+                    .Select(x => new { x.DIMENSION_TABLE, x.COLUMN_NAME })
+                    .ToList();
+
+                resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
+                {
+                    DIMENSION_TABLE = x.DIMENSION_TABLE,
+                    FIELD_NAME = x.COLUMN_NAME,
+                    SUBJECTAREA_ID = selectedSubjectArea,
+                    IS_KEY = "Y",
+                    IS_SHOW = "N",
+                    DISPLAY_NAME = master.DisplayName,
+                    MASTER_NAME = master.Master
+                }));
+                resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
+                {
+                    DIMENSION_TABLE = x.DIMENSION_TABLE,
+                    FIELD_NAME = master.FieldName, 
+                    SUBJECTAREA_ID = selectedSubjectArea,
+                    IS_KEY = "N", 
+                    IS_SHOW = "Y", 
+                    DISPLAY_NAME = master.DisplayName,
+                    MASTER_NAME = master.Master
+                }));
+                sPONGE_Context.SPG_SUBJECT_MASTER.AddRange(resultData);                
+            }
+            sPONGE_Context.SaveChanges();
 
             return View("Views\\ConfigureSubjectArea\\ConfigureDataCollection.cshtml");
         }
-        public IActionResult SaveDataCollection()
+        public IActionResult GetMasterName()
+        {
+            SPONGE_Context sPONGE_Context = new();
+            var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.IS_KEY != "Y")
+                .Select(o => new { o.MASTER_NAME }).Distinct().Take(10).ToList();
+            return Json(fieldName);            
+        }
+        public IActionResult GetUOM()
+        {
+            SPONGE_Context sPONGE_Context = new();
+            var fieldName = sPONGE_Context.SPG_UOM.Where(o => o.ACTIVE_FLAG == "Y")
+                .Select(o => new { o.UOM_CODE, o.UOM_DESC }).Distinct().ToList();
+            return Json(fieldName);
+        }
+        public IActionResult SaveDataCollection(List<SaveDataCollection> data)
         {
             return View("Views\\ConfigureSubjectArea\\AssignUsers.cshtml");
         }

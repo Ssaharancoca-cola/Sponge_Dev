@@ -1,7 +1,8 @@
-﻿@{
+﻿@model Sponge.Models.SaveDataCollection
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveDataCollection", "ConfigureSubjectArea", FormMethod.Post))
+@using (Html.BeginForm("SaveDataCollection", "ConfigureSubjectArea",Model, FormMethod.Post))
 {
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
@@ -23,122 +24,160 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" class="form-control" id="displayName" value="Remarks">
-                                </td>
+                                        <input type="text" class="form-control displayName" name="DisplayName">
+                                    </td>
                                 <td>
-                                    <input type="text" class="form-control" id="fieldName" value="Remarks">
-                                </td>
+                                        <input type="text" class="form-control fieldName" name="FieldName">
+                                    </td>
                                 <td>
-                                    <select class="form-control" id="isLookUp">
-                                        <option selected>Select Is Look Up</option>
-                                        <option value="1">Yes</option>
-                                        <option value="2">No</option>
+                                        <select class="form-control isLookUp" name="IsLookUp">
+                                            <option value="0" selected>No</option>
+                                            <option value="1">Yes</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="form-control" id="LookUpType">
-                                        <option selected>Select</option>
+                                        <select class="form-control lookUpType" name="LookUpType">                                       
 
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="form-control" id="DataType">
+                                        <select class="form-control dataType" name="DataType">
                                         <option selected>Select</option>
-                                        <option value="1">String</option>
-                                        <option value="2">Number</option>
-                                        <option value="2">Date</option>
+                                            <option value="String">String</option>
+                                            <option value="Number">Number</option>
+                                            <option value="Date">Date</option>
+                                            <option value="Perchent">Perchent</option>
+
                                     </select>
                                 </td>
                             
                                 <td>
-                                    <select class="form-control" id="UOM">
+                                        <select class="form-control uOM" name="UOM">
                                         <option selected>Select</option>
 
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="text" class="form-control" id="displayName" value="">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="fieldName" value="">
-                                </td>
-                                <td>
-                                    <select class="form-control" id="isLookUp">
-                                        <option selected>Select Is Look Up</option>
-                                        <option value="1">Yes</option>
-                                        <option value="2">No</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control" id="LookUpType">
-                                        <option selected>Select</option>
-
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control" id="DataType">
-                                        <option selected>Select</option>
-                                        <option value="1">String</option>
-                                        <option value="2">Number</option>
-                                        <option value="2">Date</option>
-                                    </select>
-                                </td>
-                              
-                                <td>
-                                    <select class="form-control" id="UOM">
-                                        <option selected>Select</option>
-
-                                    </select>
-                                </td>
-                            </tr>
-                       
-                            <tr>
-                                <td>
-                                    <input type="text" class="form-control" id="displayName" value="">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="fieldName" value="">
-                                </td>
-                                <td>
-                                    <select class="form-control" id="isLookUp">
-                                        <option selected>Select Is Look Up</option>
-                                        <option value="1">Yes</option>
-                                        <option value="2">No</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control" id="LookUpType">
-                                        <option selected>Select</option>
-
-                                    </select>
-                                </td>
-                               
-                                <td>
-                                    <select class="form-control" id="DataType">
-                                        <option selected>Select</option>
-                                        <option value="1">String</option>
-                                        <option value="2">Number</option>
-                                        <option value="2">Date</option>
-                                    </select>
-                               
-                                </td>
-                               
-                                <td>
-                                    <select class="form-control" id="UOM">
-                                        <option selected>Select</option>
-
-                                    </select>
-                                </td>
-                            </tr>
+                            </tr>                           
                         </tbody>
                     </table>
+                        <button type="button" id="addRow" class="btn btn-success">Add Row</button>
+
                 </div>
-                <button class="btn btn-light mr-2">Cancel</button>
-                <button type="submit" class="btn btn-primary ">Next</button>
+                    <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ConfigureSubjectArea", "ConfigureSubjectArea")'">Cancel</button>
+                    <button type="submit" class="btn btn-primary ">Next</button>
             </div>
         </div>
     </div>
 </div>
 }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var counter = 0;
+        var limit = 10;
+
+        $("#addRow").click(function () {
+            if (counter >= limit) {
+                alert('You can only add up to 10 rows');
+                return false;
+            }
+
+            var newRowContents = '<tr>'
+                + '<td><input type="text" class="form-control displayName" name="DisplayName[' + counter + ']"></td>'
+                + '<td><input type="text" class="form-control fieldName" name="FieldName[' + counter + ']"></td>'
+                + '<td><select class="form-control isLookUp" name="IsLookUp[' + counter + ']"><option value="0" selected>No</option><option value="1">Yes</option></select></td>'
+                + '<td><select class="form-control lookUpType" name="LookUpType[' + counter + ']"></select></td>'
+                + '<td><select class="form-control dataType" name="DataType[' + counter + ']"><option selected>Select</option><option value="String">String</option><option value="Number">Number</option><option value="Date">Date</option><option value="Perchent">Perchent</option></select></td>'
+                + '<td><select class="form-control uOM" name="UOM[' + counter + ']"><option selected>Select</option></select></td>'
+                + '</tr>';
+            counter++;
+
+            $("#example tbody").append(newRowContents);
+
+            // Populate UOM dropdown for newly added row
+            populateUOM($("#example tbody tr:last .uOM"));
+
+            // Add change event for newly added IsLookUp select
+            $("#example tbody tr:last .isLookUp").change(function () {
+                var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+                if ($(this).val() == "1") {
+                    $.ajax({
+                        url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            lookupTypeField.empty();
+                            $.each(data, function (i, item) {
+                                lookupTypeField.append($('<option>', {
+                                    value: item.masteR_NAME,
+                                    text: item.masteR_NAME
+                                }));
+                            });
+                            lookupTypeField.prop('disabled', false);
+                        },
+                        error: function () {
+                            alert('Failed to retrieve master name.');
+                        }
+                    });
+                } else {
+                    lookupTypeField.prop('disabled', true);
+                }
+            });
+        });
+        // Make the LookupType readonly by default
+        $(".lookUpType").prop('disabled', true);
+
+        // Populate UOM dropdown
+        $('.uOM').each(function () {
+            populateUOM($(this));
+        });
+
+        // Toggle readonly status of LookupType based on IsLookUp selection
+        $(".isLookUp").change(function () {
+            var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+            if ($(this).val() == "1") {
+                $.ajax({
+                    url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        lookupTypeField.empty();
+                        $.each(data, function (i, item) {
+                            lookupTypeField.append($('<option>', {
+                                value: item.masteR_NAME,
+                                text: item.masteR_NAME
+                            }));
+                        });
+                        lookupTypeField.prop('disabled', false);
+                    },
+                    error: function () {
+                        alert('Failed to retrieve master name.');
+                    }
+                });
+            } else {
+                lookupTypeField.prop('disabled', true);
+            }
+        });
+    });
+
+    function populateUOM($element) {
+        $.ajax({
+            url: '@Url.Action("GetUOM", "ConfigureSubjectArea")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $element.empty();
+                $.each(data, function (i, item) {
+                    $element.append($('<option>', {
+                        value: item.uoM_CODE,
+                        text: item.uoM_DESC
+                    }));
+                });
+            },
+            error: function () {
+                alert('Failed to retrieve UOM.');
+            }
+        });
+    }
+</script>
