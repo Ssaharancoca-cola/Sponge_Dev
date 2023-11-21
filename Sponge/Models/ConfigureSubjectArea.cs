@@ -25,4 +25,26 @@ namespace Sponge.Models
         public string DataType { get; set; }
         public string UOM { get; set; }
     }
+    public class SaveUsers
+    {
+        public string UserName { get; set; }
+        public string UserId { get; set; }
+        public string IsSelected { get; set; }
+       
+    }
+    public class UserConfiguration
+    {
+        public string DisplayName { get; set; }
+        public string FieldName { get; set; }
+        public string IsLookUp { get; set; }
+        public string LookUpType { get; set; }
+        public string DataType { get; set; }
+        public string DisplayType { get; set; }
+        public string UOM { get; set; }
+        public string CollectionType { get; set; }
+        public string IsShow { get; set; }
+        public string DimensionTable { get; set; }
+
+        public string MasterName { get; set; }
+    }
 }

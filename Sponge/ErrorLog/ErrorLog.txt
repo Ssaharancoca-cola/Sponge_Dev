@@ -1,0 +1,17 @@
+Time: 21/11/2023 11:29:32 PM
+-----------------------------------------------------------
+UserId: Z12079
+
+Message: Data is Null. This method or property cannot be called on Null values.
+StackTrace:    at Microsoft.Data.SqlClient.SqlBuffer.get_String()
+   at lambda_method718(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at System.Linq.Enumerable.TryGetSingle[TSource](IEnumerable`1 source, Boolean& found)
+   at lambda_method719(Closure , QueryContext )
+   at System.Linq.Queryable.FirstOrDefault[TSource](IQueryable`1 source)
+   at Sponge.Controllers.ConfigureSubjectAreaController.SaveUsersConfiguration(List`1 selectedusers)
+Source: Microsoft.Data.SqlClient
+TargetSite: System.String get_String()
+InnerException: 
+-----------------------------------------------------------
+

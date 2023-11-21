@@ -87,7 +87,7 @@
                 success: function (data) {
                     $(fieldNameDropdown).empty();
                     $.each(data, function (i, item) {
-                        $(fieldNameDropdown).append('<option value="' + item.columN_DISPLAY_NAME + '">' + item.columN_DISPLAY_NAME + '</option>');
+                        $(fieldNameDropdown).append('<option value="' + item.columN_NAME + '">' + item.columN_DISPLAY_NAME + '</option>');
                     });
                 },
                 error: function (ex) {

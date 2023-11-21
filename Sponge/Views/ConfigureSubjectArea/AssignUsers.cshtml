@@ -1,7 +1,8 @@
-﻿@{
+﻿@model Sponge.Models.SaveUsers
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveUsers", "ConfigureSubjectArea", FormMethod.Post))
+@using (Html.BeginForm("SaveUsersConfiguration", "ConfigureSubjectArea", FormMethod.Post))
 {
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
@@ -21,8 +22,7 @@
                         <tbody>                        
                            
                             <tr>
-                                <td>
-                                </td>
+                              
                                 
                             </tr>                           
                            
@@ -30,7 +30,7 @@
                     </table>
                 </div>
                 <button class="btn btn-light mr-2">Cancel</button>
-                <button type="submit" class="btn btn-primary ">Save</button>
+                    <button type="submit" id="saveusers"  class="btn btn-primary ">Save</button>
             </div>
         </div>
     </div>
@@ -40,18 +40,74 @@
 <script>
     $(document).ready(function () {
         $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
+            debugger;
             var tableBody = $("#example tbody");
             usernames.forEach(function (username) {
+               
                 var row = `
                         <tr>
                             <td>
-                                <input type="checkbox" name="selectedUsers" value="${username}">
+                                 <input type="hidden" value="${username.userid}" name="userid">
+
+                                        <input type="checkbox" name="UserName" value="${username.username}">
                             </td>
-                            <td>${username}</td>
+                            <td>${username.username}</td>
                         </tr>
                     `;
                 tableBody.append(row);
             });
+        });
+        $('#saveusers').click(function (e) {
+            e.preventDefault();
+            var selectedusers = $('input[name="UserName"]:checked');
+            if (!selectedusers.length) {
+                alert('Please select at least one user');
+                return;
+            }
+            // Get the selected subjectArea value
+            var selectedSubjectArea = $('#subjectArea').val();
+            debugger;
+           
+            var userkeyvaluepair = [];
+            selectedusers.each(function () {
+                debugger;
+                var userid = $(this).parent().find('input[type="hidden"]').val();
+                var username = $(this).val();
+                var isSelected = $(this).prop('disabled'); // Here we check if the checkbox is disabled, which means this dimension is already selected
+                userkeyvaluepair.push({
+                    name: username,
+                    value: userid,
+                    isSelected: isSelected // This property will have 'true' if the dimension is already selected, 'false' otherwise
+                });
+            });
+
+            // Add the dimensions to the form as hidden inputs
+            $.each(userkeyvaluepair, function (i, selecteduser) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'selectedusers[' + i + '].UserName',
+                    value: selecteduser.name
+                }).appendTo('form');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'selectedusers[' + i + '].UserId',
+                    value: selecteduser.value
+                }).appendTo('form');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'selectedusers[' + i + '].IsSelected',
+                    value: selecteduser.isSelected
+                }).appendTo('form');
+            });
+            // Add the selected subjectArea value to the form as a hidden input
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'selectedSubjectArea',
+                value: selectedSubjectArea
+            }).appendTo('form');
+
+            // Submit the form
+            $(this).closest('form').submit();
         });
     });
 </script>
