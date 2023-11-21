@@ -103,7 +103,8 @@ namespace Sponge.Controllers
         {
             var resultData = new List<SPG_SUBJECT_MASTER>();
             SPONGE_Context sPONGE_Context = new();
-            var selectedSubjectArea = TempData["selectedSubjectArea"] as int?; 
+            var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
+            TempData.Keep();
             foreach (var master in data)
             {
                 var dimensionData = sPONGE_Context.SPG_MPP_MASTER
@@ -151,9 +152,59 @@ namespace Sponge.Controllers
                 .Select(o => new { o.UOM_CODE, o.UOM_DESC }).Distinct().ToList();
             return Json(fieldName);
         }
+        [HttpPost]
         public IActionResult SaveDataCollection(List<SaveDataCollection> data)
         {
+            SPONGE_Context sPONGE_Ctx = new();
+            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+            var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
+            TempData.Keep();
+            foreach (var collection in data)
+            {
+                SPG_SUBJECT_DATACOLLECTION sPG_1 = new();
+                {
+                    sPG_1.SUBJECTAREA_ID = selectedSubjectArea;
+                    sPG_1.DISPLAY_NAME = collection.DisplayName;
+                    sPG_1.FIELD_NAME = collection.FieldName;
+                    sPG_1.DATA_TYPE = collection.DataType;
+                    sPG_1.UOM = collection.UOM;
+                    sPG_1.IS_LOOKUP = collection?.IsLookUp;
+                    if (collection?.IsLookUp == "Y")
+                        sPG_1.DISPLAY_TYPE = "DropDown";
+                    else sPG_1.DISPLAY_TYPE = "TextBox";
+                    sPG_1.LOOKUP_TYPE = collection?.LookUpType;
+                    sPG_1.ACTIVE_FLAG = "Y";
+                    sPG_1.CREATED_DATE = DateTime.Now;
+                    sPG_1.CREATED_BY = userName[1].ToString();
+                }
+                sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);              
+
+            }
+            sPONGE_Ctx.SaveChanges();
+
             return View("Views\\ConfigureSubjectArea\\AssignUsers.cshtml");
+        }
+        public IActionResult GetUserList()
+        {
+            var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
+            SPONGE_Context sPONGE_Context = new();
+            int? subfunctionID = sPONGE_Context.SPG_SUBJECTAREA
+                .Where(o => o.SUBJECTAREA_ID == selectedSubjectArea)
+                .Select(o => o.SUBFUNCTION_ID)
+                .FirstOrDefault();
+
+            var userIDs = sPONGE_Context.SPG_USERS_FUNCTION
+                .Where(o => o.SUB_FUNCTION_ID == subfunctionID)
+                .Select(o => o.USER_ID)
+                .Distinct()
+                .ToList();
+
+            var usernames = sPONGE_Context.SPG_USERS
+                .Where(o => userIDs.Contains(o.USER_ID))
+                .Select(o => o.Name)
+                .Distinct()
+                .ToList();
+            return Json(usernames);
         }
         public IActionResult SaveUsers()
         {

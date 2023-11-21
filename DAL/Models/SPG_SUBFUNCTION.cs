@@ -2,21 +2,14 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Models
 {
     public partial class SPG_SUBFUNCTION
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SUBFUNCTION_ID { get; set; }
-        [Required (ErrorMessage ="Please Enter Country Name")]
         public string COUNTRY_NAME { get; set; }
-        [Required(ErrorMessage = "Please Enter Function Name")]
         public string FUNCTION_NAME { get; set; }
-        [Required(ErrorMessage = "Please Enter SubFunction Name")]
         public string SUBFUNCTION_NAME { get; set; }
         public string ACTIVE_FLAG { get; set; }
         public DateTime? CREATED_DATE { get; set; }

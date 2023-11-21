@@ -1,6 +1,8 @@
 ﻿@model Sponge.Models.SaveDataCollection
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
+    TempData.Keep();
 }
 @using (Html.BeginForm("SaveDataCollection", "ConfigureSubjectArea",Model, FormMethod.Post))
 {
@@ -24,35 +26,33 @@
                         <tbody>
                             <tr>
                                 <td>
-                                        <input type="text" class="form-control displayName" name="DisplayName">
+                                        <input type="text" class="form-control displayName" name="data[0].DisplayName">
                                     </td>
                                 <td>
-                                        <input type="text" class="form-control fieldName" name="FieldName">
+                                        <input type="text" class="form-control fieldName" name="data[0].FieldName">
                                     </td>
                                 <td>
-                                        <select class="form-control isLookUp" name="IsLookUp">
-                                            <option value="0" selected>No</option>
-                                            <option value="1">Yes</option>
+                                        <select class="form-control isLookUp" name="data[0].IsLookUp">
+                                            <option value="N" selected>No</option>
+                                            <option value="Y">Yes</option>
                                     </select>
                                 </td>
                                 <td>
-                                        <select class="form-control lookUpType" name="LookUpType">                                       
+                                        <select class="form-control lookUpType" name="data[0].LookUpType">                                       
 
                                     </select>
                                 </td>
                                 <td>
-                                        <select class="form-control dataType" name="DataType">
-                                        <option selected>Select</option>
+                                    <select class="form-control dataType" name="data[0].DataType">
                                             <option value="String">String</option>
                                             <option value="Number">Number</option>
                                             <option value="Date">Date</option>
                                             <option value="Perchent">Perchent</option>
-
                                     </select>
                                 </td>
                             
                                 <td>
-                                        <select class="form-control uOM" name="UOM">
+                                        <select class="form-control uOM" name="data[0].UOM">
                                         <option selected>Select</option>
 
                                     </select>
@@ -63,8 +63,7 @@
                         <button type="button" id="addRow" class="btn btn-success">Add Row</button>
 
                 </div>
-                    <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ConfigureSubjectArea", "ConfigureSubjectArea")'">Cancel</button>
-                    <button type="submit" class="btn btn-primary ">Next</button>
+                    <button type="submit" id="saveData" class="btn btn-primary ">Next</button>
             </div>
         </div>
     </div>
@@ -74,7 +73,7 @@
 
 <script>
     $(document).ready(function () {
-        var counter = 0;
+        var counter = 1;
         var limit = 10;
 
         $("#addRow").click(function () {
@@ -84,12 +83,12 @@
             }
 
             var newRowContents = '<tr>'
-                + '<td><input type="text" class="form-control displayName" name="DisplayName[' + counter + ']"></td>'
-                + '<td><input type="text" class="form-control fieldName" name="FieldName[' + counter + ']"></td>'
-                + '<td><select class="form-control isLookUp" name="IsLookUp[' + counter + ']"><option value="0" selected>No</option><option value="1">Yes</option></select></td>'
-                + '<td><select class="form-control lookUpType" name="LookUpType[' + counter + ']"></select></td>'
-                + '<td><select class="form-control dataType" name="DataType[' + counter + ']"><option selected>Select</option><option value="String">String</option><option value="Number">Number</option><option value="Date">Date</option><option value="Perchent">Perchent</option></select></td>'
-                + '<td><select class="form-control uOM" name="UOM[' + counter + ']"><option selected>Select</option></select></td>'
+                + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
+                + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
+                + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
+                + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
+                + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="String" selected>String</option><option value="Number">Number</option><option value="Date">Date</option><option value="Perchent">Perchent</option></select></td>'
+                + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
                 + '</tr>';
             counter++;
 
@@ -136,7 +135,7 @@
         // Toggle readonly status of LookupType based on IsLookUp selection
         $(".isLookUp").change(function () {
             var lookupTypeField = $(this).closest('tr').find('.lookUpType');
-            if ($(this).val() == "1") {
+            if ($(this).val() == "Y") {
                 $.ajax({
                     url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
                     type: 'GET',

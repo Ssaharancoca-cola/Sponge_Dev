@@ -824,6 +824,10 @@ namespace DAL.Models
                     .IsUnicode(false)
                     .IsFixedLength();
 
+                entity.Property(e => e.LOOKUP_TYPE)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.MODIFIED_BY)
                     .HasMaxLength(30)
                     .IsUnicode(false);

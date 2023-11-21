@@ -12,6 +12,7 @@ namespace DAL.Models
         public string FIELD_NAME { get; set; }
         public string DISPLAY_NAME { get; set; }
         public string IS_LOOKUP { get; set; }
+        public string LOOKUP_TYPE { get; set; }
         public string DATA_TYPE { get; set; }
         public string DISPLAY_TYPE { get; set; }
         public string UOM { get; set; }
