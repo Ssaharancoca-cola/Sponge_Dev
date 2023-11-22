@@ -423,10 +423,7 @@ namespace Sponge.Controllers
                     foreach (var item in data)
                     {
 
-                        List<SPG_CONFIG_STRUCTURE> lst = null;
-
-                        // Handle HTTP errors                 
-                        if (!string.IsNullOrEmpty(item.DisplayName))
+                      if (!string.IsNullOrEmpty(item.DisplayName))
                         {
 
                             int ConfigUserId = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.USER_ID == i.UserId && x.CONFIG_ID == configId).Select(x => x.CONFIGUSER_ID).FirstOrDefault();
@@ -436,100 +433,16 @@ namespace Sponge.Controllers
 
                                 if (headerList.Count <= 0 && headerlist_definer == "Y")
                                 {
-
-                                    SPG_CONFIG_STRUCTURE o = new SPG_CONFIG_STRUCTURE();
-                                    if (ConfigUserId > 0)
-                                    {
-                                        o = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.USER_ID == i.UserId && x.CONFIG_ID == configId).FirstOrDefault();
-
-                                    }
-                                    o.USER_ID = i.UserId;
-                                    o.SUBJECTAREA_ID = (int)id;
-                                    o.FIELD_NAME = item.FieldName;
-                                    //o.DISPLAY_NAME = item.DisplayName;
-                                    // o.MAS = item.Dimension;
-                                    o.CONFIG_ID = configId;
-                                    o.COLLECTION_TYPE = "Measure";
-                                    string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Measure").Select(x => x.DATA_TYPE).FirstOrDefault();
-
-                                    if (DataType == null)
-                                    {
-                                        DataType = GetDataTypeCounter(objModel, id, item.DataType);
-                                    }
-                                    o.IS_ETL = "Y";
-                                    o.IS_SHOW = "Y";
-
-                                    o.DISPLAY_NAME = item.DisplayName;
-                                    o.FIELD_NAME = item.FieldName;
-                                    o.GROUPCOLUMNNAME = grpcolumnname_definer == "Y" ? null : item.DisplayName;
-                                    o.DISPLAY_TYPE = item.DisplayType;
-                                    o.UOM = item.UOM;
-                                    o.LOOKUP_TYPE = item.LookUpType;
-                                    o.DATA_TYPE = DataType;
-                                    objModel.SPG_CONFIG_STRUCTURE.Add(o);
-                                    objModel.SaveChanges();
-
-                                }
+                                  SaveConfigMeasure(objModel, ConfigUserId, i.UserId, id, configId, item, item.DisplayName, grpcolumnname_definer);
+}
                                 else
                                 {
                                     foreach (var header in headerList)
                                     {
-                                        SPG_CONFIG_STRUCTURE o = new SPG_CONFIG_STRUCTURE();
-                                        if (ConfigUserId > 0)
-                                        {
-                                            o = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.USER_ID == i.UserId && x.CONFIG_ID == configId).FirstOrDefault();
-
-                                        }
-
-                                        o.USER_ID = i.UserId;
-                                        o.SUBJECTAREA_ID = (int)id;
-                                        o.FIELD_NAME = item.FieldName;
-                                        //o.DISPLAY_NAME = item.DisplayName;
-                                        o.MASTER_NAME= item.MasterName;
-                                        o.CONFIG_ID = configId;
-                                        o.COLLECTION_TYPE = "Measure";
-                                        string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.DISPLAY_NAME == header && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Measure").Select(x => x.DATA_TYPE).FirstOrDefault();
-                                        if (DataType == null)
-                                        {
-                                            DataType= GetDataTypeCounter(objModel,id, item.DataType);
-                                            //var outputParameter = new SqlParameter()
-                                            //{
-                                            //    ParameterName = "@outputParameter",
-                                            //    SqlDbType = System.Data.SqlDbType.VarChar,
-                                            //    Size = 50,
-                                            //    Direction = System.Data.ParameterDirection.Output
-                                            //};
-                                            //objModel.Database.ExecuteSqlRaw("dbo.SP_GETDATATYPECOUNTER @p_subjectAreaID, @p_DATA_TYPE,@outputParameter OUTPUT",
-                                            //    parameters: new[] { new SqlParameter("@p_subjectAreaID", id),
-                                            //   new SqlParameter("@p_DATA_TYPE", SqlDbType.VarChar, 100) { Value = item.DataType },
-                                            //   outputParameter
-
-                                            //    }
-                                            //                    );
-                                            //DataType = (string)outputParameter.Value;
-                                            //if (DataType == null)
-                                            //{
-                                            //    DataType = item.DataType + "0";
-                                            //}
-                                        }
-                                       
-                                        o.IS_ETL = "Y";
-                                        o.IS_SHOW = "Y";
-
-                                        o.DISPLAY_NAME = header;
-                                        o.FIELD_NAME = item.FieldName;
-                                        o.GROUPCOLUMNNAME = grpcolumnname_definer == "Y" ? null : item.DisplayName;
-                                        o.DISPLAY_TYPE = item.DisplayType;
-                                        o.UOM = item.UOM;
-                                        o.LOOKUP_TYPE = item.LookUpType;
-                                        o.DATA_TYPE = DataType;
-                                        objModel.SPG_CONFIG_STRUCTURE.Add(o);
-                                        objModel.SaveChanges();
+                                        SaveConfigMeasure(objModel, ConfigUserId, i.UserId, id, configId, item, header, headerlist_definer);
 
                                     }
-                                    
-
-                                }
+                                 }
                             }
                             else if (item.CollectionType == "Master" && ConfigUserId == 0)
                             {
@@ -622,6 +535,42 @@ namespace Sponge.Controllers
         {
 
             return RedirectToAction("Function");
+        }
+        private void SaveConfigMeasure(SPONGE_Context objModel,int ConfigUserId, string userId, int? id, int configId, UserConfiguration item,string  header, string grpcolumnname_definer)
+        {
+           
+            SPG_CONFIG_STRUCTURE o = new SPG_CONFIG_STRUCTURE();
+            if (ConfigUserId > 0)
+            {
+                o = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.USER_ID == userId && x.CONFIG_ID == configId).FirstOrDefault();
+
+            }
+
+            o.USER_ID = userId;
+            o.SUBJECTAREA_ID = (int)id;
+            o.FIELD_NAME = item.FieldName;
+            o.MASTER_NAME = item.MasterName;
+            o.CONFIG_ID = configId;
+            o.COLLECTION_TYPE = "Measure";
+            string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.DISPLAY_NAME == header && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Measure").Select(x => x.DATA_TYPE).FirstOrDefault();
+            if (DataType == null)
+            {
+                DataType = GetDataTypeCounter(objModel, id, item.DataType);
+
+            }
+
+            o.IS_ETL = "Y";
+            o.IS_SHOW = "Y";
+
+            o.DISPLAY_NAME = header;
+            o.FIELD_NAME = item.FieldName;
+            o.GROUPCOLUMNNAME = grpcolumnname_definer == "Y" ? null : item.DisplayName;
+            o.DISPLAY_TYPE = item.DisplayType;
+            o.UOM = item.UOM;
+            o.LOOKUP_TYPE = item.LookUpType;
+            o.DATA_TYPE = DataType;
+            objModel.SPG_CONFIG_STRUCTURE.Add(o);
+            objModel.SaveChanges();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
