@@ -2,15 +2,11 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models
 {
     public partial class SPG_CONFIG_STRUCTURE
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CONFIGUSER_ID { get; set; }
         public string USER_ID { get; set; }
         public int SUBJECTAREA_ID { get; set; }
@@ -18,6 +14,7 @@ namespace DAL.Models
         public string FIELD_NAME { get; set; }
         public string DISPLAY_NAME { get; set; }
         public string COLLECTION_TYPE { get; set; }
+        public string MASTER_NAME { get; set; }
         public string DIMENSION_TABLE { get; set; }
         public string IS_LOOKUP { get; set; }
         public string LOOKUP_TYPE { get; set; }
@@ -34,6 +31,5 @@ namespace DAL.Models
         public string IS_SHOW { get; set; }
         public string UOM { get; set; }
         public string IS_KEY { get; set; }
-        public string MASTER_NAME { get; set; }
     }
 }

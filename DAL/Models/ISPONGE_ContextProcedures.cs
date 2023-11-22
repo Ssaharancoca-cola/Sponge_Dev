@@ -14,6 +14,7 @@ namespace DAL.Models
     {
         Task<List<SP_GET_MPP_DIMENSIONSResult>> SP_GET_MPP_DIMENSIONSAsync(OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GET_MPP_MASTERSResult>> SP_GET_MPP_MASTERSAsync(string Dimension_Name, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<int> SP_GETDATATYPECOUNTERAsync(int? p_subjectAreaID, string p_userID, string p_DATA_TYPE, OutputParameter<string> outputParameter, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GETMASTEREMAILResult>> SP_GETMASTEREMAILAsync(int? p_ConfigID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
     }
 }

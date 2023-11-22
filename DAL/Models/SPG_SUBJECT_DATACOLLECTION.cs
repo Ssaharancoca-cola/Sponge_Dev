@@ -2,13 +2,11 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models
 {
     public partial class SPG_SUBJECT_DATACOLLECTION
     {
-
         public int DATACOLLECT_ID { get; set; }
         public int? SUBJECTAREA_ID { get; set; }
         public string FIELD_NAME { get; set; }

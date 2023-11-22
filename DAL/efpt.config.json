@@ -44,6 +44,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[SPG_GET_PERIOD]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[SPG_GETTIMECODE]",
          "ObjectType": 0
       },
@@ -109,6 +113,10 @@
       },
       {
          "Name": "[dbo].[SP_GET_MPP_MASTERS]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_GETDATATYPECOUNTER]",
          "ObjectType": 1
       },
       {

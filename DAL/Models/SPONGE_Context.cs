@@ -26,6 +26,7 @@ namespace DAL.Models
         public virtual DbSet<SPG_CONFIG_STRUCTURE> SPG_CONFIG_STRUCTURE { get; set; }
         public virtual DbSet<SPG_DOCUMENT> SPG_DOCUMENT { get; set; }
         public virtual DbSet<SPG_GETTIMECODE> SPG_GETTIMECODE { get; set; }
+        public virtual DbSet<SPG_GET_PERIOD> SPG_GET_PERIOD { get; set; }
         public virtual DbSet<SPG_MPP_MASTER> SPG_MPP_MASTER { get; set; }
         public virtual DbSet<SPG_ROLE> SPG_ROLE { get; set; }
         public virtual DbSet<SPG_SENDORRESENDTASK> SPG_SENDORRESENDTASK { get; set; }
@@ -45,7 +46,7 @@ namespace DAL.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=zwdmyad0001;Initial Catalog=SPONGE_DEV;Persist Security Info=True;User ID=SPONGE_DEV_APP;Password=SJX)^8nVYfQ#3D;TrustServerCertificate = True");
+                optionsBuilder.UseSqlServer("Data Source=zwdmyad0001;Initial Catalog=SPONGE_DEV;User ID=SPONGE_DEV_APP;Password=SJX)^8nVYfQ#3D;TrustServerCertificate = True");
             }
         }
 
@@ -460,7 +461,6 @@ namespace DAL.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.DIMENSION_TABLE)
-                    .IsRequired()
                     .HasMaxLength(200)
                     .IsUnicode(false);
 
@@ -521,6 +521,10 @@ namespace DAL.Models
 
                 entity.Property(e => e.LOOKUP_TYPE)
                     .HasMaxLength(2000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MASTER_NAME)
+                    .HasMaxLength(200)
                     .IsUnicode(false);
 
                 entity.Property(e => e.UOM)
@@ -594,6 +598,32 @@ namespace DAL.Models
 
                 entity.Property(e => e.FORTIMECODE)
                     .HasMaxLength(100)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SPG_GET_PERIOD>(entity =>
+            {
+                entity.HasKey(e => e.PERIOD_ID)
+                    .HasName("PK__SPG_GET___B513F7BB5141BCB5");
+
+                entity.Property(e => e.FREQUENCY)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FREQUENCY_DISPLAY_NAME)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PERIOD)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TIME_LEVEL)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TIME_LEVEL_DISPLAY_NAME)
+                    .HasMaxLength(50)
                     .IsUnicode(false);
             });
 

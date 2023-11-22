@@ -3,14 +3,18 @@ using DAL.Common;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 
 namespace Sponge.Controllers
 {
@@ -97,7 +101,7 @@ namespace Sponge.Controllers
         {
             SPONGE_Context sPONGE_Context = new();
             var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.MASTER_NAME == masterName && o.IS_KEY != "Y")
-                .Select(o => new { o.COLUMN_DISPLAY_NAME , o.COLUMN_NAME}).Distinct();
+                .Select(o => new { o.COLUMN_DISPLAY_NAME, o.COLUMN_NAME }).Distinct();
             ViewBag.FieldName = new SelectList(fieldName.ToList(), "FILED_NAME", "FILED_DISPLAY_NAME");
             return Json(fieldName);
         }
@@ -334,12 +338,12 @@ namespace Sponge.Controllers
                                        LookUpType = "",
                                        IsLookUp = "N",
                                        DataType = "",
-                                       IsShow = "Y",
+                                       IsShow = p.IS_SHOW,
                                        MasterName = p.MASTER_NAME,
                                        DimensionTable = p.DIMENSION_TABLE
                                    }).ToList();
 
-                    var UserConfigurations = DataCollection.Concat(Masters).ToList();
+                    var UserConfigurations = Masters.Concat(DataCollection).ToList();
 
                     SaveConfigStructure(selectedusers, sPONGE_Ctx, selectedSubjectArea, UserConfigurations, headerList, headerlist_definer, grpcolumnname_definer);
                     try
@@ -450,22 +454,7 @@ namespace Sponge.Controllers
 
                                     if (DataType == null)
                                     {
-                                        DataSet ds = new DataSet();
-                                        string FormedQuery = "SP_GETDTCOUNTERTEST";
-
-                                        using (GetDataSet objGetDataSetValue = new GetDataSet())
-                                        {
-                                            //ds = objGetDataSetValue.GetDataSetValueDTField(FormedQuery, id, i, item.DataType);
-                                        }
-                                        if (ds.Tables[0].Rows.Count > 0)
-                                        {
-                                            DataType = Convert.ToString(ds.Tables[0].Rows[0]["DATA_TYPE"]);
-                                        }
-                                        else
-                                        {
-
-                                            DataType = item.DataType + "0";
-                                        }
+                                        DataType = GetDataTypeCounter(objModel, id, item.DataType);
                                     }
                                     o.IS_ETL = "Y";
                                     o.IS_SHOW = "Y";
@@ -496,30 +485,34 @@ namespace Sponge.Controllers
                                         o.SUBJECTAREA_ID = (int)id;
                                         o.FIELD_NAME = item.FieldName;
                                         //o.DISPLAY_NAME = item.DisplayName;
-                                        // o.MAS = item.Dimension;
+                                        o.MASTER_NAME= item.MasterName;
                                         o.CONFIG_ID = configId;
                                         o.COLLECTION_TYPE = "Measure";
                                         string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.DISPLAY_NAME == header && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Measure").Select(x => x.DATA_TYPE).FirstOrDefault();
-
                                         if (DataType == null)
                                         {
-                                            DataSet ds = new DataSet();
-                                            string FormedQuery = "SP_GETDTCOUNTERTEST";
-
-                                            using (GetDataSet objGetDataSetValue = new GetDataSet())
-                                            {
-                                                // ds = objGetDataSetValue.GetDataSetValueDTField(FormedQuery, id, i, item.DataType);
-                                            }
-                                            //if (ds.Tables[0].Rows.Count > 0)
+                                            DataType= GetDataTypeCounter(objModel,id, item.DataType);
+                                            //var outputParameter = new SqlParameter()
                                             //{
-                                            //    DataType = Convert.ToString(ds.Tables[0].Rows[0]["DATA_TYPE"]);
-                                            //}
-                                            //else
-                                            //{
+                                            //    ParameterName = "@outputParameter",
+                                            //    SqlDbType = System.Data.SqlDbType.VarChar,
+                                            //    Size = 50,
+                                            //    Direction = System.Data.ParameterDirection.Output
+                                            //};
+                                            //objModel.Database.ExecuteSqlRaw("dbo.SP_GETDATATYPECOUNTER @p_subjectAreaID, @p_DATA_TYPE,@outputParameter OUTPUT",
+                                            //    parameters: new[] { new SqlParameter("@p_subjectAreaID", id),
+                                            //   new SqlParameter("@p_DATA_TYPE", SqlDbType.VarChar, 100) { Value = item.DataType },
+                                            //   outputParameter
 
-                                            DataType = item.DataType + "0";
+                                            //    }
+                                            //                    );
+                                            //DataType = (string)outputParameter.Value;
+                                            //if (DataType == null)
+                                            //{
+                                            //    DataType = item.DataType + "0";
                                             //}
                                         }
+                                       
                                         o.IS_ETL = "Y";
                                         o.IS_SHOW = "Y";
 
@@ -531,10 +524,10 @@ namespace Sponge.Controllers
                                         o.LOOKUP_TYPE = item.LookUpType;
                                         o.DATA_TYPE = DataType;
                                         objModel.SPG_CONFIG_STRUCTURE.Add(o);
-
+                                        objModel.SaveChanges();
 
                                     }
-                                    objModel.SaveChanges();
+                                    
 
                                 }
                             }
@@ -553,26 +546,19 @@ namespace Sponge.Controllers
                                 o.DIMENSION_TABLE = item.DimensionTable;
                                 o.CONFIG_ID = configId;
                                 string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Master").Select(x => x.DATA_TYPE).FirstOrDefault();
-
+                                var DataTypeOutput = new SqlParameter()
+                                {
+                                    ParameterName = "@outputParameter",
+                                    SqlDbType = System.Data.SqlDbType.VarChar,
+                                    Size = 50,
+                                    Direction = System.Data.ParameterDirection.Output
+                                };
                                 if (DataType == null)
                                 {
 
-                                    DataSet ds = new DataSet();
-                                    string FormedQuery = "SP_GETDTCOUNTERTEST";
-
                                     item.DataType = "VC";
-                                    using (GetDataSet objGetDataSetValue = new GetDataSet())
-                                    {
-                                        // ds = objGetDataSetValue.GetDataSetValueDTField(FormedQuery, id, i, item.DataType);
-                                    }
-                                    //if (ds.Tables[0].Rows.Count > 0)
-                                    //{
-                                    //    DataType = Convert.ToString(ds.Tables[0].Rows[0]["DATA_TYPE"]);
-                                    //}
-                                    //else
-                                    //{
-                                        DataType = "VC0";
-                                    //}
+
+                                    DataType = GetDataTypeCounter(objModel, id, item.DataType);
 
                                 }
                                 o.COLLECTION_TYPE = "Master";
@@ -604,7 +590,33 @@ namespace Sponge.Controllers
                 }
             }
         }
+        public string GetDataTypeCounter(SPONGE_Context objModel,int ?id, string dataType)
+        {
+            var outputParameter = new SqlParameter()
+            {
+                ParameterName = "@outputParameter",
+                SqlDbType = System.Data.SqlDbType.VarChar,
+                Size = 50,
+                Direction = System.Data.ParameterDirection.Output
+            };
 
+            objModel.Database.ExecuteSqlRaw("dbo.SP_GETDATATYPECOUNTER @p_subjectAreaID, @p_DATA_TYPE,@outputParameter OUTPUT",
+              parameters: new[] {
+      new SqlParameter("@p_subjectAreaID", id),
+      new SqlParameter("@p_DATA_TYPE", SqlDbType.VarChar, 100) { Value = dataType },
+      outputParameter
+              }
+            );
+
+            var DataType = (string)outputParameter.Value;
+
+            if (DataType == null)
+            {
+                DataType = dataType + "0";
+            }
+
+            return DataType;
+        }
         [HttpPost]
         public IActionResult ConfigureMasterGroup(IFormCollection function, string Command)
         {
