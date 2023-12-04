@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
+using System.Data;
 using System.Diagnostics;
 
 namespace Sponge.Controllers
@@ -82,8 +85,8 @@ namespace Sponge.Controllers
                                 data.VERSION = "N";
                                 data.ONTIMELEVEL = "0";
                             }
-                            string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
-                            //string PERIOD =  sPONGE_Context.SPG_SUBJECTAREA.Where(s => s.FREQUENCY == data.FREQUENCY  && TIME_LEVEL == data.TIME_LEVEL).FirstOrDefault();
+                           // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
+                            string PERIOD =  sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY  && s.TIME_LEVEL == data.TIME_LEVEL).Select(s=>s.PERIOD).FirstOrDefault().ToString();
 
                             data.SUBJECTAREA_TABLE = "SPG_" + data.SUBJECTAREA_NAME;
                             data.PERIOD = PERIOD;
@@ -156,6 +159,7 @@ namespace Sponge.Controllers
             return Period;
         }
 
+       
 
         public JsonResult BindGranularity(string frequency)
         {

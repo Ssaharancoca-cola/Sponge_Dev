@@ -14,51 +14,61 @@
                         <div class="col">
                             <label for="assetMaster">Assigned To</label>
                             <input type="text" class="form-control" id="assetMaster"
-                                placeholder="Surendra" readonly>
+                                placeholder="Annu" readonly style="font-display:block; font-style:normal">
                         </div>
                         <div class="col">
                             <label for="subjectAreaName">Subject Area Name</label>
                             <input type="text" class="form-control" id="subjectAreaName"
-                                placeholder="Asset_Master" readonly>
+                                placeholder="Primary Sales Business Plan-Pack" readonly>
                         </div>
                         <div class="col">
                             <label for="frequency">Frequency</label>
                             <input type="text" class="form-control" id="frequency"
                                 placeholder="Yearly" readonly>
-                        </div>                                            
+                        </div>
+                        <div class="col">
+                            <label for="frequency">ForTime</label>
+                            <input type="text" class="form-control" id="fortime"
+                                   placeholder="Monthly" readonly>
+                        </div>
                     </div>
                     <div class="form-group row">
                         <div class="col">
                             <label for="active">Active</label>
                             <select class="form-control">
-                                <option selected>Active</option>
-                                <option value="1">Active</option>
+                                <option selected>Select</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
                             </select>
                         </div>                                            
                         <div class="col">
                             <label for="scheduled">Scheduled</label>
                             <select class="form-control" id="Scheduled">
-                                <option selected>Scheduled</option>
+                                <option selected>Select</option>
                                 <option value="Y">Yes</option>
                                 <option value="N">No</option>
                             </select>
                         </div>
+
                         <div class="col">
                             <label for="lockDate">Lock Date</label>
-                            <input type="text" class="form-control" id="lockDate"
-                           >days after template generation date
+                            <input type="text" class="form-control" id="lockDate" placeholder="15">days after template generation date
                         </div>                                            
                     </div>
                    
                     <div class="form-group row" id="IsScheduled" style="display:none">
-                        
+
+                        <div class="col">
+                            <label for="scheduled">Day</label>
+                            <input type="text" class="form-control" id="datewhich" placeholder="29" readonly>day when template generated
+                       </div>
                         <div class="col">
                             <label for="lockDate">Upload Reminder Date</label>
-                            <input type="text" class="form-control" id="uploadreminder">days after template generation date
+                            <input type="text" class="form-control" id="uploadreminder" placeholder="12" readonly>days after template generation date
                         </div>
                         <div class="col">
                             <label for="EscalationDate">Escalation  Date</label>
-                            <input type="text" class="form-control" id="Escalation">days after template generation date
+                            <input type="text" class="form-control" id="Escalation" placeholder="13" readonly>days after template generation date
                         </div>
                     </div>
                     <h6 class="mt-5 mb-3">Add Approver Details</h6>
@@ -66,7 +76,7 @@
                         <div class="col">
                             <label for="approverID">Approver Email ID</label>
                             <input type="text" class="form-control" id="approverID"
-                            placeholder="search">
+                                   placeholder="navagarwal@coca-cola.com">
                         </div>
                         <div class="col btn-align">
                             <button class="btn btn-primary">Get Approver Info</button>
@@ -75,12 +85,12 @@
                     <div class="form-group row">
                         <div class="col">
                             <label for="approverName">Approver Name</label>
-                            <input type="text" class="form-control" id="approverName"
-                                readonly>
+                            <input type="text" class="form-control" id="approverName" placeholder="Navni Agarwal "
+                             readonly>
                         </div>
                         <div class="col">
                             <label for="approverEmailID">Approver ID</label>
-                            <input type="email" class="form-control" id="approverEmailID"
+                            <input type="email" class="form-control" id="approverEmailID" placeholder="Z08233"
                                  readonly>
                         </div>                                            
                     </div>

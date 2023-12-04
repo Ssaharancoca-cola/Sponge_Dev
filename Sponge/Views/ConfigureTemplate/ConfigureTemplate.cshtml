@@ -1,6 +1,7 @@
-﻿@model IEnumerable<Sponge.ViewModel.GetUserinfo>
+﻿
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var usersJson = ViewBag.lstusers;
 }
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
@@ -14,11 +15,11 @@
 
                         <div class="col">
                             <label for="subjectAreaName">Subject Area Name</label>
-                            <select class="form-control" name="SubjectArea">
+                            <select class="form-control" id="subjectArea" name="SubjectArea">
                                 <option selected>Select</option>
                                 @foreach (var f in ViewBag.SubjectArea)
                                 {
-                                    <option value="@f.Text"  selected>@f.Value</option>
+                                    <option value="@f.Text" >@f.Value</option>
                                 }
                             </select>
                         </div>
@@ -37,10 +38,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
-                            {
+                           
                                 <tr>
-                                    <td>@item.UserName</td>
+                                   @*  <td>@item.UserName</td>
                                    
                                     <td>
                                         <a href="@Url.Action("DataFilter", "ConfigureTemplate", new {id = item.UserId})" style="background-color:lightcoral" class="btn btn-outline-primary btn-icon-text">
@@ -53,9 +53,9 @@
                                             <i class="ti-file btn-icon-prepend"></i>
                                             Setup
                                         </a>
-                                    </td>
+                                    </td> *@
                                 </tr>
-                            }
+                            
                             
                         </tbody>
                     </table>
@@ -71,11 +71,7 @@
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
-    new DataTable('#example', {
-        order: [[3, 'desc']]
-    });
-    //Initialize the Multiselect Dropdown:
-
+  
 </script>
 <!-- End plugin js for this page -->
 <!-- inject:js -->
@@ -84,29 +80,67 @@
 
 <!-- endinject -->
 <script>
-    const chBoxes = document.querySelectorAll('.dropdown-menu input[type="checkbox"]');
-    const dpBtn = document.getElementById('multiSelectDropdown');
-    let mySelectedListItems = [];
+   
+    $(document).ready(function () {
+        $('#subjectArea').change(function () {
+            var subjectArea = $(this).val();
+            if (subjectArea && subjectArea != 'Select') {
+                $.ajax({
+                    url: '@Url.Action("GetUserList", "ConfigureTemplate")',
+                    type: 'GET',
+                    data: { subjectAreaId: subjectArea },
+                    success: function (data)
+                    {
+                        var content = '';
+                        if (data || data.length) {
 
-    function handleCB() {
-        mySelectedListItems = [];
-        let mySelectedListItemsText = '';
+                            var tableBody = $("#example tbody");
+                            $.each(data, function (i, username) {
+                                debugger;
+                                var id = username.userid;
+                                var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '?id=' + id;
+                        var SetupUrl = '@Url.Action("Setup", "ConfigureTemplate")' + '?id=' + id;
 
-        chBoxes.forEach((checkbox) => {
-            if (checkbox.checked) {
-                mySelectedListItems.push(checkbox.value);
-                mySelectedListItemsText += checkbox.value + ', ';
+                               
+                                var row = `
+                            <tr>
+                                <td>
+                                     <input type="hidden" value="${username.userid}" name="userid">
+
+                                                ${username.username}
+                                </td>
+                <td>
+                                                                                            <a href="${datafilterurl}">
+                             <i class="ti-file btn-icon-prepend"></i>
+                                                Data Filter
+                                                     
+                                            </a>
+                                                
+                                        </td>
+                                        <td>
+                                        <a href="${SetupUrl}" >
+                             <i class="ti-file btn-icon-prepend"></i>
+                                                Setup
+                                                 
+                                            </a>
+                                        </td>
+                                             
+                            </tr>
+                        `;
+                                tableBody.append(row);
+                            });
+                           
+                        }
+                       
+                       
+                    }
+                });
             }
         });
 
-        dpBtn.innerText =
-            mySelectedListItems.length > 0
-                ? mySelectedListItemsText.slice(0, -2) : 'Select';
-    }
-
-    chBoxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', handleCB);
+       
     });
+     
 </script>
 <!-- <script src="assists/js/virtual-select.min.js"></script>
 <script>

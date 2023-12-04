@@ -26,34 +26,35 @@ namespace Sponge.Controllers
             var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME, o.SUBJECTAREA_ID }).Distinct();
             ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
 
-            using var cmd = spONGE_Context.Database.GetDbConnection().CreateCommand();
-            cmd.CommandText = "[dbo].[SP_GET_USERS_DETAILS]";
-
-            //common
-            cmd.CommandType = CommandType.StoredProcedure;
-            if (cmd.Connection.State != System.Data.ConnectionState.Open) cmd.Connection.Open();
-
-            List<GetUserinfo> GUi = new List<GetUserinfo>();
-
-            using (var reader = cmd.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    GetUserinfo ui = new GetUserinfo();
-
-                    ui.UserName = (string)reader["NAME"];
-                   
-                    GUi.Add(ui);
-                }
-            }
-            return View(GUi);
+            
+            return View();
         }
-        public IActionResult SetUp()
+        public IActionResult SetUp(string id)
         {
 
             return View("Views\\ConfigureTemplate\\Setup.cshtml");
         }
+       [HttpGet]
+       public IActionResult GetUserList(int subjectAreaId)
+        {
+           
+            SPONGE_Context context = new();
 
+            
+            var usernames = from U in context.SPG_USERS
+                            join SPG in context.SPG_CONFIGURATION on U.USER_ID equals SPG.USER_ID
+                            where SPG.SUBJECTAREA_ID == subjectAreaId
+                            group U by new { U.USER_ID, U.EMAIL_ID, U.Name, U.ACTIVE_FLAG } into g
+                            select new
+                            {
+                                userid = g.Key.USER_ID,
+                                username = g.Key.Name,
+                            };
+         
+
+            // UserInfo = query.ToList();
+            return Json(usernames);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
