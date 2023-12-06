@@ -13,5 +13,6 @@ namespace DAL.Models
         public string PERIOD { get; set; }
         public string FREQUENCY_DISPLAY_NAME { get; set; }
         public string TIME_LEVEL_DISPLAY_NAME { get; set; }
+        public string COLUMN_TEXT { get; set; }
     }
 }

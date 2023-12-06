@@ -95,12 +95,13 @@ namespace DAL.Models
 
             return _;
         }
-        public virtual async  Task<int> SP_GETDATATYPECOUNTERAsync(int? p_subjectAreaID, string p_userID, string p_DATA_TYPE, OutputParameter<string> outputParameter, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+
+        public virtual async Task<int> SP_GETDATATYPECOUNTERAsync(int? p_subjectAreaID, string p_DATA_TYPE, OutputParameter<string> outputParameter, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
         {
             var parameteroutputParameter = new SqlParameter
             {
                 ParameterName = "outputParameter",
-                Size = 100,
+                Size = 50,
                 Direction = System.Data.ParameterDirection.InputOutput,
                 Value = outputParameter?._value ?? Convert.DBNull,
                 SqlDbType = System.Data.SqlDbType.VarChar,
@@ -112,20 +113,13 @@ namespace DAL.Models
                 SqlDbType = System.Data.SqlDbType.Int,
             };
 
-            var sqlParameters = new[]
+            var sqlParameters = new []
             {
                 new SqlParameter
                 {
                     ParameterName = "p_subjectAreaID",
                     Value = p_subjectAreaID ?? Convert.DBNull,
                     SqlDbType = System.Data.SqlDbType.Int,
-                },
-                new SqlParameter
-                {
-                    ParameterName = "p_userID",
-                    Size = 100,
-                    Value = p_userID ?? Convert.DBNull,
-                    SqlDbType = System.Data.SqlDbType.VarChar,
                 },
                 new SqlParameter
                 {
@@ -137,7 +131,7 @@ namespace DAL.Models
                 parameteroutputParameter,
                 parameterreturnValue,
             };
-            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[SP_GETDATATYPECOUNTER] @p_subjectAreaID, @p_userID, @p_DATA_TYPE, @outputParameter OUTPUT", sqlParameters, cancellationToken);
+            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[SP_GETDATATYPECOUNTER] @p_subjectAreaID, @p_DATA_TYPE, @outputParameter OUTPUT", sqlParameters, cancellationToken);
 
             outputParameter.SetValue(parameteroutputParameter.Value);
             returnValue?.SetValue(parameterreturnValue.Value);

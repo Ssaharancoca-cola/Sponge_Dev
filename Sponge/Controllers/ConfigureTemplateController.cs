@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
 using System.Data;
 using System.Diagnostics;
+using System.DirectoryServices.AccountManagement;
 
 namespace Sponge.Controllers
 {
@@ -29,25 +31,116 @@ namespace Sponge.Controllers
             
             return View();
         }
-        public IActionResult SetUp(string id)
-        {
+        public IActionResult SetUp(int configID)
+        {            
+            using (SPONGE_Context context = new SPONGE_Context())
+            {
+               var  result = context.SPG_CONFIGURATION
+                    .Join(context.SPG_USERS,
+                        config => config.USER_ID,
+                        user => user.USER_ID,
+                        (config, user) => new { CONFIGURATION = config, USER = user })
+                    .Join(context.SPG_SUBJECTAREA,
+                        configUser => configUser.CONFIGURATION.SUBJECTAREA_ID,
+                        subject => subject.SUBJECTAREA_ID,
+                        (configUser, subject) => new
+                        {
+                             configUser.CONFIGURATION.CONFIG_ID,
+                            NAME = configUser.USER.Name,
+                            subject.SUBJECTAREA_NAME,
+                             subject.FREQUENCY,
+                             subject.TIME_LEVEL,
+                            ACTIVE_FLAG = configUser.CONFIGURATION.ACTIVE_FLAG ?? "Y",
+                            SCHEDULED = configUser.CONFIGURATION.SCHEDULED ?? "N",
+                            configUser.CONFIGURATION.LOCK_DATE,
+                            configUser.CONFIGURATION.PATTERN,
+                            configUser.CONFIGURATION.REMMINDER_DATE,
+                            configUser.CONFIGURATION.ESCALATION_DATE,
+                            configUser.CONFIGURATION.APPROVER_EMAILD,
+                            configUser.CONFIGURATION.APPROVER_NAME,
+                            configUser.CONFIGURATION.APPROVER_ID
 
-            return View("Views\\ConfigureTemplate\\Setup.cshtml");
+                        })
+                    .Where(x => x.CONFIG_ID == configID)
+                    .FirstOrDefault();
+
+                if (result != null)
+                {
+                    
+                    ViewBag.Result = result;
+                    return View();
+                }
+            }
+            return NotFound();
         }
-       [HttpGet]
-       public IActionResult GetUserList(int subjectAreaId)
+        public IActionResult SaveSetUp(SetupUser data, int configID)
+        {
+            SPONGE_Context spONGE_Context = new SPONGE_Context();
+            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+            // Fetch the record to be updated
+            var configRecord = spONGE_Context.SPG_CONFIGURATION.FirstOrDefault(x => x.CONFIG_ID == configID);
+
+            if (configRecord != null)
+            {
+                // Update the fields
+                configRecord.ACTIVE_FLAG = data.ACTIVE_FLAG;
+                configRecord.SCHEDULED = data.SCHEDULED;
+                configRecord.LOCK_DATE = data.LOCK_DATE;
+                configRecord.PATTERN = data.PATTERN;
+                configRecord.REMMINDER_DATE = data.REMMINDER_DATE;
+                configRecord.ESCALATION_DATE = data.ESCALATION_DATE;
+                configRecord.APPROVER_NAME = data.APPROVER_NAME;
+                configRecord.APPROVER_ID = data.APPROVER_ID;
+                configRecord.MODIFIED_BY = userName[1];
+                configRecord.MODIFIED_DATE = DateTime.Now;
+                // Save the changes
+                spONGE_Context.SaveChanges();
+            }
+            // Redirect to ConfigureTemplate action
+            return RedirectToAction("ConfigureTemplate");
+        }
+        public JsonResult GetUserInfoByEmail(string email)
+        {
+            UserInfo userInfo = new UserInfo();
+
+            try
+            {
+                using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
+                {
+                    UserPrincipal userPrincipal = new UserPrincipal(context);
+                    userPrincipal.EmailAddress = email;
+
+                    PrincipalSearcher search = new PrincipalSearcher(userPrincipal);
+
+                    var user = (UserPrincipal)search.FindOne();
+
+                    if (user != null)
+                    {
+                        userInfo.UserId = user.SamAccountName;
+                        userInfo.UserName = user.DisplayName;
+                        userInfo.UserEmail = user.EmailAddress;
+                        userInfo.ErrorMsg = "";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return Json(userInfo);
+        }
+        [HttpGet]
+        public IActionResult GetUserList(int subjectAreaId)
         {
            
-            SPONGE_Context context = new();
-
-            
+            SPONGE_Context context = new();            
             var usernames = from U in context.SPG_USERS
                             join SPG in context.SPG_CONFIGURATION on U.USER_ID equals SPG.USER_ID
                             where SPG.SUBJECTAREA_ID == subjectAreaId
-                            group U by new { U.USER_ID, U.EMAIL_ID, U.Name, U.ACTIVE_FLAG } into g
+                            group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, U.ACTIVE_FLAG } into g
                             select new
                             {
-                                userid = g.Key.USER_ID,
+                                configID = g.Key.CONFIG_ID,
                                 username = g.Key.Name,
                             };
          
@@ -55,11 +148,12 @@ namespace Sponge.Controllers
             // UserInfo = query.ToList();
             return Json(usernames);
         }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
 
 
 

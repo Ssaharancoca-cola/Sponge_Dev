@@ -606,6 +606,10 @@ namespace DAL.Models
                 entity.HasKey(e => e.PERIOD_ID)
                     .HasName("PK__SPG_GET___B513F7BB5141BCB5");
 
+                entity.Property(e => e.COLUMN_TEXT)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.FREQUENCY)
                     .HasMaxLength(50)
                     .IsUnicode(false);

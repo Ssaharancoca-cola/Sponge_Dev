@@ -96,16 +96,15 @@
 
                             var tableBody = $("#example tbody");
                             $.each(data, function (i, username) {
-                                debugger;
-                                var id = username.userid;
-                                var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '?id=' + id;
-                        var SetupUrl = '@Url.Action("Setup", "ConfigureTemplate")' + '?id=' + id;
+                                var configID = username.configID;
+                                var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '?configID=' + configID;
+                                var SetupUrl = '@Url.Action("SetUp", "ConfigureTemplate")' + '?configID=' + configID;
 
                                
                                 var row = `
                             <tr>
                                 <td>
-                                     <input type="hidden" value="${username.userid}" name="userid">
+                                         <input type="hidden" value="${username.configID}" name="userid">
 
                                                 ${username.username}
                                 </td>
