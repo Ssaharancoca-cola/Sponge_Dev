@@ -396,6 +396,8 @@ namespace Sponge.Controllers
         }
         private List<int> SaveConfiguration(SPONGE_Context objModel, string configName, int? subjectAreaId, string userId)
         {
+            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+
             List<int> configId_List = objModel.SPG_CONFIGURATION.Where(s => s.SUBJECTAREA_ID == subjectAreaId).Where(s => s.USER_ID == userId).Select(s => s.CONFIG_ID).ToList();
             if (configId_List.Count > 0)
             {
@@ -408,7 +410,7 @@ namespace Sponge.Controllers
                     Config_Name = configName,
                     SUBJECTAREA_ID = subjectAreaId,
                     USER_ID = userId,
-                    Created_By = "",
+                    Created_By = userName[1],
                     Created_On = DateTime.Now
                 };
                 objModel.SPG_CONFIGURATION.Add(config);

@@ -9,6 +9,7 @@ using Sponge.ViewModel;
 using System.Data;
 using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
+using System.Globalization;
 
 namespace Sponge.Controllers
 {
@@ -52,6 +53,7 @@ namespace Sponge.Controllers
                             ACTIVE_FLAG = configUser.CONFIGURATION.ACTIVE_FLAG ?? "Y",
                             SCHEDULED = configUser.CONFIGURATION.SCHEDULED ?? "N",
                             configUser.CONFIGURATION.LOCK_DATE,
+                            configUser.CONFIGURATION.PATTERN_MONTH,
                             configUser.CONFIGURATION.PATTERN,
                             configUser.CONFIGURATION.REMMINDER_DATE,
                             configUser.CONFIGURATION.ESCALATION_DATE,
@@ -67,10 +69,25 @@ namespace Sponge.Controllers
                 {
                     
                     ViewBag.Result = result;
+                    ViewBag.Months = GetMonths();
                     return View();
                 }
             }
             return NotFound();
+        }
+        public List<SelectListItem> GetMonths()
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+            items = DateTimeFormatInfo
+        .InvariantInfo
+        .MonthNames
+        .TakeWhile(monthName => monthName != String.Empty)
+        .Select((monthName, index) => new SelectListItem
+        {
+            Value = (index + 1).ToString(CultureInfo.InvariantCulture),
+            Text = string.Format("({0}) {1}", index + 1, monthName)
+        }).ToList();
+            return items;
         }
         public IActionResult SaveSetUp(SetupUser data, int configID)
         {
@@ -86,9 +103,11 @@ namespace Sponge.Controllers
                 configRecord.SCHEDULED = data.SCHEDULED;
                 configRecord.LOCK_DATE = data.LOCK_DATE;
                 configRecord.PATTERN = data.PATTERN;
+                configRecord.PATTERN_MONTH = data.PATTERN_MONTH;
                 configRecord.REMMINDER_DATE = data.REMMINDER_DATE;
                 configRecord.ESCALATION_DATE = data.ESCALATION_DATE;
                 configRecord.APPROVER_NAME = data.APPROVER_NAME;
+                configRecord.APPROVER_EMAILD =data.APPROVER_EMAILID;
                 configRecord.APPROVER_ID = data.APPROVER_ID;
                 configRecord.MODIFIED_BY = userName[1];
                 configRecord.MODIFIED_DATE = DateTime.Now;

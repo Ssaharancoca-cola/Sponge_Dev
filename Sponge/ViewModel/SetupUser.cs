@@ -10,9 +10,10 @@
         public string SCHEDULED { get; set; }
         public int LOCK_DATE { get; set; }
         public int PATTERN { get; set; }
+        public int PATTERN_MONTH { get; set; }
         public int REMMINDER_DATE { get; set; }
         public int ESCALATION_DATE { get; set; }
-        public string APPROVER_EMAILD { get; set; }
+        public string APPROVER_EMAILID { get; set; }
         public string APPROVER_NAME { get; set; }
         public string APPROVER_ID { get; set; }
 

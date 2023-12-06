@@ -4,127 +4,145 @@
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 @using (Html.BeginForm("SaveSetUp", "ConfigureTemplate", Model, FormMethod.Post))
- { 
+{
     <div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Setup</p>
-                <div class="forms-sample">
-                    <div class="form-group row ">
-                        <div class="col">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Setup</p>
+                    <div class="forms-sample">
+                        <div class="form-group row ">
+                            <div class="col">
                                 <label for="Name">Assigned To</label>
                                 <input type="text" value="@ViewBag.Result.NAME" class="form-control" id="Name"
-                                 readonly style="font-display:block; font-style:normal">
-                        </div>
-                        <div class="col">
+                                       readonly style="font-display:block; font-style:normal">
+                            </div>
+                            <div class="col">
                                 <label for="SUBJECTAREA_NAME">Subject Area Name</label>
                                 <input type="text" value="@ViewBag.Result.SUBJECTAREA_NAME" class="form-control" id="SUBJECTAREA_NAME"
-                                 readonly>
-                        </div>
-                        <div class="col">
+                                       readonly>
+                            </div>
+                            <div class="col">
                                 <label for="FREQUENCY">Frequency</label>
                                 <input type="text" value="@ViewBag.Result.FREQUENCY" class="form-control" id="FREQUENCY"
-                                 readonly>
-                        </div>
-                        <div class="col">
+                                       readonly>
+                            </div>
+                            <div class="col">
                                 <label for="TIME_LEVEL">ForTime</label>
                                 <input type="text" value="@ViewBag.Result.TIME_LEVEL" class="form-control" id="TIME_LEVEL"
-                                    readonly>
+                                       readonly>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="Active">Active</label>
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="Active">Active</label>
                                 <select class="form-control" id="Active" name="ACTIVE_FLAG">
-                                <option value="1">Yes</option>
-                                <option value="0">No</option>
-                            </select>
-                        </div>                                            
-                        <div class="col">
-                            <label for="scheduled">Scheduled</label>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="scheduled">Scheduled</label>
                                 <select class="form-control" id="Scheduled" name="SCHEDULED">
-                                <option value="Y">Yes</option>
+                                    <option value="Y">Yes</option>
                                     <option value="N">No</option>
-                            </select>
+                                </select>
+                            </div>
+
+                            <div class="col">
+                                <label for="lockDate">Lock Date</label>
+                                <input type="text" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">days after template generation date
+                            </div>
                         </div>
 
-                        <div class="col">
-                            <label for="lockDate">Lock Date</label>
-                                <input type="text" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate" >days after template generation date
-                        </div>                                            
-                    </div>
-                   
-                    <div class="form-group row" id="IsScheduled" style="display:none">
+                        <div class="form-group row" id="IsScheduled" style="display:none">
 
-                        <div class="col">
-                            <label for="scheduled">Day</label>
-                            <input type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich" >day when template generated
-                       </div>
-                        <div class="col">
-                            <label for="lockDate">Upload Reminder Date</label>
+                            <div class="col">
+                                <label for="scheduled">Month</label>
+                                <select class="form-control" id="PatternMonth" name="PATTERN_MONTH">
+                                    <option selected>Select</option>
+                                    @foreach (var f in ViewBag.Months)
+                                    {
+                                        <option value="@f.Value">@f.Text</option>
+
+
+                                    }
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="scheduled">Day</label>
+                                <input type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich">day when template generated
+                            </div>
+                            <div class="col">
+                                <label for="lockDate">Upload Reminder Date</label>
                                 <input type="text" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days after template generation date
+                            </div>
+                            <div class="col">
+                                <label for="EscalationDate">Escalation  Date</label>
+                                <input type="text" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
+                            </div>
                         </div>
-                        <div class="col">
-                            <label for="EscalationDate">Escalation  Date</label>
-                                <input type="text" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation" >days after template generation date
-                        </div>
-                    </div>
-                    <h6 class="mt-5 mb-3">Add Approver Details</h6>
-                    <div class="form-group row">
-                        <div class="col">
+                        <h6 class="mt-5 mb-3">Add Approver Details</h6>
+                        <div class="form-group row">
+                            <div class="col">
                                 <label for="approverEmailID">Approver Email ID</label>
-                                <input type="text" value="@ViewBag.Result.APPROVER_NAME" class="form-control" id="approverEmailID" name="c">
+                                <input type="text" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
+                            </div>
+                            <div class="col btn-align">
+                                <button type="submit" id="getapprover" class="btn btn-primary">Get Approver Info</button>
+                            </div>
                         </div>
-                        <div class="col btn-align">
-                            <button type="submit" id="getapprover" class="btn btn-primary">Get Approver Info</button>
-                        </div>  
-                    </div>
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="approverName">Approver Name</label>
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="approverName">Approver Name</label>
                                 <input type="text" value="@ViewBag.Result.APPROVER_NAME" class="form-control" name="APPROVER_NAME" id="approverName"
-                             readonly>
-                        </div>
-                        <div class="col">
-                            <label for="approverID">Approver ID</label>
+                                       readonly>
+                            </div>
+                            <div class="col">
+                                <label for="approverID">Approver ID</label>
                                 <input type="email" value="@ViewBag.Result.APPROVER_ID" class="form-control" name="APPROVER_ID" id="approverID"
-                                 readonly>
-                        </div>                                            
+                                       readonly>
+                            </div>
+                        </div>
+                        <button class="btn btn-light mr-2">Cancel</button>
+                        <button type="submit" id="Savebutton" class="btn btn-primary">Save</button>
+
                     </div>
-                    <button class="btn btn-light mr-2">Cancel</button>
-                    <button type="submit" id="Savebutton"  class="btn btn-primary">Save</button>
-                
+                </div>
             </div>
+
         </div>
+
     </div>
-
-</div>
-
-</div>
-<input type="hidden" value="@ViewBag.Result.CONFIG_ID" name="configID" />
+    <input type="hidden" value="@ViewBag.Result.CONFIG_ID" name="configID" />
 }
 
 <script type="text/javascript">
 
-    $(document).ready(function () {   
-            $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');    
+    $(document).ready(function () {
+        $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');
         $("#Scheduled").val('@ViewBag.Result.SCHEDULED');
-
+        $("#PatternMonth").val('@ViewBag.Result.PATTERN_MONTH');
+        if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "YEARLY") {
+            $("#PatternMonth").show();
+        }
+        if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "HALF_YEARLY") {
+            $("#PatternMonth").show();
+        }
+       
         if ($("#Scheduled").val() == "Y") {
-        $("#IsScheduled").show();
-    } else {
-        $("#IsScheduled").hide();
-    }
+            $("#IsScheduled").show();
+        } else {
+            $("#IsScheduled").hide();
+        }
+
         $("#Scheduled").change(function () {
             var Scheduled = $(this).val();
-           if (Scheduled=="Y")
-           {
+            if (Scheduled == "Y") {
                 $("#IsScheduled").show();
-           }
-            else 
-            {
+            }
+            else {
                 $("#IsScheduled").hide();
             }
         });
@@ -142,6 +160,6 @@
             });
         });
     });
-    
+
 
 </script>
