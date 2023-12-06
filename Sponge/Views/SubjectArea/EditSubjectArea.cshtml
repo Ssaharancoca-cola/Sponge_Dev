@@ -1,0 +1,70 @@
+﻿@model Sponge.ViewModel.SubjectArea
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <form action="@Url.Action("UpdateSubjectArea", "SubjectArea", new {id = Model.SpgSubjectArea.SUBJECTAREA_ID, activeFlag = Model.SpgSubjectArea.ACTIVE_FLAG})" method="post">
+                    <div class="form-group row">
+                        <div class="col-sm-4">
+                        <label>Sub Function Name</label>
+                        <input type="text" class="form-control" value="@Model.SpgSubfunction.SUBFUNCTION_NAME" readonly/>
+                        </div>
+                    
+                        <div class="col-sm-4">
+                        <label>SubjectArea Name</label>
+                        <input type="text" class="form-control" value="@Model.SpgSubjectArea.SUBJECTAREA_NAME" readonly/>
+                        </div>                  
+                    
+                        <div class="col-sm-4">
+                        <label>Reporting Period</label>
+                        <input type="text" class="form-control" value="@Model.SpgSubjectArea.REPORTING_PERIOD" readonly/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-4">
+                        <label>Frequency</label>
+                        <input type="text" class="form-control" value="@Model.SpgSubjectArea.FREQUENCY" readonly/>
+                        </div>
+                   
+                        <div class="col-sm-4">
+                        <label>ForTime</label>
+                        <input type="text" class="form-control" value="@Model.SpgSubjectArea.TIME_LEVEL" readonly/>
+                        </div>
+                    
+                        <div class="col-sm-4">
+                        <label>Version</label>
+                        <input type="text" class="form-control" value="@Model.SpgSubjectArea.VERSION" readonly/>
+                        </div>
+                    </div>
+                    @if (@Model.SpgSubjectArea.VERSION == "Y")
+                    {
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                            <label>OnTime</label>
+                            <input type="text" class="form-control" value="@Model.SpgSubjectArea.ONTIMELEVEL" readonly />
+                            </div>
+                        </div>
+                    }                    
+
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                            <label for="Active">Active</label>
+                            <select class="form-control" id="Active" name="ACTIVE_FLAG">
+                                <option selected>Select</option>
+                                <option value="@Model.SpgSubjectArea.ACTIVE_FLAG">Active</option>
+                                <option value="@Model.SpgSubjectArea.ACTIVE_FLAG">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
