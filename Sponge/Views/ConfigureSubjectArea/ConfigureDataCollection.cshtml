@@ -3,6 +3,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
     TempData.Keep();
+    var selectedDataCollection = ViewBag.SelectedDataCollection as List<DAL.Models.SPG_SUBJECT_DATACOLLECTION>;
+
 }
 @using (Html.BeginForm("SaveDataCollection", "ConfigureSubjectArea",Model, FormMethod.Post))
 {
@@ -24,6 +26,31 @@
                             </tr>
                         </thead>
                         <tbody>
+                                @foreach (var master in selectedDataCollection)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control prepopulated" id="displayName" name="data[0].DISPLAY_NAME" value="@master.DISPLAY_NAME" readonly>
+                                        </td>
+                                        <td>
+                                            <select class="form-control fieldName prepopulated" id="fieldName" name="data[0].FIELD_NAME">
+                                                <option selected>@master.FIELD_NAME</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control prepopulated" id="IsLookup" name="data[0].IS_LOOKUP" value="@master.IS_LOOKUP" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control prepopulated" id="LookUpType" name="data[0].LOOKUP_TYPE" value="@master.LOOKUP_TYPE" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="@master.DATA_TYPE" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control prepopulated" id="Uom" name="data[0].UOM" value="@master.UOM" readonly>
+                                        </td>
+                                    </tr>
+                                }
                             <tr>
                                 <td>
                                         <input type="text" class="form-control displayName" name="data[0].DisplayName">
@@ -157,6 +184,9 @@
             } else {
                 lookupTypeField.prop('disabled', true);
             }
+        });
+        $('#saveData').click(function () {
+            $('.prepopulated').prop('disabled', true);
         });
     });
 

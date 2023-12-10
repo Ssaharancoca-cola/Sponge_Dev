@@ -3,9 +3,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
     TempData.Keep();
+    var selectedMasters = ViewBag.SelectedMaster as List<DAL.Models.SPG_SUBJECT_MASTER>;
 }
 @using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea",Model, FormMethod.Post))
 {
+
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
@@ -20,7 +22,26 @@
                                 <th>Display Name</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody>                               
+                            @foreach (var master in selectedMasters)
+                            {
+                            <tr>
+                                <td>
+                                            <select class="form-control master prepopulated" name="data[0].Master">
+                                        <option selected>@master.MASTER_NAME</option>
+                                    </select>
+                                </td>
+                                <td>
+                                            <select class="form-control fieldName prepopulated" id="fieldName" name="data[0].FieldName">
+                                        <option selected>@master.FIELD_NAME</option>
+                                    </select>
+                                </td>
+                                <td>
+                                            <input type="text" class="form-control prepopulated" id="displayName" name="data[0].DisplayName" value="@master.DISPLAY_NAME" readonly>
+                                </td>
+                            </tr>
+                            }
+                           
                             <tr>
                                 <td>
                                     <select class="form-control master" name="data[0].Master">
@@ -55,7 +76,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var rowIndex = 1;
-
+        
         $(document).on('change', '.master', function () {
             if ($(this).val() !== "Select Master") {
                 $('#addRow').prop('disabled', false);
@@ -98,6 +119,9 @@
 
         // Attach the handler to the all dropdowns
         $(document).on('change', 'select.master', dropdownChangeHandler);
+        $('#nextButton').click(function () {
+            $('.prepopulated').prop('disabled', true);
+        });
     });
    
 </script>

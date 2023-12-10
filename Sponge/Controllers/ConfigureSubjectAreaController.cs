@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
@@ -99,6 +100,18 @@ namespace Sponge.Controllers
                 }
 
             }
+            List<SPG_SUBJECT_MASTER> selectedMasters = new();
+            foreach (var Master in dimensions)
+            {
+                var selectedMaster = sPONGE_Context.SPG_SUBJECT_MASTER
+                    .Where(x => x.DIMENSION_TABLE == Master.Key)
+                    .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME= o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
+                        .Distinct().ToList();
+                selectedMasters.AddRange(selectedMaster);
+            }
+            ViewBag.SelectedMaster = selectedMasters.ToList();
+
+
             ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
 
             return View("Views\\ConfigureSubjectArea\\ConfigureMasters.cshtml");
@@ -148,8 +161,19 @@ namespace Sponge.Controllers
                     MASTER_NAME = master.Master
                 }));
                 sPONGE_Context.SPG_SUBJECT_MASTER.AddRange(resultData);
+                sPONGE_Context.SaveChanges();
             }
-            sPONGE_Context.SaveChanges();
+
+            List<SPG_SUBJECT_DATACOLLECTION> selectedDataCollection = new();
+           
+            var selectedMaster = sPONGE_Context.SPG_SUBJECT_DATACOLLECTION
+                .Where(x => x.SUBJECTAREA_ID == selectedSubjectArea)
+                .Select(o => new SPG_SUBJECT_DATACOLLECTION { DISPLAY_NAME = o.DISPLAY_NAME, FIELD_NAME = o.FIELD_NAME, IS_LOOKUP = o.IS_LOOKUP,
+                LOOKUP_TYPE = o.LOOKUP_TYPE, DATA_TYPE = o.DATA_TYPE, UOM = o.UOM})
+                    .Distinct().ToList();
+            selectedDataCollection.AddRange(selectedMaster);
+            
+            ViewBag.SelectedDataCollection = selectedDataCollection.ToList();
 
             return View("Views\\ConfigureSubjectArea\\ConfigureDataCollection.cshtml");
         }
