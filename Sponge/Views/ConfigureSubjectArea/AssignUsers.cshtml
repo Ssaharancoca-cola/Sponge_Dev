@@ -1,6 +1,7 @@
 ﻿@model Sponge.Models.SaveUsers
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var SelectedUser = ViewBag.SelectedUser;
 }
 @using (Html.BeginForm("SaveUsersConfiguration", "ConfigureSubjectArea", FormMethod.Post))
 {

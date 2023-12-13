@@ -1,23 +1,32 @@
-﻿<div class="row">
+﻿@model IEnumerable<DAL.Models.SPG_SUBFUNCTION>
+@using (Html.BeginForm("GetSearchData", "SearchTemplate", Model, FormMethod.Post))
+{
+<div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <p class="card-title">Search Template</p>
                 <form class="forms-sample">
                     <div class="form-group row ">
-                       
+                        <div class="col">
+                            <label for="subFunction">SubFunction</label>
+                            <select class="form-control" id="subFunction">
+                                @foreach (var subfunction in Model)
+                                {
+                                    <option value="@subfunction.SUBFUNCTION_ID">@subfunction.SUBFUNCTION_NAME</option>
+                                }
+                            </select>
+                        </div>
                         <div class="col">
                             <label for="subjectArea">Subject Area</label>
-                            <select class="form-control">
-                                <option value="0">Select</option>
-                                <option value="1">Subject Area</option>
+                            <select class="form-control" id="subjectArea">
+                                <option value="0">Select</option>                                
                             </select>
                         </div>
                         <div class="col">
                             <label for="assignToUser">Assign To User</label>
-                            <select class="form-control">
+                            <select class="form-control" id="assignToUser">
                                 <option value="0">Select</option>
-                                <option value="1">Assign To User</option>
                             </select>
                         </div>
                     </div>
@@ -36,21 +45,23 @@
                         </div>
                         <div class="col">
                             <label for="active">Active</label>
-                            <select class="form-control">
-                                <option value="0">Select</option>
+                            <select class="form-control" id="active">
                                 <option value="1">Active</option>
+                                <option value="0">InActive</option>
                             </select>
                         </div>
                     </div>
                     <button class="btn btn-light mr-2">Cancel</button>
-                    <button type="submit" class="btn btn-primary ">Search</button>
+                    <button type="button" class="btn btn-primary" id="searchButton">Search</button>
                 </form>
             </div>
         </div>
     </div>
 
 </div>
-<div class="row">
+}
+
+<div class="row" id="resultsGrid" style="display: none;">
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
             <div class="card-body">
@@ -97,12 +108,95 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script>
-    new DataTable('#example', {
-        order: [[3, 'desc']]
-    });
-        //Initialize the Multiselect Dropdown:
 
-</script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="~/assists/js/template.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#subFunction').change(function () {
+            var subFunctionId = $(this).val();
+
+            $.ajax({
+                url: '@Url.Action("GetSubjectAreas", "SearchTemplate")',
+                type: 'GET',
+                data: { subFunctionId: subFunctionId },
+                success: function (data) {                    
+                    var subjectAreaDropdown = $('#subjectArea');
+                    subjectAreaDropdown.empty();
+                    subjectAreaDropdown.append($('<option>').text("Select").attr('value', '0'));
+
+                    $.each(data, function (i, subjectArea) {
+                        subjectAreaDropdown.append($('<option>').text(subjectArea.subjectareA_NAME
+                        ).attr('value', subjectArea.subjectareA_ID
+                        ));
+                    });
+                }
+            });
+        });
+        $('#subjectArea').change(function () {
+            var subjectAreaId = $(this).val();
+
+            $.ajax({
+                url: '@Url.Action("GetAssignedUsers", "SearchTemplate")',
+                type: 'GET',
+                data: { subjectAreaId: subjectAreaId },
+                success: function (data) {
+                    debugger;
+                    var userDropdown = $('#assignToUser');
+                    userDropdown.empty();
+                    userDropdown.append($('<option>').text("Select").attr('value', '0'));
+
+                    $.each(data, function (i, userlist) {
+                        userDropdown.append($('<option>').text(userlist.name).attr('value', userlist.useR_ID));
+                    });
+                }
+            });
+        });
+        $(document).ready(function () {
+            var dataTable = $('#example').DataTable({ order: [[3, 'desc']] });
+
+            $('#searchButton').click(function () {
+                var subFunctionId = $('#subFunction').val();
+                var subjectAreaId = $('#subjectArea').val();
+                var assignToUser = $('#assignToUser').val();
+                var dateFrom = $('#dateFrom').val();
+                var dateTo = $('#dateTo').val();
+                var active = $('#active').val();
+
+                // AJAX request
+                $.ajax({
+                    url: '@Url.Action("GetSearchData", "SearchTemplate")',
+                    type: 'POST',
+                    data: {
+                        subFunctionId: subFunctionId,
+                        subjectAreaId: subjectAreaId,
+                        assignToUser: assignToUser,
+                        dateFrom: dateFrom,
+                        dateTo: dateTo,
+                        active: active,
+                    },
+                    success: function (data) {
+                        // clear previous data
+                        dataTable.clear().draw();
+
+                        // add new data
+                        $.each(data, function (i, row) {
+                            dataTable.row.add([
+                                row.SubjectArea,
+                                row.EffectiveDate,
+                                row.AssignedUser,
+                                row.Active,
+                                '<a href="' + row.ManualSendResendUrl + '">Generate Template</a>',
+                            ]).draw();
+                        });
+                        $('#resultsGrid').show();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    });
+</script>
