@@ -217,9 +217,18 @@ namespace Sponge.Controllers
                     sPG_1.CREATED_BY = userName[1].ToString();
                 }
                 sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);
-
+                sPONGE_Ctx.SaveChanges();
             }
-            sPONGE_Ctx.SaveChanges();
+            var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIG_STRUCTURE
+                                  join user in sPONGE_Ctx.SPG_USERS on config.USER_ID equals user.USER_ID
+                                  where config.SUBJECTAREA_ID == selectedSubjectArea
+                                  select new 
+                                  {
+                                      UserId = config.USER_ID,
+                                      UserName = user.Name
+                                  }).Distinct().ToList();
+
+            ViewBag.SelectedUser = selectedUser.ToList();
 
             return View("Views\\ConfigureSubjectArea\\AssignUsers.cshtml");
         }
