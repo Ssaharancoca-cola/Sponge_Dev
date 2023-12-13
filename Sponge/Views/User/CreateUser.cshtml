@@ -210,6 +210,12 @@
         });
         $("#btnSave").click(function (event) {
             event.preventDefault();
+            debugger;
+            var userEmailId = $('#email').val();
+            if (userEmailId.trim(' ') == "") {
+                alert("Please enter User Email Id");
+                return false;
+            };
             var form = $('#Userform').serialize();
             $.ajax({
                 url: '@Url.Action("SaveUser", "User")',

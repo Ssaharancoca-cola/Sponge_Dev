@@ -89,7 +89,7 @@ namespace DAL
                         cmd.CommandText = selectCommand;
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        cmd.Parameters.Add(new SqlParameter("@p_configID", configid));
+                        cmd.Parameters.Add(new SqlParameter("@p_config_id", configid));
                         cmd.Parameters.Add(new SqlParameter("@p_IS_PREPOPULATE", p_IS_PREPOPULATE));
 
                         try
@@ -510,7 +510,7 @@ namespace DAL
 
                     cmd.Parameters.Add(new SqlParameter("@p_ConfigID", configid));
                     cmd.Parameters.Add(new SqlParameter("@p_EffectiveToDate", p_EffectiveToDate));
-                    cmd.Parameters.Add(new SqlParameter("@documentId", documentId));
+                   
 
                     try
                     {

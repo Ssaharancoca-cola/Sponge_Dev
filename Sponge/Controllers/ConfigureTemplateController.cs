@@ -103,6 +103,7 @@ namespace Sponge.Controllers
                 configRecord.SCHEDULED = data.SCHEDULED;
                 configRecord.LOCK_DATE = data.LOCK_DATE;
                 configRecord.PATTERN = data.PATTERN;
+                configRecord.DATA_COLLECTION = "OFFLINE";
                 configRecord.PATTERN_MONTH = data.PATTERN_MONTH;
                 configRecord.REMMINDER_DATE = data.REMMINDER_DATE;
                 configRecord.ESCALATION_DATE = data.ESCALATION_DATE;
