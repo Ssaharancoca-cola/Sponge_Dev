@@ -736,10 +736,10 @@ namespace BatchJob
                                     {
 
                                         objRange.Style.Font.Bold = true;
-                                        //////objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        //////objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
-                                        //////objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        //////objRange.Style.Font.Color.SetColor(Color.Black);
+                                        ////objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                        ////objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
+                                        ////objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                        ////objRange.Style.Font.Color.SetColor(Color.Black);
                                         objRange.Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
 
                                         /*Border lines should be added*/
@@ -1067,7 +1067,7 @@ namespace BatchJob
                     mailBodyplaceHolders.Add("<LockDate>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[6]));
                     mailBodyplaceHolders.Add("<Custom>", custom.ToString());
 
-                    string DataCollectionSubject = "[iQlik Portal] - Escalation template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
+                    string DataCollectionSubject = "[Sponge] - Escalation template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
                     string mailbody = "";
                     string messageTemplatePath = "";
                     if (Convert.ToString(ds.Tables[0].Rows[i].ItemArray[7]) == "Online")

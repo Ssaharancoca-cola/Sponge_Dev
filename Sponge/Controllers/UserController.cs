@@ -33,16 +33,16 @@ namespace Sponge.Controllers
         }
        
         [ActionName("GetUserInfo")]
-        public UserInfo GetADUserInfo(string userId)
+        public UserInfo GetADUserInfo(string userEmailId)
             {
                 UserInfo userInfo = new UserInfo();
             SPONGE_Context spONGE_Context = new SPONGE_Context();
-            int userid = spONGE_Context.SPG_USERS.Where(o =>  o.USER_ID==userId ).Count();
+            int userid = spONGE_Context.SPG_USERS.Where(o =>  o.EMAIL_ID== userEmailId).Count();
             if (userid>0)
             {
-                userInfo.UserId = userId.ToString();
+                userInfo.UserEmail = userEmailId.ToString();
                 userInfo.UserName = "";
-                userInfo.UserEmail = "";
+                userInfo.UserId = "";
                 userInfo.ErrorMsg = "User already exists";
 
             }
@@ -52,12 +52,17 @@ namespace Sponge.Controllers
                 {
                     using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
                     {
-                        var user = UserPrincipal.FindByIdentity(context, userId);
+                        UserPrincipal userPrincipal = new UserPrincipal(context);
+                        userPrincipal.EmailAddress = userEmailId;
+
+                        PrincipalSearcher search = new PrincipalSearcher(userPrincipal);
+
+                        var user = (UserPrincipal)search.FindOne();
 
                         if (user != null)
                         {
                           
-                            userInfo.UserId = user.Name.ToString();
+                            userInfo.UserId = user.SamAccountName.ToString();
                             userInfo.UserName = user.DisplayName.ToString();
                             userInfo.UserEmail = user.EmailAddress.ToString();
                             userInfo.ErrorMsg = "";
