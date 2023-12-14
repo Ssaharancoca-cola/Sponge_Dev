@@ -2,23 +2,32 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Models
 {
     public partial class SPG_SUBJECTAREA
     {
+        
         public int SUBJECTAREA_ID { get; set; }
+        [Required(ErrorMessage = "This field is required")]
         public int? SUBFUNCTION_ID { get; set; }
+        [Required(ErrorMessage = "This field is required")]
         public string SUBJECTAREA_NAME { get; set; }
         public string SUBJECTAREA_TABLE { get; set; }
+        [Required(ErrorMessage = "This field is required")]
         public string VERSION { get; set; }
+        [Required(ErrorMessage = "This field is required")]
         public string ACTIVE_FLAG { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime? CREATED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public DateTime? MODIFIED_DATE { get; set; }
+        [Required(ErrorMessage ="This field is required")]
         public string REPORTING_PERIOD { get; set; }
+        [Required(ErrorMessage = "This field is required")]
         public string TIME_LEVEL { get; set; }
+        [Required(ErrorMessage = "This field is required")]
         public string FREQUENCY { get; set; }
         public string PERIOD { get; set; }
         public string ONTIMELEVEL { get; set; }

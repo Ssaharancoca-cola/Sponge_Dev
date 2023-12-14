@@ -1,8 +1,9 @@
-﻿@model DAL.Models.SPG_SUBFUNCTION
+﻿@model DAL.Models.SPG_SUBFUNCTION;
 @{
+    ViewData["Title"] = "EditFunction";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("SaveFunction", "Function",Model, FormMethod.Post))
+@using (Html.BeginForm("EditFunction", "Function", Model, FormMethod.Post))
 {
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
@@ -14,17 +15,11 @@
 
                             <div class="col">
                                 <label for="Country">Country</label>
-                                <select asp-for="COUNTRY_NAME" class="form-control" name="COUNTRY_NAME" id="Country">
-                                    <option selected disabled>Select a Country</option>
-                                    @foreach (var country in ViewBag.Countries)
-                                    {
-                                        <option value="@country">@country</option>
-                                    }
-                                </select>
+                                <input class="form-control" disabled asp-for="COUNTRY_NAME" value="@Model.COUNTRY_NAME">                               
                             </div>
                             <div class="col">
                                 <label for="FunctionName">Function Name</label>
-                                <input type="text" class="form-control" id="functionName"
+                                <input disabled type="text" class="form-control" id="functionName"
                                        name="FUNCTION_NAME" value="@Model?.FUNCTION_NAME"
                                        placeholder="Function Name" maxlength="30" onkeydown="return /[a-zA-Z]/i.test(event.key)">
                                 @* @Html.ValidationMessageFor(model => model.FUNCTION_NAME) *@
@@ -37,9 +32,9 @@
                                 {
 
 
-                                @Html.HiddenFor(m => m.SUBFUNCTION_ID)
+                                    @Html.HiddenFor(m => m.SUBFUNCTION_ID)
                                 }
-                                <input type="text" class="form-control" id="subFunctionName"
+                                <input disabled type="text" class="form-control" id="subFunctionName"
                                        name="SUBFUNCTION_NAME" value="@Model?.SUBFUNCTION_NAME"
                                        placeholder="Sub function name" onkeydown="return /[a-zA-Z]/i.test(event.key)">
                                 @* @Html.ValidationMessageFor(model => model.SUBFUNCTION_NAME) *@
@@ -52,7 +47,7 @@
                                     <label class="form-check-label">
                                         <input type="checkbox"
                                                id="activeFlag" name="ACTIVE_FLAG" class="form-check-input"
-                                               @* checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)" *@ checked >
+                                        checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)" >
                                     </label>
                                 </div>
                             </div>
@@ -63,14 +58,9 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("Function", "Function")'">Cancel</button>
-                        @* @if(Model != null)
-                        {
+                      
                         <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
-                        }
-                        else
-                        { *@
-                        <button type="submit" name="Command" value="Save" class="btn btn-primary">Save</button>
-                        @* } *@
+                    
                     </div>
                 </div>
             </div>
@@ -79,30 +69,4 @@
     </div>
 }
 
-@* <script>
-    $('#formid').on('submit', submitFormWithAjax);
 
-    function submitFormWithAjax(event) {
-        
-        let commandValue = $(document.activeElement).attr("value");
-        // Declare an object to store the form data
-        let form = {};
-        // Loop through form elements and collect the data
-        $('#formid input, #formid select').each(function () {
-            form[$(this).attr('name')] = $(this).val();
-        });
-        form['Command'] = commandValue;
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("SaveFunction", "Function")',
-            data: form,
-            success: function (data) {
-                // Update your DOM based on the received data.
-                onSuccess(data);
-            },
-            error: function (err) {
-                console.error("Error", err);
-            }
-        });
-    }
-</script> *@

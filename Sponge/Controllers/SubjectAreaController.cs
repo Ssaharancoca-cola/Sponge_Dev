@@ -70,7 +70,7 @@ namespace Sponge.Controllers
             }
            return RedirectToAction("ManageSubjectArea");
         }
-        public IActionResult SaveSubjectArea(SPG_SUBJECTAREA data)
+        public IActionResult SaveSubjectArea(SPG_SUBJECTAREA data,SubjectArea subjectArea)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
 
@@ -78,6 +78,12 @@ namespace Sponge.Controllers
             {
                 try
                 {
+                    SPONGE_Context spONGE_Context = new SPONGE_Context();
+                    var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
+                    ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
+                    List<SelectListItem> timelvl = new List<SelectListItem>();
+                    SelectListItem item = new SelectListItem();
+                    ViewBag.Timelevel = timelvl;
                     if (ModelState.IsValid)
                     {
                         SPONGE_Context sPONGE_Context = new SPONGE_Context();
@@ -99,8 +105,8 @@ namespace Sponge.Controllers
                                 data.VERSION = "N";
                                 data.ONTIMELEVEL = "0";
                             }
-                           // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
-                            string PERIOD =  sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY  && s.TIME_LEVEL == data.TIME_LEVEL).Select(s=>s.PERIOD).FirstOrDefault().ToString();
+                            // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
+                            string PERIOD = sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY && s.TIME_LEVEL == data.TIME_LEVEL).Select(s => s.PERIOD).FirstOrDefault().ToString();
 
                             data.SUBJECTAREA_TABLE = "SPG_" + data.SUBJECTAREA_NAME;
                             data.PERIOD = PERIOD;
@@ -115,6 +121,10 @@ namespace Sponge.Controllers
                         {
                             return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
                         }
+                    }
+                    else
+                    {
+                        return View("CreateSubjectArea", subjectArea);
                     }
 
                 }

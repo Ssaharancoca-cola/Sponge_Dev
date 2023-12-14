@@ -13,6 +13,7 @@ using System.Data;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Security.Policy;
+using System.Text.RegularExpressions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -31,107 +32,151 @@ namespace Sponge.Controllers
             ViewBag.SubFunction = new SelectList(subFnList.ToList(), "SUBFUNCTION_ID", "SUBFUNCTION_NAME");
             return View();
         }
-       
+        public ActionResult GetEmailSuggestions(string email)
+        {
+            List<string> matchingEmails = new List<string>();
+
+            using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
+            {
+                UserPrincipal user = new UserPrincipal(context);
+                user.EmailAddress = email + "*";
+
+                using (var searcher = new PrincipalSearcher(user))
+                {
+                    foreach (var result in searcher.FindAll())
+                    {
+                        UserPrincipal foundUser = result as UserPrincipal;
+                        if (foundUser != null)
+                        {
+                            matchingEmails.Add(foundUser.EmailAddress);
+                        }
+                    }
+                }
+            }
+
+            return Json(matchingEmails);
+
+        }
+
         [ActionName("GetUserInfo")]
         public UserInfo GetADUserInfo(string userEmailId)
-            {
-                UserInfo userInfo = new UserInfo();
-            SPONGE_Context spONGE_Context = new SPONGE_Context();
-            int userid = spONGE_Context.SPG_USERS.Where(o =>  o.EMAIL_ID== userEmailId).Count();
-            if (userid>0)
+        {
+            UserInfo userInfo = new UserInfo();
+            string pattern = @"([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
+            Regex regex = new Regex(pattern);
+            if (!regex.IsMatch(userEmailId))
             {
                 userInfo.UserEmail = userEmailId.ToString();
                 userInfo.UserName = "";
                 userInfo.UserId = "";
-                userInfo.ErrorMsg = "User already exists";
-
+                userInfo.ErrorMsg = "Please enter a valid email address";
+                return userInfo;
             }
             else
             {
-                try
+
+                SPONGE_Context spONGE_Context = new SPONGE_Context();
+                int userid = spONGE_Context.SPG_USERS.Where(o => o.EMAIL_ID == userEmailId).Count();
+                if (userid > 0)
                 {
-                    using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
+                    userInfo.UserEmail = userEmailId.ToString();
+                    userInfo.UserName = "";
+                    userInfo.UserId = "";
+                    userInfo.ErrorMsg = "User already exists";
+
+                }
+                else
+                {
+                    try
                     {
-                        UserPrincipal userPrincipal = new UserPrincipal(context);
-                        userPrincipal.EmailAddress = userEmailId;
 
-                        PrincipalSearcher search = new PrincipalSearcher(userPrincipal);
-
-                        var user = (UserPrincipal)search.FindOne();
-
-                        if (user != null)
+                        using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
                         {
-                          
-                            userInfo.UserId = user.SamAccountName.ToString();
-                            userInfo.UserName = user.DisplayName.ToString();
-                            userInfo.UserEmail = user.EmailAddress.ToString();
-                            userInfo.ErrorMsg = "";
+                            UserPrincipal userPrincipal = new UserPrincipal(context);
+                            userPrincipal.EmailAddress = userEmailId;
+
+                            PrincipalSearcher search = new PrincipalSearcher(userPrincipal);
+
+                            var user = (UserPrincipal)search.FindOne();
+
+                            if (user != null)
+                            {
+
+                                userInfo.UserId = user.SamAccountName.ToString();
+                                userInfo.UserName = user.DisplayName.ToString();
+                                userInfo.UserEmail = user.EmailAddress.ToString();
+                                userInfo.ErrorMsg = "";
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                    }
                 }
-                catch (Exception ex)
-                {
-                }
-            }
                 return userInfo;
             }
+
+        } 
         [HttpPost]
-        public IActionResult SaveUser(IFormCollection data)
+        public JsonResult SaveUser(IFormCollection data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             try
             {
-                SPONGE_Context sPONGE_Context = new SPONGE_Context();
-
-                SPG_USERS sPG_ = new SPG_USERS();
-                {
-                    sPG_.USER_ID = data["userId"];
-                    sPG_.Name = data["userName"];
-                    sPG_.EMAIL_ID = data["email"];
-                    sPG_.ACTIVE_FLAG = data["status"];
-                    sPG_.CREATED_DATE = DateTime.Now;
-                    sPG_.CREATED_BY = userName[1].ToString();
-                }
-                sPONGE_Context.SPG_USERS.Add(sPG_);                
-
-                string subFunctions = data["subFunction"];
-                string[] subFunctionArr = subFunctions.Split(',');
-
-                string Role = data["Role"];
-                string[] RoleArr = Role.Split(',');
                 
-                foreach (string role in RoleArr)
-                {
-                   
-                    foreach (string subFunction in subFunctionArr)
+                    SPONGE_Context sPONGE_Context = new SPONGE_Context();
+
+                    SPG_USERS sPG_ = new SPG_USERS();
                     {
-                        int subFunctionId = 0;
-                        Int32.TryParse(subFunction, out subFunctionId);
-                        int roleid = 0;
-                        Int32.TryParse(role, out roleid);
-                        int userid = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() &&  o.SUB_FUNCTION_ID==subFunctionId).Count();
-                      if(userid==0)
-                        { 
-                        SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
-                            {
-                                sPG_1.ACTIVE_FLAG = data["status"];
-                                sPG_1.USER_ID = data["userId"];
-                              
-                                sPG_1.SUB_FUNCTION_ID = subFunctionId;
-                               
-                                sPG_1.ROLE_ID = roleid;
-
-                            }
-                            sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
-                        }
-                        
+                        sPG_.USER_ID = data["userId"];
+                        sPG_.Name = data["userName"];
+                        sPG_.EMAIL_ID = data["email"];
+                        sPG_.ACTIVE_FLAG = data["status"];
+                        sPG_.CREATED_DATE = DateTime.Now;
+                        sPG_.CREATED_BY = userName[1].ToString();
                     }
-                    
-                }
-                sPONGE_Context.SaveChanges();
-            } catch (Exception ex) { }
+                    sPONGE_Context.SPG_USERS.Add(sPG_);
 
-            return View();
+                    string subFunctions = data["subFunction"];
+                    string[] subFunctionArr = subFunctions.Split(',');
+
+                    string Role = data["Role"];
+                    string[] RoleArr = Role.Split(',');
+
+                    foreach (string role in RoleArr)
+                    {
+
+                        foreach (string subFunction in subFunctionArr)
+                        {
+                            int subFunctionId = 0;
+                            Int32.TryParse(subFunction, out subFunctionId);
+                            int roleid = 0;
+                            Int32.TryParse(role, out roleid);
+                            int userid = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() && o.SUB_FUNCTION_ID == subFunctionId).Count();
+                            if (userid == 0)
+                            {
+                                SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
+                                {
+                                    sPG_1.ACTIVE_FLAG = data["status"];
+                                    sPG_1.USER_ID = data["userId"];
+
+                                    sPG_1.SUB_FUNCTION_ID = subFunctionId;
+
+                                    sPG_1.ROLE_ID = roleid;
+
+                                }
+                                sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
+                            }
+
+                        }
+
+                    }
+                    sPONGE_Context.SaveChanges();
+                return Json("User added successfully");
+            } 
+            catch (Exception ex) { }
+
+            return Json("Some error occured");
         }
         [HttpPost]
         public IActionResult UpdateUser(IFormCollection data)

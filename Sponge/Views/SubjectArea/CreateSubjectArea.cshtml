@@ -14,32 +14,35 @@
                         <div class="form-group row ">
                             <div class="col">
                                 <label for="SubFunction">Sub Function</label>
-                                <select class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
+                                <select asp-for="SpgSubjectArea.SUBFUNCTION_ID" class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
                                     <option selected>Select</option>
                                     @foreach (var f in ViewBag.SubFunction)
                                     {
                                         <option value="@f.Text">@f.Value</option>
                                     }
                                 </select>
+                                <span asp-validation-for="SpgSubjectArea.SUBFUNCTION_ID" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col">
-                                <label for="SubjectAreaName">Subject Area Name</label>
-                                <input type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-zA-Z]/i.test(event.key)" />
+                                <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME" for="SubjectAreaName">Subject Area Name</label>
+                                <input asp-for="SpgSubjectArea.SUBJECTAREA_NAME" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-zA-Z]/i.test(event.key)" />
+                                <span asp-validation-for="@Model.SpgSubjectArea.SUBJECTAREA_NAME" class="text-danger" style="font-size:10px"></span>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col">
-                                <label for="ReportPeriod">Report Period</label>
-                                <select class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
+                                <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period</label>
+                                <select asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
                                     <option selected>Select</option>
                                     <option value="CURRENT">Current</option>
                                     <option value="NEXT">Next</option>
                                     <option value="PREVIOUS">Previous</option>
                                 </select>
+                                <span asp-validation-for="@Model.SpgSubjectArea.REPORTING_PERIOD" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
-                                <label for="Frequency">Frequency</label>
-                                <select class="form-control" id="Frequency" name="Frequency">
+                                <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency</label>
+                                <select asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
                                     <option selected>Select</option>                                    
                                     <option value="YEARLY">Yearly</option>
                                     <option value="HALF_YEARLY">Half Yearly</option>
@@ -48,6 +51,7 @@
                                     <option value="WEEKLY">Weekly</option>
                                     <option value="DAILY">Daily</option>
                                 </select>
+                                <span asp-validation-for="SpgSubjectArea.FREQUENCY" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
                                 <label for="ForTime">For Time</label>
@@ -61,24 +65,27 @@
                                         @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
                                     }
                                 </select>
+                                <span asp-validation-for="SpgSubjectArea.TIME_LEVEL" class="text-danger" style="font-size:10px"></span>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-4">
-                                <label for="Active">Active</label>
-                                <select class="form-control" id="Active" name="ACTIVE_FLAG">
+                                <label asp-for="SpgSubjectArea.ACTIVE_FLAG" for="Active">Active</label>
+                                <select asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
                                     <option selected>Select</option>
                                     <option value="Y">Active</option>
                                     <option value="N">Inactive</option>
                                 </select>
+                                <span asp-validation-for="SpgSubjectArea.ACTIVE_FLAG" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
-                                <label for="Version">Version</label>
+                                <label asp-for="SpgSubjectArea.VERSION" for="Version">Version</label>
                                 <div class="form-check form-check-flat form-check-primary">
                                     <label class="form-check-label">
-                                        <input type="checkbox" id="Version" name="Version" class="form-check-input">
+                                        <input asp-for="SpgSubjectArea.VERSION" type="checkbox" id="Version" name="Version" class="form-check-input">
                                     </label>
                                 </div>
+                                <span asp-validation-for="SpgSubjectArea.VERSION" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4" id="OnTimeDiv" style="display:none;">
                                 <label for="OnTime">On Time</label>

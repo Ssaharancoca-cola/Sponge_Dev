@@ -2,6 +2,8 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace DAL.Models
 {
@@ -9,7 +11,11 @@ namespace DAL.Models
     {
         public int SUBFUNCTION_ID { get; set; }
         public string COUNTRY_NAME { get; set; }
+        [Required(ErrorMessage = "Function Name field is required.")]
+        [DisplayName("Function Name")]
         public string FUNCTION_NAME { get; set; }
+        [Required(ErrorMessage = "Subfunction Name field is required.")]
+        [DisplayName("Subfunction Name")]
         public string SUBFUNCTION_NAME { get; set; }
         public string ACTIVE_FLAG { get; set; }
         public DateTime? CREATED_DATE { get; set; }
