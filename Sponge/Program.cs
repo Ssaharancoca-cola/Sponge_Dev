@@ -2,10 +2,13 @@ using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
+using Sponge;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {

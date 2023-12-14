@@ -157,7 +157,7 @@ namespace Sponge.Controllers
                     SUBJECTAREA_ID = selectedSubjectArea,
                     IS_KEY = "N",
                     IS_SHOW = "Y",
-                    DISPLAY_NAME = master.DisplayName,
+                    DISPLAY_NAME = master.DisplayName + " Code",
                     MASTER_NAME = master.Master
                 }));
                 sPONGE_Context.SPG_SUBJECT_MASTER.AddRange(resultData);
@@ -217,9 +217,18 @@ namespace Sponge.Controllers
                     sPG_1.CREATED_BY = userName[1].ToString();
                 }
                 sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);
-
+                sPONGE_Ctx.SaveChanges();
             }
-            sPONGE_Ctx.SaveChanges();
+            var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIG_STRUCTURE
+                                  join user in sPONGE_Ctx.SPG_USERS on config.USER_ID equals user.USER_ID
+                                  where config.SUBJECTAREA_ID == selectedSubjectArea
+                                  select new 
+                                  {
+                                      UserId = config.USER_ID,
+                                      UserName = user.Name
+                                  }).Distinct().ToList();
+
+            ViewBag.SelectedUser = selectedUser.ToList();
 
             return View("Views\\ConfigureSubjectArea\\AssignUsers.cshtml");
         }
@@ -493,13 +502,7 @@ namespace Sponge.Controllers
                                 o.DIMENSION_TABLE = item.DimensionTable;
                                 o.CONFIG_ID = configId;
                                 string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Master").Select(x => x.DATA_TYPE).FirstOrDefault();
-                                var DataTypeOutput = new SqlParameter()
-                                {
-                                    ParameterName = "@outputParameter",
-                                    SqlDbType = System.Data.SqlDbType.VarChar,
-                                    Size = 50,
-                                    Direction = System.Data.ParameterDirection.Output
-                                };
+                               
                                 if (DataType == null)
                                 {
 
@@ -528,7 +531,7 @@ namespace Sponge.Controllers
 
                                 }
 
-                                o.IS_SHOW = (Convert.ToString(item.IsShow) == "True") ? "Y" : "N";
+                                o.IS_SHOW = (Convert.ToString(item.IsShow));
                                 objModel.SaveChanges();
 
                             }
