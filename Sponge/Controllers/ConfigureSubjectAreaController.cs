@@ -104,7 +104,7 @@ namespace Sponge.Controllers
             foreach (var Master in dimensions)
             {
                 var selectedMaster = sPONGE_Context.SPG_SUBJECT_MASTER
-                    .Where(x => x.DIMENSION_TABLE == Master.Key)
+                    .Where(x => x.DIMENSION_TABLE == Master.Key && x.SUBJECTAREA_ID == selectedSubjectArea && x.IS_SHOW =="Y")
                     .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME= o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
                         .Distinct().ToList();
                 selectedMasters.AddRange(selectedMaster);
@@ -147,7 +147,7 @@ namespace Sponge.Controllers
                     SUBJECTAREA_ID = selectedSubjectArea,
                     IS_KEY = "Y",
                     IS_SHOW = "N",
-                    DISPLAY_NAME = master.DisplayName,
+                    DISPLAY_NAME = master.DisplayName +" Code",
                     MASTER_NAME = master.Master
                 }));
                 resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
@@ -157,7 +157,7 @@ namespace Sponge.Controllers
                     SUBJECTAREA_ID = selectedSubjectArea,
                     IS_KEY = "N",
                     IS_SHOW = "Y",
-                    DISPLAY_NAME = master.DisplayName + " Code",
+                    DISPLAY_NAME = master.DisplayName, 
                     MASTER_NAME = master.Master
                 }));
                 sPONGE_Context.SPG_SUBJECT_MASTER.AddRange(resultData);
