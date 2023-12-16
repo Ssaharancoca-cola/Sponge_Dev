@@ -1,0 +1,494 @@
+﻿@model Sponge.ViewModel.ManualSendResendExcelModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+@using (Html.BeginForm("SaveManualSendResendExcel", "ManualSendResend", Model, FormMethod.Post))
+{
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Manually Send/Resend Excel</p>
+                <div class="forms-sample">
+                    <div class="form-group row ">
+                        <div class="col">
+                            <label for="subjectArea">Subject Area</label>
+                            <input type="text" class="form-control" id="subjectArea"
+                                   value="@Model.SubjectAreaName" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="assignToUser">Assign To User</label>
+                            <input type="text" class="form-control" id="assignToUser"
+                                   value="@Model.UserName" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="frequency">Frequency</label>
+                            <input type="text" class="form-control" id="frequency"
+                                   value="@Model.Frequency" readonly>
+                        </div>
+                    </div>
+                        <div class="form-group row">
+                            <div class="col">
+                                <label for="onTime">On Time</label>
+                                @Html.DropDownList("onTime",
+                            ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>,
+                            new { @class = "form-control", onchange = "OnChangeOnTime();" })
+                            </div>
+                            <div class="col">
+                                <label for="GranularTime">Granularity</label>
+                                @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control", @readonly = "readonly" })
+                                <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
+                                <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
+                                <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
+                                <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
+                            </div>
+                        </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="uploadReminderDate">Upload Reminder Date</label>
+                            <input type="date" class="form-control" id="uploadReminderDate"
+                                   placeholder="DD/MM/YYYY">
+                        </div>
+                        <div class="col">
+                            <label for="escalationAlertDate">Escalation Alert Date</label>
+                            <input type="date" class="form-control" id="escalationAlertDate"
+                                   placeholder="DD/MM/YYYY">
+                        </div>
+                        <div class="col">
+                            <label for="lockDate">Lock Date</label>
+                            <input type="date" class="form-control" id="lockDate"
+                                   placeholder="DD/MM/YYYY">
+                        </div>
+                    </div>
+                    <button class="btn btn-light mr-2" id="btnCancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+        @Html.Hidden("config_id", Model.ConfigId)
+        @Html.Hidden("subjectAreaId", Model.SubjectAreaId)
+        @Html.Hidden("version", Model.Version)
+        @Html.Hidden("SubjectAreaName", Model.SubjectAreaName)
+        @Html.Hidden("UserName", Model.UserName)
+        @Html.Hidden("frequency", Model.Frequency)
+        @Html.Hidden("hdnFrequency", Model.Frequency)
+        @Html.Hidden("hdnOnTimeText", "")
+        @Html.Hidden("hdn_lockDate", Model.LockDate)
+        @Html.Hidden("hdn_escalationAlertDate", Model.EscalationAlertDate)
+        @Html.Hidden("hdn_uploadReminderDate", Model.UploadReminderDate)
+</div>
+}
+<script>
+    $(document).ready(function () {
+        //debugger;
+        // if ($("#hdn_lockDate").val() == "" || $("#hdn_lockDate").val() == undefined || $("#hdn_lockDate").val() == null) {
+        //     $("#lockDate").datepicker({
+        //         changeMonth: true,
+        //         changeYear: true,
+        //         showButtonPanel: true,
+        //         dateFormat: 'dd/M/yy',
+        //         minDate: new Date()
+        //     });
+        // }
+        // if ($("#hdn_escalationAlertDate").val() == "" || $("#hdn_escalationAlertDate").val() == undefined || $("#hdn_escalationAlertDate").val() == null) {
+        //     $("#escalationAlertDate").datepicker({
+        //         changeMonth: true,
+        //         changeYear: true,
+        //         showButtonPanel: true,
+        //         dateFormat: 'dd/M/yy',
+        //         minDate: new Date()
+        //     });
+        // }
+
+        // if ($("#hdn_uploadReminderDate").val() == "" || $("#hdn_uploadReminderDate").val() == undefined || $("#hdn_uploadReminderDate").val() == null) {
+        //     $("#uploadReminderDate").datepicker({
+        //         changeMonth: true,
+        //         changeYear: true,
+        //         showButtonPanel: true,
+        //         dateFormat: 'dd/M/yy',
+        //         minDate: new Date()
+        //     });
+        // }
+        // if ($("#lockDate").val() == "01/01/0001") {
+        //     $("#lockDate").val('');
+        // }
+        // if ($("#lockDate").val() == "01/Jan/0001") {
+        //     $("#lockDate").val('');
+        // }
+
+        // if ($("#version").val() != "Y") {
+        //     $("#GranularTime").attr("readonly", "readonly");
+        // }
+        // else {
+        //     $("#GranularTime").removeAttr("readonly");
+        // }
+        // if ($("#uploadReminderDate").val() != "") {
+        //     $("#uploadReminderDate").attr("readonly", "readonly");
+        //     $("#uploadReminderDate").datepicker("destroy");
+        // }
+        // else {
+        //     $("#uploadReminderDate").removeAttr("readonly");
+        //     $("#uploadReminderDate").datepicker({
+        //         changeMonth: true,
+        //         changeYear: true,
+        //         showButtonPanel: true,
+        //         dateFormat: 'dd/M/yy',
+        //         minDate: new Date()
+        //     });
+        // }
+        // if ($("#escalationAlertDate").val() != "") {
+        //     $("#escalationAlertDate").attr("readonly", "readonly");
+        //     $("#escalationAlertDate").datepicker("destroy");
+        // }
+        // else {
+        //     $("#escalationAlertDate").removeAttr("readonly");
+        //     $("#escalationAlertDate").datepicker({
+        //         changeMonth: true,
+        //         changeYear: true,
+        //         showButtonPanel: true,
+        //         dateFormat: 'dd/M/yy',
+        //         minDate: new Date()
+        //     });
+        // }
+        // if ($("#lockDate").val() != "") {
+        //     $("#lockDate").attr("readonly", "readonly");
+        //     $("#lockDate").datepicker("destroy");
+        //     $("#escalationAlertDate").attr("readonly", "readonly");
+        //     $("#escalationAlertDate").datepicker("destroy");
+        //     $("#uploadReminderDate").attr("readonly", "readonly");
+        //     $("#uploadReminderDate").datepicker("destroy");
+        // }
+        // else {
+        //     $("#lockDate").removeAttr("readonly");
+        //     $("#lockDate").datepicker({
+        //         changeMonth: true,
+        //         changeYear: true,
+        //         showButtonPanel: true,
+        //         dateFormat: 'dd/M/yy',
+        //         minDate: new Date()
+        //     });
+        // }
+        var text = $("#onTime").find('option:selected').text();
+        $('#hdnOnTimeText').val(text);
+        OnChangeOnTime();       
+
+    });
+    $('#uploadReminderDate').keypress(function (e) {
+        e.preventDefault();
+    });
+    $('#escalationAlertDate').keypress(function (e) {
+        e.preventDefault();
+    });
+    $('#lockDate').keypress(function (e) {
+        e.preventDefault();
+    });
+    // $(function () {
+    //     $(".datepicker").datepicker({
+    //         changeMonth: true,
+    //         changeYear: true,
+    //         showButtonPanel: true,
+    //         dateFormat: 'dd/M/yy',
+    //         minDate: new Date()
+    //     });
+    // });
+    var FillReportingStartEndDate = function () {
+        debugger;
+        var frequency = $('#hdnFrequency').val();
+        var reportingStartDate, reportingEndDate, pattern, date;
+        pattern = $('#hdnOnTimeText').val();
+        var granularityText = $("#GranularTime option:selected").text();
+        $('#hdnGranularTime').val($("#GranularTime option:selected").val());
+        if (frequency == 'YEARLY') {
+            var obj = pattern.split('-');
+            reportingStartDate = new Date(obj[0], Common.MonthEnum.JULY, 1);
+            reportingEndDate = new Date(obj[1], Common.MonthEnum.JUNE, 30);
+
+        }
+        if (frequency == 'HALF_YEARLY') {
+            var obj = GetHalfYearlyStartEndDate(pattern);
+            reportingStartDate = obj.periodicStartDate;
+            reportingEndDate = obj.periodicEndDate;
+
+        }
+        if (frequency == 'QUARTERLY') {
+            var obj = GetQuarterlyStartEndDate(pattern);
+            reportingStartDate = obj.periodicStartDate;
+            reportingEndDate = obj.periodicEndDate;
+
+        }
+        if (frequency == 'MONTHLY') {
+            var obj = GetMonthlyStartEndDate(pattern);
+            reportingStartDate = obj.periodicStartDate;
+            reportingEndDate = obj.periodicEndDate;
+
+        }
+        if (frequency == 'WEEKLY') {
+            var obj = GetWeeklyStartEndDate(pattern);
+            reportingStartDate = obj.periodicStartDate;
+            reportingEndDate = obj.periodicEndDate;
+
+        }
+        if (frequency == 'DAILY') {
+            var obj = GetDailyStartEndDate(pattern);
+            reportingStartDate = obj.periodicStartDate;
+            reportingEndDate = obj.periodicEndDate;
+        }
+        $('#hdnPeriodFrom').val(Common.formatDate(reportingStartDate));
+        $('#hdnPeriodTo').val(Common.formatDate(reportingEndDate));
+
+    }
+    var GetMonthlyStartEndDate = function (patternValue) {
+        var arrayVal = patternValue.split('-');
+        var month = Common.MonthEnum[arrayVal[0].toUpperCase()];
+        return {
+            periodicStartDate: new Date(arrayVal[1], month, 1),
+            periodicEndDate: new Date(arrayVal[1], month + 1, 0)
+        }
+    }
+    var GetWeeklyStartEndDate = function (patterValue) {
+        var arrayVal = patterValue.split('-');
+        var month = Common.MonthEnum[arrayVal[0].toUpperCase()];
+        arrayVal = arrayVal[1].split(',');
+        var year = arrayVal[0];
+        if (arrayVal[1] == 'W1') {
+            return {
+                periodicStartDate: new Date(year, month, Common.WeekEnum.WEEK1.START_DATE),
+                periodicEndDate: new Date(year, month, Common.WeekEnum.WEEK1.END_DATE)
+            }
+        }
+        if (arrayVal[1] == 'W2') {
+            return {
+                periodicStartDate: new Date(year, month, Common.WeekEnum.WEEK2.START_DATE),
+                periodicEndDate: new Date(year, month, Common.WeekEnum.WEEK2.END_DATE)
+            }
+        }
+        if (arrayVal[1] == 'W3') {
+            return {
+                periodicStartDate: new Date(year, month, Common.WeekEnum.WEEK3.START_DATE),
+                periodicEndDate: new Date(year, month, Common.WeekEnum.WEEK3.END_DATE)
+            }
+        }
+        if (arrayVal[1] == 'W4') {
+            return {
+                periodicStartDate: new Date(year, month, Common.WeekEnum.WEEK4.START_DATE),
+                periodicEndDate: new Date(year, month + 1, 0)
+            }
+        }
+    }
+    var GetDailyStartEndDate = function (patternValue) {
+        var arrayVal = patternValue.split('-');
+        var month = Common.MonthEnum[arrayVal[0].toUpperCase()];
+        return {
+            periodicStartDate: new Date(arrayVal[2], arrayVal[1] - 1, arrayVal[0]),
+            periodicEndDate: new Date(arrayVal[2], arrayVal[1] - 1, arrayVal[0])
+        }
+    }
+    var GetHalfYearlyStartEndDate = function (patternValue) {
+        var arrayVal = patternValue.split('-');
+        Common.selectedStartYear = arrayVal[0];
+        arrayVal = arrayVal[1].split(',');
+        Common.selectedEndYear = arrayVal[0];
+        if (arrayVal[1] == 'H1') {
+            var H1 = Common.HalfYearlyEnum.H1();
+            return {
+                periodicStartDate: H1.START_DATE,
+                periodicEndDate: H1.END_DATE
+            };
+        }
+        else {
+            var H2 = Common.HalfYearlyEnum.H2();
+            return {
+                periodicStartDate: H2.START_DATE,
+                periodicEndDate: H2.END_DATE
+            };
+        }
+    }
+    var GetQuarterlyStartEndDate = function (patternValue) {
+        var arrayVal = patternValue.split('-');
+        Common.selectedStartYear = arrayVal[0];
+        arrayVal = arrayVal[1].split(',');
+        Common.selectedEndYear = arrayVal[0];
+        if (arrayVal[1] == 'Q1') {
+            var Q1 = Common.QuarterlyEnum.Q1();
+            return {
+                periodicStartDate: Q1.START_DATE,
+                periodicEndDate: Q1.END_DATE
+            };
+        }
+        else if (arrayVal[1] == 'Q2') {
+            var Q2 = Common.QuarterlyEnum.Q2();
+            return {
+                periodicStartDate: Q2.START_DATE,
+                periodicEndDate: Q2.END_DATE
+            };
+        }
+        else if (arrayVal[1] == 'Q3') {
+            var Q3 = Common.QuarterlyEnum.Q3();
+            return {
+                periodicStartDate: Q3.START_DATE,
+                periodicEndDate: Q3.END_DATE
+            };
+        }
+        else {
+            var Q4 = Common.QuarterlyEnum.Q4();
+            return {
+                periodicStartDate: Q4.START_DATE,
+                periodicEndDate: Q4.END_DATE
+            };
+        }
+    }
+    function OnChangeOnTime() {
+        debugger;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        var text = $("#onTime").find('option:selected').text();
+        var value = $("#onTime").find('option:selected').val();
+        $('#hdnOnTimeText').val(text);
+        var id = $('#config_id').val();
+        var parameter = {
+            configid: id,
+            fortime: value,
+            ontimecode: value
+        }
+        $.ajax({
+            url: '@Url.Action("LoadLockDetails", "ManualSendResend")',
+            type: 'POST',
+            data: parameter,
+            dataType: "json",
+            async: false,
+            success: function (classesData) {
+                if (classesData.Error == 1) {
+                    classesData = null;
+                }
+                //debugger;
+                // $('#uploadReminderDate').attr("value", "");
+                // $('#uploadReminderDate').val("");
+                // $('#lockDate').attr("value", "");
+                // $('#lockDate').val("");
+                // $('#escalationAlertDate').attr("value", "");
+                // $('#escalationAlertDate').val("");
+                // if (classesData == null) {
+                //     //debugger;
+                //     $("#lockDate").removeAttr("readonly");
+                //     $("#lockDate").datepicker({
+                //         changeMonth: true,
+                //         changeYear: true,
+                //         showButtonPanel: true,
+                //         dateFormat: 'dd/M/yy',
+                //         minDate: new Date()
+                //     });
+                //     $("#uploadReminderDate").removeAttr("readonly");
+                //     $("#uploadReminderDate").datepicker({
+                //         changeMonth: true,
+                //         changeYear: true,
+                //         showButtonPanel: true,
+                //         dateFormat: 'dd/M/yy',
+                //         minDate: new Date()
+                //     });
+                //     $("#escalationAlertDate").removeAttr("readonly");
+                //     $("#escalationAlertDate").datepicker({
+                //         changeMonth: true,
+                //         changeYear: true,
+                //         showButtonPanel: true,
+                //         dateFormat: 'dd/M/yy',
+                //         minDate: new Date()
+                //     });
+                // }
+                // if (classesData != null) {
+                //     //debugger;
+                //     if (classesData.UploadReminderDate != null) {
+                //         var dateString = classesData.UploadReminderDate.substr(6);
+                //         var value = new Date(parseInt(dateString));
+                //         var uploaddat = value.getDate() + "/" + monthNames[value.getMonth()] + "/" + value.getFullYear();
+                //         $('#uploadReminderDate').val(uploaddat);
+                //         if (uploaddat.length > 0) {
+                //             $('#uploadReminderDate').prop("readonly", "readonly");
+                //             $('#uploadReminderDate').datepicker("destroy");
+                //         }
+                //     }
+                // }
+                // if (classesData != null) {
+                //     //debugger;
+                //     if (classesData.LockDate != null) {
+                //         var lockvalue = classesData.LockDate.substr(6);
+                //         var lockdate = new Date(parseInt(lockvalue));
+                //         var lockdat = lockdate.getDate() + "/" + monthNames[lockdate.getMonth()] + "/" + lockdate.getFullYear();
+                //         $('#lockDate').val(lockdat);
+                //         if (lockdat.length > 0) {
+                //             $('#lockDate').prop("readonly", "readonly");
+                //             $('#lockDate').datepicker("destroy");
+                //             $('#uploadReminderDate').prop("readonly", "readonly");
+                //             $('#uploadReminderDate').datepicker("destroy");
+                //             $('#escalationAlertDate').prop("readonly", "readonly");
+                //             $('#escalationAlertDate').datepicker("destroy");
+                //         }
+                //     }
+                //     else {
+                //         $("#lockDate").removeAttr("readonly");
+                //         $("#lockDate").datepicker({
+                //             changeMonth: true,
+                //             changeYear: true,
+                //             showButtonPanel: true,
+                //             dateFormat: 'dd/M/yy',
+                //             minDate: new Date()
+                //         });
+                //         $("#uploadReminderDate").removeAttr("readonly");
+                //         $("#uploadReminderDate").datepicker({
+                //             changeMonth: true,
+                //             changeYear: true,
+                //             showButtonPanel: true,
+                //             dateFormat: 'dd/M/yy',
+                //             minDate: new Date()
+                //         });
+                //         $("#escalationAlertDate").removeAttr("readonly");
+                //         $("#escalationAlertDate").datepicker({
+                //             changeMonth: true,
+                //             changeYear: true,
+                //             showButtonPanel: true,
+                //             dateFormat: 'dd/M/yy',
+                //             minDate: new Date()
+                //         });
+                //     }
+                // }
+                // if (classesData != null) {
+                //     //debugger;
+                //     if (classesData.EsclationDate != null) {
+                //         var escvalue = classesData.EsclationDate.substr(6);
+                //         var escdate = new Date(parseInt(escvalue));
+                //         var escdat = escdate.getDate() + "/" + monthNames[escdate.getMonth()] + "/" + escdate.getFullYear();
+                //         $('#escalationAlertDate').val(escdat);
+                //         if (escdat.length > 0) {
+                //             $('#escalationAlertDate').prop("readonly", "readonly");
+                //             $('#escalationAlertDate').datepicker("destroy");
+                //         }
+                //     }
+                // }
+            }
+        });
+
+        FillReportingStartEndDate();
+        FillGranularDropdown();
+    }
+
+    $('#GranularTime').change(function () {
+        //debugger;;
+        FillReportingStartEndDate();
+        FillGranularDropdown();
+        var hdnGranularity = $('#hdnGranularTime');
+        if (hdnGranularity.length) {
+            if (hdnGranularity.val().length > 0) {
+                $('#GranularTime').val(hdnGranularity.val());
+            }
+        }
+    });
+    $('#btnCancel').click(function () {
+        window.location.href = "@Url.Action("SearchTemplate", "SearchTemplate")";
+    })
+
+</script>
+
