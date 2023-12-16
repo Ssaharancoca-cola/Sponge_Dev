@@ -3,7 +3,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<form id="Userform">
+<form id="Userform" asp-action="SaveUser">
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
@@ -12,10 +12,13 @@
                     <form class="forms-sample">
                         <div class="form-group row ">
                             <div class="col">
-                                <label for="exampleInputEmail1">User EmailID</label>
+                                <label asp-for="Email" for="exampleInputEmail1">User EmailID</label>
 
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                <input asp-for="Email" required type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                <div id="emailSuggestions" style="border:1px solid;display:none"></div>
+                                <span asp-validation-for="@Model.Email"></span>
                                 <div class="row">
+                                    <br />
                                     <div class="col">
                                         <button type="button" id="btnSearch" class="btn btn-primary">Search</button>
                                     </div>
@@ -24,86 +27,94 @@
 
                             </div>
                             <div class="col">
-                                <label for="UserName">User Name</label>
+                                <label asp-for="UserName" for="UserName">User Name</label>
                                
-                                    <input type="text" class="form-control" id="UserName" name="userName" readonly placeholder="User Name">
-                                
+                                    <input  asp-for="UserName" type="text" class="form-control" id="UserName" name="userName" readonly placeholder="User Name">
+                                <span asp-validation-for="@Model.UserName"></span>
                             </div>
                             <div class="col">
-                                <label for="exampleInputUsername1">User ID</label>
+                                <label asp-for="UserId" for="exampleInputUsername1">User ID</label>
 
-                                <input type="text" class="form-control" id="txtUserIdForNewUser" name="userId" readonly placeholder="User ID">
-
+                                <input  asp-for="UserId" type="text" class="form-control" id="txtUserIdForNewUser" name="userId" readonly placeholder="User ID">
+                                <span asp-validation-for="@Model.UserId"></span>
 
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <div class="col">
-                                <label for="Role">Role</label>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle bth-custom-multi" name="Role" type="button" id="Role"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
-
-                                        @foreach (var Role in ViewBag.Role)
-                                        {
-                                            <li>
-
-                                                <label for=@Role.Value>
-
-                                                    <input type="checkbox" name="Role" value=@Role.Value>@Role.Text
-                                                </label>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <label for="">SubFunction</label>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle bth-custom-multi" name="subFunction" type="button" id="multiSelectDropdown"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
-
-                                        @foreach (var subfunction in ViewBag.SubFunction)
-                                        {
-                                            <li>
-                                                <label id="@("S"+subfunction.Value)">
-
-                                                    <input type="checkbox" name="subFunction" value=@subfunction.Value>@subfunction.Text
-                                                </label>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <label for="exampleInputConfirmPassword1">Status</label>
-                                <select class="form-control" name="status">
-                                    <option selected>Select</option>
-                                    <option value="Y">Active</option>
-                                    <option value="N">Inactive</option>
-                                </select>
-
-                            </div>
+                        <div id="loader" style="display: none">
+                            <h4>Getting user details please wait...</h4>
                         </div>
-                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageUser", "User")'">Cancel</button>
-                        @if (Model != null)
-                        {
-                            <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
-                        }
-                        else
-                        {
-                            <button type="submit" name="Command" id="btnSave" value="Save" class="btn btn-primary">Save</button>
-                        }
+                        <div id="userOtherDetailsDiv" style="display: none">
+                            <div class="form-group row">
+                                <div class="col">
+                                    <label for="Role">Role</label>
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle bth-custom-multi" name="Role" type="button" id="Role"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            Select
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
+
+                                            @foreach (var Role in ViewBag.Role)
+                                            {
+                                                <li>
+
+                                                    <label for=@Role.Value>
+
+                                                        <input type="checkbox" name="Role" value=@Role.Value>@Role.Text
+                                                    </label>
+                                                </li>
+                                            }
+
+                                        </ul>
+                                        <span id="roleSpan" class="text-danger" style="font-size:10px"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col">
+                                    <label for="">SubFunction</label>
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle bth-custom-multi" name="subFunction" type="button" id="multiSelectDropdown"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            Select
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
+
+                                            @foreach (var subfunction in ViewBag.SubFunction)
+                                            {
+                                                <li>
+                                                    <label id="@("S"+subfunction.Value)">
+
+                                                        <input type="checkbox" name="subFunction" value=@subfunction.Value>@subfunction.Text
+                                                    </label>
+                                                </li>
+                                            }
+
+                                        </ul>
+                                        <span asp-validation-for="SubFunction" id="subFunctionSpan" class="text-danger" style="font-size:10px"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col">
+                                    <label for="exampleInputConfirmPassword1">Status</label>
+                                    <select id="activeFlagID" class="form-control" name="status">
+                                        <option selected value="">Select</option>
+                                        <option value="Y">Active</option>
+                                        <option value="N">Inactive</option>
+                                    </select>
+                                    <span asp-validation-for="Status" id="activeSpan" class="text-danger" style="font-size:10px"></span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageUser", "User")'">Cancel</button>
+                            @if (Model != null)
+                            {
+                                <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
+                            }
+                            else
+                            {
+                                <button type="submit" name="Command" id="btnSave" value="Save" class="btn btn-primary">Save</button>
+                            }
+                        </div>
+                        
                     </form>
                 </div>
             </div>
@@ -125,105 +136,6 @@
 <!-- inject:js -->
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="~/assists/js/template.js"></script>
-
+<script src="~/js/user/createuserjs.js"></script>
 <!-- endinject -->
-<script>
-    const chBoxes = document.querySelectorAll('.dropdown-menu input[name="subFunction"]');
-    const chRoleBoxes = document.querySelectorAll('.dropdown-menu input[name="Role"]');
-    const dpBtn = document.getElementById('multiSelectDropdown');
-    const dpRole = document.getElementById('Role');
-    let mySelectedListItems = [];
-    let mySelectedListItemsRole = [];
 
-    function handleCB() {
-        mySelectedListItems = [];
-        let mySelectedListItemsText = '';
-
-        chBoxes.forEach((checkbox) => {
-            debugger;
-            if (checkbox.checked) {
-                let checkboxvalue = "S" + checkbox.value;
-                let checkboxText = $(`label[id="${checkboxvalue}"]`).text();
-                mySelectedListItems.push(checkbox.value);
-                mySelectedListItemsText += checkboxText.trim() + ', ';
-            }
-        });
-
-        dpBtn.innerText =
-            mySelectedListItems.length > 0
-                ? mySelectedListItemsText.slice(0, -2) : 'Select';
-    }
-    function handleRoleCB() {
-        mySelectedListItemsRole = [];
-        let mySelectedListItemsTextRole = '';
-        debugger;
-        chRoleBoxes.forEach((checkbox) => {
-            debugger;
-            if (checkbox.checked) {
-                let checkboxText = $(`label[for="${checkbox.value}"]`).text();
-                mySelectedListItemsRole.push(checkbox.value);
-                mySelectedListItemsTextRole += checkboxText.trim() + ', ';
-            }
-        });
-
-        dpRole.innerText =
-            mySelectedListItemsRole.length > 0
-                ? mySelectedListItemsTextRole.slice(0, -2) : 'Select';
-    }
-
-    chBoxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', handleCB);
-    });
-    chRoleBoxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', handleRoleCB);
-    });
-
-    $(document).ready(function () {
-        handleCB();
-        handleRoleCB();
-        $("#btnSearch").click(function (event) {
-            event.preventDefault();
-
-            var userEmailId = $('#email').val();
-            if (userEmailId.trim(' ') == "") {
-                alert("Please enter User Email Id");
-                return false;
-            };
-            $.ajax({
-                url: '/User/GetUserInfo',
-                data: { userEmailId: userEmailId },
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    debugger;
-                    $('#txtUserIdForNewUser').val(data.userId);
-                    $('#UserName').val(data.userName);
-                    if (data.errorMsg != "" && data.errorMsg != null) {
-                        alert(data.errorMsg);
-                        return false;
-                    }
-                },
-                error: function (error) {
-                    console.log('Error: ', error);
-                }
-            });
-        });
-        $("#btnSave").click(function (event) {
-            event.preventDefault();
-            var form = $('#Userform').serialize();
-            $.ajax({
-                url: '@Url.Action("SaveUser", "User")',
-                data: form,
-                type: 'POST',
-                success: function (data) {
-
-                    onSuccess(data);
-                },
-                error: function (error) {
-                    console.log('Error: ', error);
-                }
-            });
-        });
-    });
-
-</script>

@@ -14,8 +14,8 @@ namespace DAL.Common
             SmtpClient smtpClient = new SmtpClient();
             smtpClient.Host = SMTPHost;
             MailMessage mailMessage = new MailMessage();
-            mailMessage.Body = "Hi All,Please find the below Portal Dev Application error message details:" + message + "";
-            mailMessage.Subject = "Error On Portal Application  --Do Not Reply---";
+            mailMessage.Body = "Hi All,Please find the below Sponge  Application error message details:" + message + "";
+            mailMessage.Subject = "Error On Sponge Application  --Do Not Reply---";
             mailMessage.From = new MailAddress(MailFrom);
             var Emailids = MailIds;
             mailMessage.To.Add(Emailids);
@@ -26,8 +26,8 @@ namespace DAL.Common
             SmtpClient smtpClient = new SmtpClient();
             smtpClient.Host = SMTPHost;
             MailMessage mailMessage = new MailMessage();
-            mailMessage.Body = "Hi All,Please find the below Portal Batch Job Application error message details:" + message + "";
-            mailMessage.Subject = "Error On Portal Batch Job  --Do Not Reply---";
+            mailMessage.Body = "Hi All,Please find the below Sponge Batch Job Application error message details:" + message + "";
+            mailMessage.Subject = "Error On Sponge Batch Job  --Do Not Reply---";
             mailMessage.From = new MailAddress(MailFrom);
             mailMessage.To.Add(MailIds);
             smtpClient.Send(mailMessage);

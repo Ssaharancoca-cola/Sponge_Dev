@@ -7,21 +7,36 @@ using System.Net.Mail;
 using System.Text;
 using DAL;
 using DAL.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NuGet.Protocol;
 using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Style;
 using Sponge.Common;
+using Sponge;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace BatchJob
 {  /// <summary>
    /// Class for Main program.
    /// </summary>
     public class Program
     {
-        /// <summary>
-        /// 
-        /// </summary>
+       
+      private readonly AppSettings _settings;
+
+        public Program()
+        {
+            var config = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
+                 .AddJsonFile("appsettings.json", false)
+                 .Build();
+
+            _settings = config.GetSection(nameof(AppSettings)).Get<AppSettings>();
+        }
+
         public static void Main()
         {
             try
@@ -29,7 +44,7 @@ namespace BatchJob
                 Console.WriteLine("----Start Job-----");
                 Program batchJob = new Program();
                 DataSet ds = new DataSet();
-
+              
                 ds = batchJob.GetConfigForExcelGeneration(0, "Y");
                 //ds = batchJob.GetPrepopulatedConfigForExcelGeneration(0, "N");
                 Console.WriteLine("----End Job-----");
@@ -138,7 +153,7 @@ namespace BatchJob
 
                 List<SPG_CONFIG_STRUCTURE> lstConfigEntity = new List<SPG_CONFIG_STRUCTURE>();
                 GetDataSet gd = new GetDataSet();
-                ds = gd.GetBatchJobDataSetValue("SP_GETCONFIG_BATCH", Convert.ToInt32(configid), p_IS_PREPOPULATE);
+                ds = gd.GetBatchJobDataSetValue("SP_GET_CONFIG_BATCH", Convert.ToInt32(configid), p_IS_PREPOPULATE);
                 CommonUtility objutility = new CommonUtility();
 
                 foreach (DataRow dr in ds.Tables[0].Rows)
@@ -273,7 +288,7 @@ namespace BatchJob
                             FileCode = Guid.NewGuid().ToString();
                             objutility.GenerateDynamicColumnNames(configId, Convert.ToDateTime(PeriodFrom), Convert.ToDateTime(PeriodTo), TimeLevel, frequency, TemplateId, out IsGroupColumnNameExist, null);
 
-                            FormedQuery3 = "GETTEMPLATEDATANEW";
+                            FormedQuery3 = "GET_TEMPLATE_DATA";
                             using (GetDataSet objDataSetValue = new GetDataSet())
                             {
                                 ds3 = objDataSetValue.GetDataSetValueForBatchJob(FormedQuery3, configId, documentid, Convert.ToDateTime(SPGTemplate.PERIOD_TO).ToString("dd-MMM-yyyy"));
@@ -370,7 +385,7 @@ namespace BatchJob
 
                             if (string.IsNullOrEmpty(documentid) || documentid == "null")
                             {
-                                FormedQuery3 = "GETTEMPLATEDATANEW";
+                                FormedQuery3 = "GET_TEMPLATE_DATA";
                                 using (GetDataSet objDataSetValue = new GetDataSet())
                                 {
 
@@ -500,413 +515,427 @@ namespace BatchJob
 
                         }
 
-                        if (DataCollection == "Online")
-                        {
+                        //if (DataCollection == "Online")
+                        //{
 
-                            string OntimeCode = ForTime;
-                            string ForTimeCode = OnTime;
-                            string Period = PeriodTo;
-                            string onlineTemplateURL = ConfigurationManager.AppSettings["HostName"] + "/" + ConfigurationManager.AppSettings["ApplicationName"] + "/OnlineFormView/ViewOnlineForm?Strid=" + configId.ToString() + "&StrsubjectAreaId=" + ot_details.SUBJECTAREAID.ToString() + "&UserID=" + ot_details.UserId + "&ForTimeCode=" + OntimeCode + "&OnTimeCode=" + ForTimeCode + "&PeriodTo=" + PeriodTo;
-                            NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-                            string ChangedSubjectArea = ot_details.SubjectArea.Replace("_", " ");
-                            ChangedSubjectArea = new CultureInfo("en-US").TextInfo.ToTitleCase(ChangedSubjectArea.ToLower());
+                        //    string OntimeCode = ForTime;
+                        //    string ForTimeCode = OnTime;
+                        //    string Period = PeriodTo;
+                        //    string onlineTemplateURL = System.Configuration.ConfigurationManager.AppSettings["HostName"] + "/" + ConfigurationManager.AppSettings["ApplicationName"] + "/OnlineFormView/ViewOnlineForm?Strid=" + configId.ToString() + "&StrsubjectAreaId=" + ot_details.SUBJECTAREAID.ToString() + "&UserID=" + ot_details.UserId + "&ForTimeCode=" + OntimeCode + "&OnTimeCode=" + ForTimeCode + "&PeriodTo=" + PeriodTo;
+                        //    NameValueCollection mailBodyplaceHolders = new NameValueCollection();
+                        //    string ChangedSubjectArea = ot_details.SubjectArea.Replace("_", " ");
+                        //    ChangedSubjectArea = new CultureInfo("en-US").TextInfo.ToTitleCase(ChangedSubjectArea.ToLower());
 
-                            mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
-                            mailBodyplaceHolders.Add("<SubjectArea>", ChangedSubjectArea);
-                            mailBodyplaceHolders.Add("<ForTimeCode>", ForTime);
-                            mailBodyplaceHolders.Add("<OnTimeCode>", OnTime);
-                            mailBodyplaceHolders.Add("<LockDate>", dtlockdate.ToString());
-                            mailBodyplaceHolders.Add("<Custom>", customonline.ToString());
-                            mailBodyplaceHolders.Add("<OnlineTemplateURL>", onlineTemplateURL);
-                            //Format the header    
+                        //    mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
+                        //    mailBodyplaceHolders.Add("<SubjectArea>", ChangedSubjectArea);
+                        //    mailBodyplaceHolders.Add("<ForTimeCode>", ForTime);
+                        //    mailBodyplaceHolders.Add("<OnTimeCode>", OnTime);
+                        //    mailBodyplaceHolders.Add("<LockDate>", dtlockdate.ToString());
+                        //    mailBodyplaceHolders.Add("<Custom>", customonline.ToString());
+                        //    mailBodyplaceHolders.Add("<OnlineTemplateURL>", onlineTemplateURL);
+                        //    //Format the header    
 
-                            string DataCollectionSubject = "[iQlik Portal] - Data collection template link for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
-                            string mailbody = "";
-                            string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["OnlineTemplateDataUpload"].ToString());
+                        //    string DataCollectionSubject = "[iQlik Portal] - Data collection template link for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
+                        //    string mailbody = "";
+                        //    string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["OnlineTemplateDataUpload"].ToString());
 
-                            mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-                            try
-                            {
-                                SendMailIsHtml("", DataCollectionSubject, mailbody, ot_details.UserEmail);
-                            }
-                            catch (Exception ex)
-                            {
-                                SPG_SENDORRESENDTASK ESP = m.SPG_SENDORRESENDTASK.Where(x => x.ID == SendResendId).FirstOrDefault();
-                                ESP.ATTEMPTS++;
-                                m.SaveChanges();
-                            }
-                        }
-                        else
-                        {
+                        //    mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+                        //    try
+                        //    {
+                        //        SendMailIsHtml("", DataCollectionSubject, mailbody, ot_details.UserEmail);
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        SPG_SENDORRESENDTASK ESP = m.SPG_SENDORRESENDTASK.Where(x => x.ID == SendResendId).FirstOrDefault();
+                        //        ESP.ATTEMPTS++;
+                        //        m.SaveChanges();
+                        //    }
+                        //}
+                        //else
+                        //{
                             int MasterColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
                             int MeasureColmnsCount = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
                             var measurecolumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { Text = s.DATA_TYPE, Value = s.DISPLAY_TYPE, ConfigUserId = s.CONFIGUSER_ID }).OrderBy(s => s.ConfigUserId);
                             var MasterShowColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { DATA_TYPE = s.DATA_TYPE, IS_SHOW = s.IS_SHOW });
 
                             FileName = ot_details.SubjectArea + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
-                            string FormedQuery4 = "SP_GETDROPDOWNDATA";
-                            DataSet ds4 = new DataSet();
-                            using (GetDataSet objDataSetValue = new GetDataSet())
-                            {
-                                ds4 = objDataSetValue.GetDataSetValue(FormedQuery4, configId);
-                            }
-                            //ProcessDataSetHeader(ref ds3, ref ds33, configId);
-                            using (ExcelPackage objExcelPackage = new ExcelPackage())
-                            {
-                                DataTable dsExcel = new DataTable();
-                                // var SecondList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.FIELD_NAME.Contains("_CODE") || s.FIELD_NAME.Contains("_CD"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
-                                var SecondList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.IS_SHOW == "N")).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID, CollectionType = s.COLLECTION_TYPE, DisplayType = s.DISPLAY_TYPE }).OrderBy(y => y.CONFIGUSER_ID).ToList();
-                                // var FirstList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && !(s.FIELD_NAME.Contains("_CD")) && (!s.FIELD_NAME.Contains("_CODE"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
-                                var FirstList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.IS_SHOW == "Y" || s.IS_SHOW == null)).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID, CollectionType = s.COLLECTION_TYPE, DisplayType = s.DISPLAY_TYPE }).OrderBy(y => y.CONFIGUSER_ID).ToList();
-                                var totalList = FirstList.OrderBy(o => o.CollectionType).Concat(SecondList).ToList();
-                                //var J = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && !(s.FIELD_NAME.Contains("_CD")) && (!s.FIELD_NAME.Contains("_CODE"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
-                                //var M = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.FIELD_NAME.Contains("_CODE") || s.FIELD_NAME.Contains("_CD"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
-                                //var N = J.Concat(M).ToList();
-                                // var DisplayName = (from T in MasterShowColumn1 join R in N on T.DATA_TYPE equals R.DATA_TYPE select new { DISPLAY_NAME = R.DISPLAY_NAME, DATA_TYPE =R.DATA_TYPE }).ToList();
-                                if (ds3.Tables.Count > 0)
-                                {
-                                    DataTable table = ds3.Tables[0];
+                        DataSet ds4 = new DataSet();
+                        //string FormedQuery4 = "SP_GETDROPDOWNDATA";
+                        //    DataSet ds4 = new DataSet();
+                        //    try
+                        //    {
+                        //        using (GetDataSet objDataSetValue = new GetDataSet())
+                        //        {
+                        //            ds4 = objDataSetValue.GetDataSetValue(FormedQuery4, configId);
+                        //        }
+                        //    }
+                        //    catch (Exception ex)
+                        //    { 
 
-                                    foreach (var column in totalList)
+
+                        //}
+                        //ProcessDataSetHeader(ref ds3, ref ds33, configId);
+                        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                        using (ExcelPackage objExcelPackage = new ExcelPackage())
+                        {
+
+                            DataTable dsExcel = new DataTable();
+                            // var SecondList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.FIELD_NAME.Contains("_CODE") || s.FIELD_NAME.Contains("_CD"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
+                            var SecondList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.IS_SHOW == "N")).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID, CollectionType = s.COLLECTION_TYPE, DisplayType = s.DISPLAY_TYPE }).OrderBy(y => y.CONFIGUSER_ID).ToList();
+                            // var FirstList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && !(s.FIELD_NAME.Contains("_CD")) && (!s.FIELD_NAME.Contains("_CODE"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
+                            var FirstList = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.IS_SHOW == "Y" || s.IS_SHOW == null)).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID, CollectionType = s.COLLECTION_TYPE, DisplayType = s.DISPLAY_TYPE }).OrderBy(y => y.CONFIGUSER_ID).ToList();
+                            var totalList = FirstList.OrderBy(o => o.CollectionType).Concat(SecondList).ToList();
+                            //var J = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && !(s.FIELD_NAME.Contains("_CD")) && (!s.FIELD_NAME.Contains("_CODE"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
+                            //var M = m.SPG_CONFIG_STRUCTURE.Where(s => s.CONFIG_ID == configId && (s.FIELD_NAME.Contains("_CODE") || s.FIELD_NAME.Contains("_CD"))).Select(s => new { DISPLAY_NAME = s.DISPLAY_NAME, DATA_TYPE = s.DATA_TYPE, CONFIGUSER_ID = s.CONFIGUSER_ID }).OrderBy(y => y.CONFIGUSER_ID).ToList();
+                            //var N = J.Concat(M).ToList();
+                            // var DisplayName = (from T in MasterShowColumn1 join R in N on T.DATA_TYPE equals R.DATA_TYPE select new { DISPLAY_NAME = R.DISPLAY_NAME, DATA_TYPE =R.DATA_TYPE }).ToList();
+                            if (ds3.Tables.Count > 0)
+                            {
+                                DataTable table = ds3.Tables[0];
+
+                                foreach (var column in totalList)
+                                {
+                                    var displayName = column.DISPLAY_NAME;
+                                    if (IsGroupColumnNameExist)
                                     {
-                                        if (IsGroupColumnNameExist == true)
+                                        var tempDisplayName = m.SPG_GETTIMECODE
+                                                               .Where(w => w.CONFIG_ID == configId
+                                                              && w.DATA_TYPE == column.DATA_TYPE
+                                                              && w.TEMPLATE_ID == TemplateId)
+                                                              .Select(s => s.DISPLAY_NAME.Trim()).FirstOrDefault();
+                                        if (!string.IsNullOrEmpty(tempDisplayName))
                                         {
-                                            var DisplayName = m.SPG_GETTIMECODE.Where(w => w.CONFIG_ID == configId && w.DATA_TYPE == column.DATA_TYPE && w.TEMPLATE_ID == TemplateId).Select(s => new { DisplayName = s.DISPLAY_NAME, DataType = s.DATA_TYPE }).FirstOrDefault();
-                                            if (DisplayName != null)
-                                                table.Columns[column.DATA_TYPE].ColumnName = DisplayName.DisplayName.Trim();
-                                            else
-                                                table.Columns[column.DATA_TYPE].ColumnName = column.DISPLAY_NAME;
-                                        }
-                                        else
-                                        {
-                                            table.Columns[column.DATA_TYPE].ColumnName = column.DISPLAY_NAME;
+                                            displayName = tempDisplayName;
                                         }
                                     }
-                                    table.AcceptChanges();
-                                    dsExcel = table;
+                                    table.Columns[column.DATA_TYPE].ColumnName = displayName;
                                 }
-                                //foreach (DataTable dtSrc in dsExcel)
-                                if (dsExcel.Rows.Count > 0)
+                           
+                                table.AcceptChanges();
+                                dsExcel = table;
+                            }
+                            //foreach (DataTable dtSrc in dsExcel)
+                            if (dsExcel.Rows.Count > 0)
+                            {
+
+                                ExcelWorksheet hiddenSheet = objExcelPackage.Workbook.Worksheets.Add(_settings.HiddenSheetName);
+                                hiddenSheet.Cells[1000000, 500].Value = FileCode;// Need to pass File Code 
+                                hiddenSheet.Hidden = eWorkSheetHidden.VeryHidden;
+                                //Create the worksheet    
+                                dsExcel.TableName = "DataCollectionSheet";
+                                ExcelWorksheet objWorksheet = objExcelPackage.Workbook.Worksheets.Add(dsExcel.TableName);
+                                //ExcelWorksheet objWorksheet = objExcelPackage.Workbook.Worksheets.Add("Data Collection Sheet");
+
+                                objWorksheet.Cells["A1"].Value = ot_details.SubjectArea + "- Data Collection Sheet";
+                                objWorksheet.Cells["A2"].Value = "Reporting Start Date-" + Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["B2"].Value = "Reporting End Date-" + Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
+                                objWorksheet.Cells["B3"].Value = "Lock Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["A4"].Value = "";// customexcel;
+                                objWorksheet.Row(4).Hidden = true;//Hide 4th row
+                                objWorksheet.DefaultColWidth = 30;
+                                //Load the datatable into the sheet, starting from cell A1. Print the column names on row 1 
+                                try
+                                {
+                                    objWorksheet.Cells["A5"].LoadFromDataTable(dsExcel, true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    string ErrorDetails = "Error Details:Total Rows " + dsExcel.Rows.Count + " and ConfigId :" + configId + " and Subject Area Name:" + ot_details.SubjectArea + "  Assigned User: " + ot_details.UserName;
+                                    ErrorLog srsEx = new ErrorLog();
+                                    //srsEx.LogErrorInTextFile(ex, ErrorDetails);
+                                    continue;
+
+                                }
+
+                                objWorksheet.Cells.Style.Font.SetFromFont("Calibri", float.Parse("10"), false, false, false, false);
+                                // char next='A';
+                                char next = incrementCharacter('A', MasterColumn);
+                                int xx = 0;
+                                List<string> LstMeasureColumns = new List<string>();
+                                List<string> LstGrandTotalColumns = new List<string>();
+                                foreach (var T in totalList)
                                 {
 
-                                    ExcelWorksheet hiddenSheet = objExcelPackage.Workbook.Worksheets.Add(ConfigurationManager.AppSettings["HiddenSheetName"]);
-                                    hiddenSheet.Cells[1000000, 500].Value = FileCode;// Need to pass File Code 
-                                    hiddenSheet.Hidden = eWorkSheetHidden.VeryHidden;
-                                    //Create the worksheet    
-                                    dsExcel.TableName = "DataCollectionSheet";
-                                    ExcelWorksheet objWorksheet = objExcelPackage.Workbook.Worksheets.Add(dsExcel.TableName);
-                                    //ExcelWorksheet objWorksheet = objExcelPackage.Workbook.Worksheets.Add("Data Collection Sheet");
 
-                                    objWorksheet.Cells["A1"].Value = ot_details.SubjectArea + "- Data Collection Sheet";
-                                    objWorksheet.Cells["A2"].Value = "Reporting Start Date-" + Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy");
-                                    objWorksheet.Cells["B2"].Value = "Reporting End Date-" + Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy");
-                                    objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
-                                    objWorksheet.Cells["B3"].Value = "Lock Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
-                                    objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
-                                    objWorksheet.Cells["A4"].Value = "";// customexcel;
-                                    objWorksheet.Row(4).Hidden = true;//Hide 4th row
-                                    objWorksheet.DefaultColWidth = 30;
-                                    //Load the datatable into the sheet, starting from cell A1. Print the column names on row 1 
-                                    try
-                                    {
-                                        objWorksheet.Cells["A5"].LoadFromDataTable(dsExcel, true);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        string ErrorDetails = "Error Details:Total Rows " + dsExcel.Rows.Count + " and ConfigId :" + configId + " and Subject Area Name:" + ot_details.SubjectArea + "  Assigned User: " + ot_details.UserName;
-                                        ErrorLog srsEx = new ErrorLog();
-                                        //srsEx.LogErrorInTextFile(ex, ErrorDetails);
-                                        continue;
-
-                                    }
-
-                                    objWorksheet.Cells.Style.Font.SetFromFont("Calibri",float.Parse("10") ,false, false, false, false);
-                                    // char next='A';
-                                    char next = incrementCharacter('A', MasterColumn);
-                                    int xx = 0;
-                                    List<string> LstMeasureColumns = new List<string>();
-                                    List<string> LstGrandTotalColumns = new List<string>();
-                                    foreach (var T in totalList)
+                                    foreach (var s in measurecolumn)
                                     {
 
-
-                                        foreach (var s in measurecolumn)
+                                        if (T.DATA_TYPE == s.Text && s.Value == "DROPDOWN" && T.CollectionType == "Measure")
                                         {
+                                            next = incrementCharacter('A', xx);
+                                            string resultchar = (next.ToString() + ':' + next.ToString()).ToString();
+                                            IExcelDataValidation dataValidation;
 
-                                            if (T.DATA_TYPE == s.Text && s.Value == "DROPDOWN" && T.CollectionType == "Measure")
+                                            var lookuptype = objWorksheet.DataValidations.AddListValidation(resultchar.ToString());
+                                            foreach (DataRow row in ds4.Tables[0].Rows) // Loop over the rows.
                                             {
-                                                next = incrementCharacter('A', xx);
-                                                string resultchar = (next.ToString() + ':' + next.ToString()).ToString();
-                                                IExcelDataValidation dataValidation;
-
-                                                var lookuptype = objWorksheet.DataValidations.AddListValidation(resultchar.ToString());
-                                                foreach (DataRow row in ds4.Tables[0].Rows) // Loop over the rows.
+                                                if (row.ItemArray[0].ToString() == s.Text)
                                                 {
-                                                    if (row.ItemArray[0].ToString() == s.Text)
-                                                    {
-                                                        lookuptype.Formula.Values.Add(row.ItemArray[2].ToString());
-                                                    }
-                                                    dataValidation = lookuptype;
-                                                    dataValidation.ShowErrorMessage = true;
-                                                    dataValidation.ErrorStyle = ExcelDataValidationWarningStyle.stop;
-                                                    dataValidation.ErrorTitle = "An invalid value was entered";
-                                                    dataValidation.Error = "Select a value from the from  list";
+                                                    lookuptype.Formula.Values.Add(row.ItemArray[2].ToString());
                                                 }
-                                                LstMeasureColumns.Add(next.ToString());
-                                                break;
-
+                                                dataValidation = lookuptype;
+                                                dataValidation.ShowErrorMessage = true;
+                                                dataValidation.ErrorStyle = ExcelDataValidationWarningStyle.stop;
+                                                dataValidation.ErrorTitle = "An invalid value was entered";
+                                                dataValidation.Error = "Select a value from the from  list";
                                             }
-                                            //if (s.Value == "TEXTBOX" && T.DATA_TYPE.Contains("VC") && T.CollectionType == "Measure")
-                                            if (s.Value == T.DisplayType && s.Value != "DROPDOWN" && T.DATA_TYPE.Contains("VC") && T.CollectionType == "Measure")
-                                            {
-                                                next = incrementCharacter('A', xx);
-                                                //CellsNumeric(objWorksheet, next, 1);
-
-                                                LstMeasureColumns.Add(next.ToString());
-                                                LstGrandTotalColumns.Add(next.ToString());
-                                                break;
-
-                                            }
-                                            //if (s.Value == "TEXTBOX" && T.DATA_TYPE.Contains("N") && T.CollectionType == "Measure")
-                                            if (s.Value == T.DisplayType && T.DATA_TYPE.Contains("N") && T.CollectionType == "Measure")
-                                            {
-                                                next = incrementCharacter('A', xx);
-                                                CellsNumeric(objWorksheet, next, 1);
-
-                                                LstMeasureColumns.Add(next.ToString());
-                                                LstGrandTotalColumns.Add(next.ToString());
-                                                break;
-
-                                            }
-                                            // if (s.Value == "DATE" && T.DATA_TYPE.Contains("DT") && T.CollectionType == "Measure")
-                                            if (s.Value == T.DisplayType && T.DATA_TYPE.Contains("DT") && T.CollectionType == "Measure")
-                                            {
-                                                next = incrementCharacter('A', xx);
-                                                DateNumeric(objWorksheet, next, 1);
-                                                LstMeasureColumns.Add(next.ToString());
-                                                break;
-                                            }
-                                            // if (s.Value == "TEXTBOX" && T.DATA_TYPE.Contains("P") && T.CollectionType == "Measure")
-                                            if (s.Value == T.DisplayType && T.DATA_TYPE.Contains("P") && T.CollectionType == "Measure")
-                                            {
-                                                next = incrementCharacter('A', xx);
-                                                CellsNumericPercentage(objWorksheet, next, 1);
-                                                LstMeasureColumns.Add(next.ToString());
-                                                LstGrandTotalColumns.Add(next.ToString());
-                                                break;
-                                            }
-
+                                            LstMeasureColumns.Add(next.ToString());
+                                            break;
 
                                         }
-                                        xx++;
-                                    }
-                                    // char next = incrementCharacter('A', MasterColumn);
-                                    char nextmeasure = incrementCharacter(next, MeasureColmnsCount);
-                                    //string nextstring = (next.ToString() + ':' + nextmeasure.ToString()).ToString();
-                                    //int countindex = 1;
-                                    objWorksheet.Cells["A4:C4"].Merge = true;
-                                    objWorksheet.Protection.IsProtected = true;
-                                    if (LstMeasureColumns.Count > 0)
-                                    {
-                                        //Unlock Measure Columns
-                                        string S = LstMeasureColumns[0];
-                                        string L = LstMeasureColumns[LstMeasureColumns.Count - 1];
-                                        int LastRownumber = dsExcel.Rows.Count + 5;
-
-                                        using (ExcelRange objRange = objWorksheet.Cells[S + "6" + ":" + L + LastRownumber])
+                                        //if (s.Value == "TEXTBOX" && T.DATA_TYPE.Contains("VC") && T.CollectionType == "Measure")
+                                        if (s.Value == T.DisplayType && s.Value != "DROPDOWN" && T.DATA_TYPE.Contains("VC") && T.CollectionType == "Measure")
                                         {
-                                            objRange.Style.Locked = false;
+                                            next = incrementCharacter('A', xx);
+                                            //CellsNumeric(objWorksheet, next, 1);
+
+                                            LstMeasureColumns.Add(next.ToString());
+                                            LstGrandTotalColumns.Add(next.ToString());
+                                            break;
+
                                         }
-                                    }
-                                    //dsExcel.Rows
-
-                                    objWorksheet.Protection.IsProtected = true;
-                                    if (!string.IsNullOrEmpty(FileCode))
-                                        objWorksheet.Protection.SetPassword(FileCode);
-                                    objWorksheet.Cells.AutoFitColumns();
-
-                                    hiddenSheet.Cells.AutoFitColumns();
-
-                                    objExcelPackage.Workbook.Protection.LockStructure = true;
-                                    char total = incrementCharacter('A', (FirstList.Count - 1));//Remove unwanted column in excel 
-                                    /*Freeze Panes*/
-                                    objWorksheet.View.FreezePanes(6, 1);
-
-                                    using (ExcelRange objRange = objWorksheet.Cells["A5:" + total.ToString() + "5"])
-                                    {
-
-                                        objRange.Style.Font.Bold = true;
-                                        ////objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        ////objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
-                                        ////objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        ////objRange.Style.Font.Color.SetColor(Color.Black);
-                                        objRange.Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
-
-                                        /*Border lines should be added*/
-                                        //objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                        //objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                        //objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                        //objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                                        objRange.AutoFilter = true;
-                                        objWorksheet.Protection.AllowAutoFilter = true;
-
-                                        //•	Hide isShow(which is true) Columns  from Excel.
-                                        if (SecondList.Count > 0)
+                                        //if (s.Value == "TEXTBOX" && T.DATA_TYPE.Contains("N") && T.CollectionType == "Measure")
+                                        if (s.Value == T.DisplayType && T.DATA_TYPE.Contains("N") && T.CollectionType == "Measure")
                                         {
+                                            next = incrementCharacter('A', xx);
+                                            CellsNumeric(objWorksheet, next, 1);
 
-                                            int Firstlistcloulmncount = FirstList.Count;
-                                            for (int c = 1; c <= SecondList.Count; c++)
-                                            {
-
-                                                objWorksheet.Column(Firstlistcloulmncount + c).Hidden = true;
-                                            }
+                                            LstMeasureColumns.Add(next.ToString());
+                                            LstGrandTotalColumns.Add(next.ToString());
+                                            break;
 
                                         }
-                                        //Border lines should be added
-                                        int columnno = 6;
-                                        int rows = dsExcel.Rows.Count;
-                                        for (int c = 1; c <= rows; c++)
+                                        // if (s.Value == "DATE" && T.DATA_TYPE.Contains("DT") && T.CollectionType == "Measure")
+                                        if (s.Value == T.DisplayType && T.DATA_TYPE.Contains("DT") && T.CollectionType == "Measure")
                                         {
-                                            int rr = columnno;
-
-                                            //objWorksheet.Cells["A6:" + next + "6"].Style.Locked = true;
-                                            objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                            objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                            objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                            objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                                            columnno++;
+                                            next = incrementCharacter('A', xx);
+                                            DateNumeric(objWorksheet, next, 1);
+                                            LstMeasureColumns.Add(next.ToString());
+                                            break;
                                         }
-                                        //SubTotal
-                                        //objWorksheet.Cells["A" + (rows + 6).ToString() + ""]
-                                        //Grand Total
-                                        objWorksheet.Cells["A" + (rows + 6).ToString() + ""].Value = "Grand Total";
-
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
-                                        /*Border lines should be added*/
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Font.Bold = true;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Font.Color.SetColor(Color.White);
-
-
-                                        if (LstGrandTotalColumns.Count > 0)
+                                        // if (s.Value == "TEXTBOX" && T.DATA_TYPE.Contains("P") && T.CollectionType == "Measure")
+                                        if (s.Value == T.DisplayType && T.DATA_TYPE.Contains("P") && T.CollectionType == "Measure")
                                         {
-                                            for (int g = 0; g < LstGrandTotalColumns.Count; g++)
-                                            {
-                                                objWorksheet.Cells[LstGrandTotalColumns[g] + "" + (dsExcel.Rows.Count + 6) + ""].Formula = "=SUM(" + LstGrandTotalColumns[g] + "6:" + LstGrandTotalColumns[g] + "" + (dsExcel.Rows.Count + 5) + ")";
-                                            }
+                                            next = incrementCharacter('A', xx);
+                                            CellsNumericPercentage(objWorksheet, next, 1);
+                                            LstMeasureColumns.Add(next.ToString());
+                                            LstGrandTotalColumns.Add(next.ToString());
+                                            break;
                                         }
-                                        //objWorksheet.Cells["F" + (dsExcel.Rows.Count + 6) + ""].Formula = "=SUM(E6:E" + (dsExcel.Rows.Count + 5) + ")";
-                                    }
 
-                                    using (ExcelRange objRange = objWorksheet.Cells["A1:" + total.ToString() + "1"])
-                                    {
-                                        objRange.Style.Font.Bold = true;
-                                        objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                                        objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        objRange.Style.Font.Color.SetColor(Color.White);
-
-                                        objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
-                                        /*Border lines should be added*/
-                                        objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                                     }
-                                    using (ExcelRange objRange = objWorksheet.Cells["A2:" + total.ToString() + "2"])
+                                    xx++;
+                                }
+                                // char next = incrementCharacter('A', MasterColumn);
+                                char nextmeasure = incrementCharacter(next, MeasureColmnsCount);
+                                //string nextstring = (next.ToString() + ':' + nextmeasure.ToString()).ToString();
+                                //int countindex = 1;
+                                objWorksheet.Cells["A4:C4"].Merge = true;
+                                objWorksheet.Protection.IsProtected = true;
+                                if (LstMeasureColumns.Count > 0)
+                                {
+                                    //Unlock Measure Columns
+                                    string S = LstMeasureColumns[0];
+                                    string L = LstMeasureColumns[LstMeasureColumns.Count - 1];
+                                    int LastRownumber = dsExcel.Rows.Count + 5;
+
+                                    using (ExcelRange objRange = objWorksheet.Cells[S + "6" + ":" + L + LastRownumber])
                                     {
-                                        objRange.Style.Font.Bold = true;
-                                        objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                                        objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        objRange.Style.Font.Color.SetColor(Color.White);
-                                        objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
-                                        /*Border lines should be added*/
-                                        objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                                    }
-                                    using (ExcelRange objRange = objWorksheet.Cells["A3:" + total.ToString() + "3"])
-                                    {
-                                        objRange.Style.Font.Bold = true;
-                                        objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                                        objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        objRange.Style.Font.Color.SetColor(Color.White);
-                                        objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
-                                        /*Border lines should be added*/
-                                        objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                                    }
-                                    using (ExcelRange objRange = objWorksheet.Cells["A4:" + total.ToString() + "4"])
-                                    {
-                                        objRange.Style.Font.Bold = true;
-                                        objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                        objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                                        objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                        objRange.Style.Font.Color.SetColor(Color.White);
-                                        objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
-                                        /*Border lines should be added*/
-                                        objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                                        objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                                    }
-
-
-                                    string filepath = System.Configuration.ConfigurationManager.AppSettings["BatchJobErrorlocation"];
-                                    string path = Path.Combine(filepath, FileName);
-                                    //string path = Path.Combine(HttpContext.Current.Server.MapPath("~/Excel"), FileName);
-                                    //Create excel file on physical disk    
-                                    FileStream objFileStrm = System.IO.File.Create(path);
-                                    objFileStrm.Close();
-                                    //Write content to excel file    
-                                    System.IO.File.WriteAllBytes(path, objExcelPackage.GetAsByteArray());
-                                    string ChangedSubjectArea = ot_details.SubjectArea.Replace("_", " ");
-                                    ChangedSubjectArea = new CultureInfo("en-US").TextInfo.ToTitleCase(ChangedSubjectArea.ToLower());
-
-                                    NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-                                    mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
-                                    mailBodyplaceHolders.Add("<SubjectArea>", ChangedSubjectArea);
-                                    mailBodyplaceHolders.Add("<ForTimeCode>", ForTime);
-                                    mailBodyplaceHolders.Add("<OnTimeCode>", OnTime);
-                                    mailBodyplaceHolders.Add("<LockDate>", dtlockdate.ToString());
-                                    mailBodyplaceHolders.Add("<Custom>", custom.ToString());
-                                    //Format the header    
-                                    string DataCollectionSubject = "[iQlik Portal] - Data collection template for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
-
-                                    string mailbody = "";
-                                    string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["TemplateGenerationEmail"].ToString());
-
-                                    mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-
-                                    try
-                                    {
-
-                                        SendMail(path, DataCollectionSubject, mailbody, ot_details.UserEmail);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        SPG_SENDORRESENDTASK ESP = m.SPG_SENDORRESENDTASK.Where(x => x.ID == SendResendId).FirstOrDefault();
-                                        ESP.ATTEMPTS++;
-                                        m.SaveChanges();
+                                        objRange.Style.Locked = false;
                                     }
                                 }
-                            }
+                                //dsExcel.Rows
 
+                                objWorksheet.Protection.IsProtected = true;
+                                if (!string.IsNullOrEmpty(FileCode))
+                                    objWorksheet.Protection.SetPassword(FileCode);
+                                objWorksheet.Cells.AutoFitColumns();
+
+                                hiddenSheet.Cells.AutoFitColumns();
+
+                                objExcelPackage.Workbook.Protection.LockStructure = true;
+                                char total = incrementCharacter('A', (FirstList.Count - 1));//Remove unwanted column in excel 
+                                /*Freeze Panes*/
+                                objWorksheet.View.FreezePanes(6, 1);
+
+                                using (ExcelRange objRange = objWorksheet.Cells["A5:" + total.ToString() + "5"])
+                                {
+
+                                    objRange.Style.Font.Bold = true;
+                                    ////objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                    ////objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
+                                    ////objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    ////objRange.Style.Font.Color.SetColor(Color.Black);
+                                   // objRange.Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
+
+                                    /*Border lines should be added*/
+                                    //objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                    //objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                    //objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                    //objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                                    objRange.AutoFilter = true;
+                                    objWorksheet.Protection.AllowAutoFilter = true;
+
+                                    //•	Hide isShow(which is true) Columns  from Excel.
+                                    if (SecondList.Count > 0)
+                                    {
+
+                                        int Firstlistcloulmncount = FirstList.Count;
+                                        for (int c = 1; c <= SecondList.Count; c++)
+                                        {
+
+                                            objWorksheet.Column(Firstlistcloulmncount + c).Hidden = true;
+                                        }
+
+                                    }
+                                    //Border lines should be added
+                                    int columnno = 6;
+                                    int rows = dsExcel.Rows.Count;
+                                    for (int c = 1; c <= rows; c++)
+                                    {
+                                        int rr = columnno;
+
+                                        //objWorksheet.Cells["A6:" + next + "6"].Style.Locked = true;
+                                        objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                        objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                        objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                        objWorksheet.Cells["A" + columnno + ":" + total.ToString() + "" + columnno + ""].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                        columnno++;
+                                    }
+                                    //SubTotal
+                                    //objWorksheet.Cells["A" + (rows + 6).ToString() + ""]
+                                    //Grand Total
+                                    objWorksheet.Cells["A" + (rows + 6).ToString() + ""].Value = "Grand Total";
+
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    /*Border lines should be added*/
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Font.Bold = true;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Font.Color.SetColor(Color.White);
+
+
+                                    if (LstGrandTotalColumns.Count > 0)
+                                    {
+                                        for (int g = 0; g < LstGrandTotalColumns.Count; g++)
+                                        {
+                                            objWorksheet.Cells[LstGrandTotalColumns[g] + "" + (dsExcel.Rows.Count + 6) + ""].Formula = "=SUM(" + LstGrandTotalColumns[g] + "6:" + LstGrandTotalColumns[g] + "" + (dsExcel.Rows.Count + 5) + ")";
+                                        }
+                                    }
+                                    //objWorksheet.Cells["F" + (dsExcel.Rows.Count + 6) + ""].Formula = "=SUM(E6:E" + (dsExcel.Rows.Count + 5) + ")";
+                                }
+
+                                using (ExcelRange objRange = objWorksheet.Cells["A1:" + total.ToString() + "1"])
+                                {
+                                    objRange.Style.Font.Bold = true;
+                                    objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                    objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                                    objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    objRange.Style.Font.Color.SetColor(Color.White);
+
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                                    /*Border lines should be added*/
+                                    objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                                }
+                                using (ExcelRange objRange = objWorksheet.Cells["A2:" + total.ToString() + "2"])
+                                {
+                                    objRange.Style.Font.Bold = true;
+                                    objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                    objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                                    objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    objRange.Style.Font.Color.SetColor(Color.White);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    /*Border lines should be added*/
+                                    objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                }
+                                using (ExcelRange objRange = objWorksheet.Cells["A3:" + total.ToString() + "3"])
+                                {
+                                    objRange.Style.Font.Bold = true;
+                                    objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                    objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                                    objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    objRange.Style.Font.Color.SetColor(Color.White);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    /*Border lines should be added*/
+                                    objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                }
+                                using (ExcelRange objRange = objWorksheet.Cells["A4:" + total.ToString() + "4"])
+                                {
+                                    objRange.Style.Font.Bold = true;
+                                    objRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                    objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                                    objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                    objRange.Style.Font.Color.SetColor(Color.White);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    /*Border lines should be added*/
+                                    objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                    objRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                }
+
+
+                                string filepath = _settings.BatchJobErrorlocation;
+                                string path = Path.Combine(filepath, FileName);
+                                //string path = Path.Combine(HttpContext.Current.Server.MapPath("~/Excel"), FileName);
+                                //Create excel file on physical disk    
+                                FileStream objFileStrm = System.IO.File.Create(path);
+                                objFileStrm.Close();
+                                //Write content to excel file    
+                                System.IO.File.WriteAllBytes(path, objExcelPackage.GetAsByteArray());
+                                string ChangedSubjectArea = ot_details.SubjectArea.Replace("_", " ");
+                                ChangedSubjectArea = new CultureInfo("en-US").TextInfo.ToTitleCase(ChangedSubjectArea.ToLower());
+
+                                NameValueCollection mailBodyplaceHolders = new NameValueCollection();
+                                mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
+                                mailBodyplaceHolders.Add("<SubjectArea>", ChangedSubjectArea);
+                                mailBodyplaceHolders.Add("<ForTimeCode>", ForTime);
+                                mailBodyplaceHolders.Add("<OnTimeCode>", OnTime);
+                                mailBodyplaceHolders.Add("<LockDate>", dtlockdate.ToString());
+                                mailBodyplaceHolders.Add("<Custom>", custom.ToString());
+                                //Format the header    
+                                string DataCollectionSubject = "[Sponge] - Data collection template for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
+
+                                string mailbody = "";
+                                string messageTemplatePath = System.IO.File.ReadAllText(_settings.TemplateGenerationEmail.ToString());
+
+                                mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+
+                                try
+                                {
+
+                                    SendMail(path, DataCollectionSubject, mailbody, ot_details.UserEmail);
+                                }
+                                catch (Exception ex)
+                                {
+                                    SPG_SENDORRESENDTASK ESP = m.SPG_SENDORRESENDTASK.Where(x => x.ID == SendResendId).FirstOrDefault();
+                                    ESP.ATTEMPTS++;
+                                    m.SaveChanges();
+                                }
+                            }
                         }
+
+                        
                         SPG_TEMPLATE EPM = m.SPG_TEMPLATE.Where(x => x.TEMPLATE_ID == TemplateId).FirstOrDefault();
                         if (FileName != "")
                         {
@@ -1002,14 +1031,9 @@ namespace BatchJob
                     string DataCollectionSubject = "[Sponge] - Upload Reminder template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
                     string mailbody = "";
                     string messageTemplatePath = "";
-                    if (Convert.ToString(ds.Tables[0].Rows[i].ItemArray[7]) == "Online")
-                    {
-                        messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["UploadReminderMailOnlineTemplate"].ToString());
-                    }
-                    else
-                    {
-                        messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["UploadReminderMailExcelTemplate"].ToString());
-                    }
+                   
+                        messageTemplatePath = System.IO.File.ReadAllText(_settings.UploadReminderMailExcelTemplate.ToString());
+                    
                     mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.UserEmail);
                     // lg.LogMessageInTextFile("Mail Sent Upload Reminder ID - " + configId + DateTime.Now.ToString());
@@ -1070,14 +1094,9 @@ namespace BatchJob
                     string DataCollectionSubject = "[Sponge] - Escalation template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
                     string mailbody = "";
                     string messageTemplatePath = "";
-                    if (Convert.ToString(ds.Tables[0].Rows[i].ItemArray[7]) == "Online")
-                    {
-                        messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["EscalationMailOnlineTemplate"].ToString());
-                    }
-                    else
-                    {
-                        messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["EscalationMailExcelTemplate"].ToString());
-                    }
+                   
+                        messageTemplatePath = System.IO.File.ReadAllText(_settings.EscalationMailExcelTemplate);
+                    
                     mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.UserEMail);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.ApproverEmail);
@@ -1100,12 +1119,12 @@ namespace BatchJob
         public void SendMailIsHtml(string filename, string subject, string mailbody, string MailID)
         {
             SmtpClient smtpClient = new SmtpClient();
-            smtpClient.Host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
+            smtpClient.Host = _settings.SMTPHost;
 
             MailMessage mailMessage = new MailMessage();
             mailMessage.Body = mailbody;
             mailMessage.Subject = subject;
-            mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["MailFrom"].ToString());
+            mailMessage.From = new MailAddress(_settings.MailFrom);
             mailMessage.To.Add(new MailAddress(MailID));
             mailMessage.IsBodyHtml = true;
             if (!string.IsNullOrEmpty(filename))
@@ -1146,12 +1165,12 @@ namespace BatchJob
 
 
             SmtpClient smtpClient = new SmtpClient();
-            smtpClient.Host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
+            smtpClient.Host = _settings.SMTPHost;
 
             MailMessage mailMessage = new MailMessage();
             mailMessage.Body = mailbody;
             mailMessage.Subject = subject;
-            mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["MailFrom"].ToString());
+            mailMessage.From = new MailAddress(_settings.MailFrom);
             mailMessage.To.Add(new MailAddress(MailID));
             //mailMessage.IsBodyHtml = true;
             //if (filename != "")
@@ -1164,12 +1183,12 @@ namespace BatchJob
         public void SendMail(string filename, string subject, string mailbody, string MailID)
         {
             SmtpClient smtpClient = new SmtpClient();
-            smtpClient.Host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
+            smtpClient.Host = _settings.SMTPHost;
 
             MailMessage mailMessage = new MailMessage();
             mailMessage.Body = mailbody;
             mailMessage.Subject = subject;
-            mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["MailFrom"].ToString());
+            mailMessage.From = new MailAddress(_settings.MailFrom);
             mailMessage.To.Add(new MailAddress(MailID));
             //mailMessage.IsBodyHtml = true;
             if (filename != "")
@@ -1236,8 +1255,8 @@ namespace BatchJob
             var val = objWorksheet.DataValidations.AddDecimalValidation(resultchar.ToString());
             val.ShowErrorMessage = true;
             IExcelDataValidation dataValidation;
-            long minValue = Convert.ToInt64(ConfigurationManager.AppSettings["NumberMin"]);
-            long maxValue = Convert.ToInt64(ConfigurationManager.AppSettings["NumberMax"]);
+            long minValue = Convert.ToInt64(System.Configuration.ConfigurationManager.AppSettings["NumberMin"]);
+            long maxValue = Convert.ToInt64(System.Configuration.ConfigurationManager.AppSettings["NumberMax"]);
 
             // If UoM1 == 9Litres then Decimal else Integer
 
@@ -1292,8 +1311,8 @@ namespace BatchJob
             var val = objWorksheet.DataValidations.AddDecimalValidation(resultchar.ToString());
             val.ShowErrorMessage = true;
             IExcelDataValidation dataValidation;
-            double minValue = Convert.ToDouble(ConfigurationManager.AppSettings["PercentageMin"]);
-            double maxValue = Convert.ToDouble(ConfigurationManager.AppSettings["PercentageMax"]);
+            double minValue = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["PercentageMin"]);
+            double maxValue = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["PercentageMax"]);
 
 
             // If UoM1 == 9Litres then Decimal else Integer
