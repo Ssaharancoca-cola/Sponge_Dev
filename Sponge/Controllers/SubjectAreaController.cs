@@ -94,45 +94,40 @@ namespace Sponge.Controllers
                     //ViewBag.Timelevel = timelvl;
                     //if (ModelState.IsValid)
                     //{
-                        SPONGE_Context sPONGE_Context = new SPONGE_Context();
-                        var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
-                                                     select new SearchFunctionList
-                                                     {
-                                                         SubjectAreaName = func.SUBJECTAREA_NAME
-                                                     }).ToList();
-                        SearchSubjectAreaData = SearchSubjectAreaData.Where(s => s.SubjectAreaName == data.SUBJECTAREA_NAME).ToList();
+                    SPONGE_Context sPONGE_Context = new SPONGE_Context();
+                    var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
+                                                 select new SearchFunctionList
+                                                 {
+                                                     SubjectAreaName = func.SUBJECTAREA_NAME
+                                                 }).ToList();
+                    SearchSubjectAreaData = SearchSubjectAreaData.Where(s => s.SubjectAreaName == data.SUBJECTAREA_NAME).ToList();
 
-                        if (SearchSubjectAreaData.Count <= 0)
+                    if (SearchSubjectAreaData.Count <= 0)
+                    {
+                        if (data.VERSION == "on")
                         {
-                            if (data.VERSION == "on")
-                            {
-                                data.VERSION = "Y";
-                            }
-                            else
-                            {
-                                data.VERSION = "N";
-                                data.ONTIMELEVEL = "0";
-                            }
-                            // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
-                            string PERIOD = sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY && s.TIME_LEVEL == data.TIME_LEVEL).Select(s => s.PERIOD).FirstOrDefault().ToString();
-
-                            data.SUBJECTAREA_TABLE = "SPG_" + data.SUBJECTAREA_NAME;
-                            data.PERIOD = PERIOD;
-                            data.CREATED_DATE = DateTime.Now;
-                            data.CREATED_BY = userName[1].ToString();
-                            sPONGE_Context.SPG_SUBJECTAREA.Add(data);
-
-                            sPONGE_Context.SaveChanges();
-                            return RedirectToAction("ManageSubjectArea");
+                            data.VERSION = "Y";
                         }
                         else
                         {
-                            return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
+                            data.VERSION = "N";
+                            data.ONTIMELEVEL = "0";
                         }
+                        // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
+                        string PERIOD = sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY && s.TIME_LEVEL == data.TIME_LEVEL).Select(s => s.PERIOD).FirstOrDefault().ToString();
+
+                        data.SUBJECTAREA_TABLE = "SPG_" + data.SUBJECTAREA_NAME;
+                        data.PERIOD = PERIOD;
+                        data.CREATED_DATE = DateTime.Now;
+                        data.CREATED_BY = userName[1].ToString();
+                        sPONGE_Context.SPG_SUBJECTAREA.Add(data);
+
+                        sPONGE_Context.SaveChanges();
+                        return RedirectToAction("ManageSubjectArea");
                     }
                     else
                     {
-                        return View("CreateSubjectArea", subjectArea);
+                        return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
                     }
 
                 }
