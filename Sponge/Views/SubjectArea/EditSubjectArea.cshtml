@@ -54,10 +54,10 @@
                     <div class="form-group">
                         <div class="col-sm-4">
                             <label for="Active">Active</label>
-                            <select class="form-control" id="Active" name="ACTIVE_FLAG">
+                            <select asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
                                 <option selected>Select</option>
-                                <option value="@Model.SpgSubjectArea.ACTIVE_FLAG">Active</option>
-                                <option value="@Model.SpgSubjectArea.ACTIVE_FLAG">Inactive</option>
+                                <option value="Y">Active</option>
+                                <option value="N">Inactive</option>
                             </select>
                         </div>
                     </div>

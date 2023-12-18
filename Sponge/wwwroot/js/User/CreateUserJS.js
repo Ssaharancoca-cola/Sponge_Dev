@@ -11,7 +11,6 @@ function handleCB() {
     let mySelectedListItemsText = '';
 
     chBoxes.forEach((checkbox) => {
-        debugger;
         if (checkbox.checked) {
             let checkboxvalue = "S" + checkbox.value;
             let checkboxText = $(`label[id="${checkboxvalue}"]`).text();
@@ -27,9 +26,7 @@ function handleCB() {
 function handleRoleCB() {
     mySelectedListItemsRole = [];
     let mySelectedListItemsTextRole = '';
-    debugger;
     chRoleBoxes.forEach((checkbox) => {
-        debugger;
         if (checkbox.checked) {
             let checkboxText = $(`label[for="${checkbox.value}"]`).text();
             mySelectedListItemsRole.push(checkbox.value);
@@ -64,7 +61,6 @@ function validateForm(form) {
     if (!isValid) {
         alert('Please fill all required fields.');
     }
-    debugger;
     return isValid;
 }
 // Function to validate email
@@ -92,8 +88,7 @@ function validateEmailField() {
 // EMail autocomplete
 $('#email').on('keyup', function () {
     var email = $(this).val();
-    if (email == "")
-    {
+    if (email == "") {
         $('#emailSuggestions').empty();
     }
 
@@ -126,6 +121,17 @@ $(document).on('click', '.suggestion', function () {
     $('#email').val(selectedEmail);
     $('#emailSuggestions').empty();
 });
+// hide suggestions div when input loses focus, after a short delay
+var timeoutId;
+$('#email').on('blur', function () {
+    timeoutId = setTimeout(function () {
+        $('#emailSuggestions').hide();
+    }, 500); // 500 ms delay
+});
+
+$(document).on('mousedown', '.suggestion', function () {
+    clearTimeout(timeoutId);
+});
 $(document).ready(function () {
     handleCB();
     handleRoleCB();
@@ -146,10 +152,10 @@ $(document).ready(function () {
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    debugger;
                     $('#txtUserIdForNewUser').val(data.userId);
                     $('#UserName').val(data.userName);
                     if (data.errorMsg != "" && data.errorMsg != null) {
+                        $('#loader').hide();
                         alert(data.errorMsg);
                         return false;
                     }
@@ -173,41 +179,39 @@ $(document).ready(function () {
         var form = $('#Userform').serialize();
         if ($('input[name="Role"]:checked').length === 0) {
             isValid = false;
-            //alert('Please select at least one role.');
             $('#roleSpan').text('Please select at least one role.');
+        }
+        else {
+            $('#roleSpan').text('');
         }
         if ($('input[name="subFunction"]:checked').length === 0) {
             isValid = false;
-            //alert('Please select at least one sub function.');
             $('#subFunctionSpan').text('Please select at least one sub function.');
+        }
+        else {
+            $('#subFunctionSpan').text('');
         }
         if ($('#activeFlagID').val() === '') {
             isValid = false;
-            //alert('Please select status.');
             $('#activeSpan').text('Please select status.');
         }
-        
         else {
-            $('#roleSpan').text('');
-            $('#subFunctionSpan').text('');
             $('#activeSpan').text('');
-            if (isValid)
-            {
-                
-                $.ajax({
-                    url: '/User/SaveUser',
-                    data: form,
-                    type: 'POST',
-                    success: function (data) {
-                        alert(data);
-                        window.location.href = '/User/ManageUser'
-                    },
-                    error: function (error) {
-                        console.log('Error: ', error);
-                    }
-                });
-            }
+        }
+        if (isValid) {
 
+            $.ajax({
+                url: '/User/SaveUser',
+                data: form,
+                type: 'POST',
+                success: function (data) {
+                    alert(data);
+                    window.location.href = '/User/ManageUser'
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                }
+            });
         }
 
     });

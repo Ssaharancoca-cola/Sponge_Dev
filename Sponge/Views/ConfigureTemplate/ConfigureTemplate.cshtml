@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var usersJson = ViewBag.lstusers;
 }
@@ -19,59 +18,59 @@
                                 <option selected>Select</option>
                                 @foreach (var f in ViewBag.SubjectArea)
                                 {
-                                    <option value="@f.Text" >@f.Value</option>
+                                    <option value="@f.Text">@f.Value</option>
                                 }
                             </select>
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col ">
-                <div class="table-responsive">
+                            <div class="table-responsive">
 
-                    <table id="example" class="display expandable-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Assign To</th>
-                                <th>Data Filter</th>
-                                <th>Setup </th>
-                               
-                            </tr>
-                        </thead>
-                        <tbody>
-                           
-                                <tr>
-                                   @*  <td>@item.UserName</td>
-                                   
-                                    <td>
-                                        <a href="@Url.Action("DataFilter", "ConfigureTemplate", new {id = item.UserId})" style="background-color:lightcoral" class="btn btn-outline-primary btn-icon-text">
+                                <table id="example" class="display expandable-table" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Assign To</th>
+                                            <th>Data Filter</th>
+                                            <th>Setup </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            @*  <td>@item.UserName</td>
+
+                                            <td>
+                                            <a href="@Url.Action("DataFilter", "ConfigureTemplate", new {id = item.UserId})" style="background-color:lightcoral" class="btn btn-outline-primary btn-icon-text">
                                             <i class="ti-file btn-icon-prepend"></i>
                                             Data Filter
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="@Url.Action("Setup", "ConfigureTemplate", new {id = item.UserId})" class="btn btn-outline-primary btn-icon-text">
+                                            </a>
+                                            </td>
+                                            <td>
+                                            <a href="@Url.Action("Setup", "ConfigureTemplate", new {id = item.UserId})" class="btn btn-outline-primary btn-icon-text">
                                             <i class="ti-file btn-icon-prepend"></i>
                                             Setup
-                                        </a>
-                                    </td> *@
-                                </tr>
-                            
-                            
-                        </tbody>
-                    </table>
-                </div>
-                </div>
+                                            </a>
+                                            </td> *@
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
 <!-- Plugin js for this page -->
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
-  
+
 </script>
 <!-- End plugin js for this page -->
 <!-- inject:js -->
@@ -80,7 +79,7 @@
 
 <!-- endinject -->
 <script>
-   
+
     $(document).ready(function () {
         $('#subjectArea').change(function () {
             var subjectArea = $(this).val();
@@ -89,8 +88,7 @@
                     url: '@Url.Action("GetUserList", "ConfigureTemplate")',
                     type: 'GET',
                     data: { subjectAreaId: subjectArea },
-                    success: function (data)
-                    {
+                    success: function (data) {
                         var content = '';
                         if (data || data.length) {
 
@@ -99,47 +97,42 @@
                                 var configID = username.configID;
                                 var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '?configID=' + configID;
                                 var SetupUrl = '@Url.Action("SetUp", "ConfigureTemplate")' + '?configID=' + configID;
+                                let setupText = (username.activeflag == null ? 'Pending' : 'Done');
 
-                               
+
                                 var row = `
-                            <tr>
-                                <td>
-                                         <input type="hidden" value="${username.configID}" name="userid">
+                                <tr>
+                                    <td>
+                                             <input type="hidden" value="${username.configID}" name="userid">
 
-                                                ${username.username}
-                                </td>
-                <td>
-                                                                                            <a href="${datafilterurl}">
-                             <i class="ti-file btn-icon-prepend"></i>
-                                                Data Filter
-                                                     
-                                            </a>
-                                                
-                                        </td>
-                                        <td>
-                                        <a href="${SetupUrl}" >
-                             <i class="ti-file btn-icon-prepend"></i>
-                                                Setup
-                                                 
-                                            </a>
-                                        </td>
-                                             
-                            </tr>
-                        `;
+                                                    ${username.username}
+                                    </td>
+                                    <td>
+                                    <a href="${datafilterurl}">
+                                    <i class="ti-file btn-icon-prepend"></i>
+                                     Data Filter</a>
+                                    </td>
+                                    <td>
+                                    <a href="${SetupUrl}" >
+                                    <i class="ti-file btn-icon-prepend"></i>
+                                            ${setupText} </a>
+                                    </td>
+                                </tr>
+                            `;
                                 tableBody.append(row);
                             });
-                           
+
                         }
-                       
-                       
+
+
                     }
                 });
             }
         });
 
-       
+
     });
-     
+
 </script>
 <!-- <script src="assists/js/virtual-select.min.js"></script>
 <script>

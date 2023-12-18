@@ -108,6 +108,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[SP_CREATEETLVIEW_GROUPCOLUMN]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_CREATEETLVIEW_NORMAL]",
+         "ObjectType": 1
+      },
+      {
          "Name": "[dbo].[SP_GET_MPP_DIMENSIONS]",
          "ObjectType": 1
       },

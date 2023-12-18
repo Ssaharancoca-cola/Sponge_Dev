@@ -16,6 +16,7 @@
         public string APPROVER_EMAILID { get; set; }
         public string APPROVER_NAME { get; set; }
         public string APPROVER_ID { get; set; }
+        public DateTime EFFECTIVE_TO { get; set; }
 
     }
 }

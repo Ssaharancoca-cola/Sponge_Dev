@@ -718,7 +718,7 @@ namespace DAL
             }
             }
             return documentid;
-        }   
+        }
         //public OracleParameter CreateOracleParameter(int value, string parameterName)
         //{
         //    OracleParameter param = new OracleParameter();
@@ -831,64 +831,7 @@ namespace DAL
         //        }
         //    }
         //}
-        //public string CreateViewforSubjectArea(string selectCommand, decimal? subjectAreaId)
-        //{
-        //    var result = "";// new DataSet();
-        //    using (var context = new SPONGE_Context())
-        //    {
-        //        using (var transaction = context.Database.BeginTransaction(IsolationLevel.ReadCommitted))
-        //        {
-        //            using (var cmd = context.Database.Connection.CreateCommand())
-        //            {
-        //                cmd.Transaction = transaction.UnderlyingTransaction;
-        //                //var cmd = context.Database.Connection.CreateCommand();
-        //                cmd.CommandText = selectCommand;
-        //                cmd.CommandType = CommandType.StoredProcedure;
-
-        //                OracleParameter param = new OracleParameter();
-        //                param.ParameterName = "p_SubjectAreaId";
-        //                param.OracleDbType = OracleDbType.Int16;
-        //                param.Direction = ParameterDirection.Input;
-        //                param.Value = Convert.ToInt16(subjectAreaId);
-                        
-
-
-        //                OracleParameter param2 = new OracleParameter();
-        //                param2.ParameterName = "p_success";
-        //                param2.Direction = ParameterDirection.Output;
-        //                param2.OracleDbType = OracleDbType.Int16;
-        //                param2.Size = 20000;
-        //                cmd.Parameters.Add(param);
-        //                cmd.Parameters.Add(param2);
-        //                //cmd.Parameters.Add(param2);
-        //                //cmd.Parameters.Add(param2);
-
-        //                try
-        //                {
-        //                    // context.Database.Connection.Open();
-        //                    cmd.ExecuteNonQuery();
-        //                    result = param2.Value.ToString();
-
-        //                }
-        //                catch (Exception ex)
-        //                {
-
-        //                    ErrorLog lgerr = new ErrorLog();
-        //                    lgerr.LogErrorInTextFile(ex);
-        //                    SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
-
-        //                }
-        //                finally
-        //                {
-        //                    context.Database.Connection.Close();
-        //                }
-        //            }
-        //            return result;
-
-        //        }
-        //    }
-        //}
-
+       
         public List<T> ConvertDataTable<T>(DataTable dt)
         {
             List<T> data = new List<T>();

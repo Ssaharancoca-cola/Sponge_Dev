@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
@@ -18,11 +19,14 @@ namespace Sponge.Controllers
     public class ConfigureTemplateController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-
-        public ConfigureTemplateController(ILogger<HomeController> logger)
+        private IConfiguration _configuration;
+        public ConfigureTemplateController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
+        
+
         public IActionResult ConfigureTemplate()
         {
             SPONGE_Context spONGE_Context = new SPONGE_Context();
@@ -32,7 +36,9 @@ namespace Sponge.Controllers
             return View();
         }
         public IActionResult SetUp(int configID)
-        {            
+        {
+            
+
             using (SPONGE_Context context = new SPONGE_Context())
             {
                var  result = context.SPG_CONFIGURATION
@@ -59,11 +65,14 @@ namespace Sponge.Controllers
                             configUser.CONFIGURATION.ESCALATION_DATE,
                             configUser.CONFIGURATION.APPROVER_EMAILD,
                             configUser.CONFIGURATION.APPROVER_NAME,
-                            configUser.CONFIGURATION.APPROVER_ID
+                            configUser.CONFIGURATION.APPROVER_ID,
+                            configUser.CONFIGURATION.EFFECTIVE_TO,
+                            configUser.CONFIGURATION.Created_On
 
                         })
                     .Where(x => x.CONFIG_ID == configID)
                     .FirstOrDefault();
+                
 
                 if (result != null)
                 {
@@ -95,6 +104,8 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             // Fetch the record to be updated
             var configRecord = spONGE_Context.SPG_CONFIGURATION.FirstOrDefault(x => x.CONFIG_ID == configID);
+            // TO set the default effective to date
+            var defaultEffectiveToDate = _configuration.GetSection("AppSettings:DefaultEffectiveToDate").Value;
 
             if (configRecord != null)
             {
@@ -112,6 +123,14 @@ namespace Sponge.Controllers
                 configRecord.APPROVER_ID = data.APPROVER_ID;
                 configRecord.MODIFIED_BY = userName[1];
                 configRecord.MODIFIED_DATE = DateTime.Now;
+                if (configRecord.EFFECTIVE_TO == null)
+                {
+                    configRecord.EFFECTIVE_TO = Convert.ToDateTime(defaultEffectiveToDate);
+                }
+                else
+                {
+                    configRecord.EFFECTIVE_TO = data.EFFECTIVE_TO;
+                }
                 // Save the changes
                 spONGE_Context.SaveChanges();
             }
@@ -156,11 +175,12 @@ namespace Sponge.Controllers
             var usernames = from U in context.SPG_USERS
                             join SPG in context.SPG_CONFIGURATION on U.USER_ID equals SPG.USER_ID
                             where SPG.SUBJECTAREA_ID == subjectAreaId
-                            group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, U.ACTIVE_FLAG } into g
+                            group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, SPG.ACTIVE_FLAG} into g
                             select new
                             {
                                 configID = g.Key.CONFIG_ID,
                                 username = g.Key.Name,
+                                activeflag  = g.Key.ACTIVE_FLAG
                             };
          
 
