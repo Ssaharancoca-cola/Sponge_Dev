@@ -44,7 +44,13 @@ namespace Sponge.Controllers
             SelectListItem item = new SelectListItem();
             ViewBag.Timelevel = timelvl;
             ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubjectArea aleardy exist" : "";
-            return View();
+            SubjectArea spg = new SubjectArea
+            {
+                SpgSubfunction = new SPG_SUBFUNCTION(),
+                SpgSubjectArea = new SPG_SUBJECTAREA()
+            };
+
+            return View(spg);
         }
         public IActionResult EditSubjectArea(int id)
         {
@@ -55,7 +61,7 @@ namespace Sponge.Controllers
                             select new SubjectArea { SpgSubjectArea = sp, SpgSubfunction = p }).FirstOrDefault();
             return View(viewmodel);
         }
-        public IActionResult UpdateSubjectArea(int id, string activeFlag)
+        public IActionResult UpdateSubjectArea(int id, string activeFlag, SPG_SUBJECTAREA spg)
         {
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
@@ -63,14 +69,16 @@ namespace Sponge.Controllers
             
             if (lst1 != null)
             {
-                lst1.ACTIVE_FLAG = activeFlag;
+                //lst1.ACTIVE_FLAG = activeFlag;
+                lst1.ACTIVE_FLAG = spg.ACTIVE_FLAG;
                 lst1.MODIFIED_BY = userName[1];
                 lst1.MODIFIED_DATE = DateTime.Now;
                 spONGE_Context.SaveChanges();
             }
            return RedirectToAction("ManageSubjectArea");
         }
-        public IActionResult SaveSubjectArea(SPG_SUBJECTAREA data,SubjectArea subjectArea)
+        [HttpPost]
+        public IActionResult SaveSubjectArea(SPG_SUBJECTAREA data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
 
@@ -79,13 +87,13 @@ namespace Sponge.Controllers
                 try
                 {
                     SPONGE_Context spONGE_Context = new SPONGE_Context();
-                    var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
-                    ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
-                    List<SelectListItem> timelvl = new List<SelectListItem>();
-                    SelectListItem item = new SelectListItem();
-                    ViewBag.Timelevel = timelvl;
-                    if (ModelState.IsValid)
-                    {
+                    //var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
+                    //ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
+                    //List<SelectListItem> timelvl = new List<SelectListItem>();
+                    //SelectListItem item = new SelectListItem();
+                    //ViewBag.Timelevel = timelvl;
+                    //if (ModelState.IsValid)
+                    //{
                         SPONGE_Context sPONGE_Context = new SPONGE_Context();
                         var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
                                                      select new SearchFunctionList
@@ -121,11 +129,6 @@ namespace Sponge.Controllers
                         {
                             return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
                         }
-                    }
-                    else
-                    {
-                        return View("CreateSubjectArea", subjectArea);
-                    }
 
                 }
                 catch (Exception ex)

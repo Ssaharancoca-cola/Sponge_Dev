@@ -54,7 +54,7 @@
 
                                                 <label for=@Role.RoleId>
 
-                                                    <input type="checkbox" readonly=@Role.Selected checked=@Role.Selected name="Role" value=@Role.RoleId>@Role.RoleName
+                                                    <input type="checkbox" disabled=@Role.Selected checked=@Role.Selected name="Role" value=@Role.RoleId>@Role.RoleName
                                                 </label>
                                             </li>
                                         }
@@ -78,7 +78,7 @@
 
                                             <label id="@("S"+subfunction.SubFunctionId)">
 
-                                                    <input type="checkbox" readonly=@subfunction.Selected checked=@subfunction.Selected name="subFunction" value=@subfunction.SubFunctionId>@subfunction.SubfunctionName
+                                                    <input type="checkbox" disabled=@subfunction.Selected checked=@subfunction.Selected name="subFunction" value=@subfunction.SubFunctionId>@subfunction.SubfunctionName
                                                 </label>
                                                 </li>
                                             }
@@ -216,10 +216,9 @@
                 data: form,
                 type: 'POST',
                 success: function (data) {
-                    debugger;
-                   
-                    onSuccess(data);
-                    alert("Update Successfully");
+                    // onSuccess(data);
+                    alert(data);
+                    window.location.href = "/User/ManageUser"
                 },
                 error: function (error) {
                     console.log('Error: ', error);

@@ -2,9 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-@using (Html.BeginForm("SaveSubjectArea", "SubjectArea", Model, FormMethod.Post))
-{
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/subjectarea/createsubjectarea.js"></script>
+</head>
+@* @using (Html.BeginForm("SaveSubjectArea", "SubjectArea", Model, FormMethod.Post, new { id = "createSubjectFormID" })) *@
+
+<form asp-controller="SubjectArea" asp-action="SaveSubjectArea" method="post" id="createSubjectFormID">
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
@@ -14,8 +18,8 @@
                         <div class="form-group row ">
                             <div class="col">
                                 <label for="SubFunction">Sub Function</label>
-                                <select asp-for="SpgSubjectArea.SUBFUNCTION_ID" class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
-                                    <option selected>Select</option>
+                                <select required asp-for="SpgSubjectArea.SUBFUNCTION_ID" class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
+                                    <option selected value="">Select</option>
                                     @foreach (var f in ViewBag.SubFunction)
                                     {
                                         <option value="@f.Text">@f.Value</option>
@@ -24,16 +28,16 @@
                                 <span asp-validation-for="SpgSubjectArea.SUBFUNCTION_ID" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col">
-                                <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME" for="SubjectAreaName">Subject Area Name</label>
-                                <input asp-for="SpgSubjectArea.SUBJECTAREA_NAME" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-zA-Z]/i.test(event.key)" />
-                                <span asp-validation-for="@Model.SpgSubjectArea.SUBJECTAREA_NAME" class="text-danger" style="font-size:10px"></span>
+                                <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME">Subject Area Name</label>
+                                <input required asp-for="SpgSubjectArea.SUBJECTAREA_NAME" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-zA-Z]/i.test(event.key)" />
+                                <span asp-validation-for="SpgSubjectArea.SUBJECTAREA_NAME" class="text-danger" style="font-size:10px"></span>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col">
                                 <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period</label>
-                                <select asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
-                                    <option selected>Select</option>
+                                <select required asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
+                                    <option selected value="">Select</option>
                                     <option value="CURRENT">Current</option>
                                     <option value="NEXT">Next</option>
                                     <option value="PREVIOUS">Previous</option>
@@ -42,8 +46,8 @@
                             </div>
                             <div class="col-sm-4">
                                 <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency</label>
-                                <select asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
-                                    <option selected>Select</option>                                    
+                                <select required asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
+                                    <option selected value="">Select</option>                                    
                                     <option value="YEARLY">Yearly</option>
                                     <option value="HALF_YEARLY">Half Yearly</option>
                                     <option value="QUARTERLY">Quarterly</option>
@@ -55,7 +59,8 @@
                             </div>
                             <div class="col-sm-4">
                                 <label for="ForTime">For Time</label>
-                                <select class="form-control" id="ForTime" name="TIME_LEVEL">
+                                <select required class="form-control" id="ForTime" name="TIME_LEVEL">
+                                    <option disabled selected value="">Select</option>
                                     @if (Model != null)
                                     {
                                         @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @disabled = "disabled" })
@@ -71,8 +76,8 @@
                         <div class="form-group row">
                             <div class="col-sm-4">
                                 <label asp-for="SpgSubjectArea.ACTIVE_FLAG" for="Active">Active</label>
-                                <select asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
-                                    <option selected>Select</option>
+                                <select required asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
+                                    <option selected value="">Select</option>
                                     <option value="Y">Active</option>
                                     <option value="N">Inactive</option>
                                 </select>
@@ -100,77 +105,14 @@
                         </div>
                         <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
                         
-                        <button type="submit" name="Command" value="Save" class="btn btn-primary">Save</button>
+                        @* <button id="validateFormBtnID" name="ValidateForm" class="btn btn-primary">Save</button> *@
+                        <button id="saveFormData" type="submit" name="Command" value="Save" class="btn btn-primary">Submit</button>
                         
                     </form>
                 </div>
             </div>
         </div>
     </div>
-}
+</form>
 
-<script type="text/javascript">
 
-    $(document).ready(function () {
-        $("#Frequency").change(function () {
-            var selectedFrequency = $(this).val();
-            if (selectedFrequency) {
-                $("#ForTime").prop("disabled", false);
-                $.ajax({
-                    url: '@Url.Action("BindGranularity", "SubjectArea")',
-                    type: 'GET',
-                    data: { frequency: selectedFrequency },
-                    success: function (data) {
-                        debugger;
-                        var options = '';
-                        $.each(data, function (i, item) {
-                            options += '<option value="' + item.value + '">' + item.text + '</option>';
-                        });
-                        $('#ForTime').html(options);
-                    }
-                });
-                if ($("#Version").is(":checked")) {
-                    $.ajax({
-                        url: '@Url.Action("BindTimeLevel", "SubjectArea")',
-                        type: 'GET',
-                        data: { frequency: selectedFrequency },
-                        success: function (data) {
-                            var options = '';
-                            $.each(data, function (i, item) {
-                                options += '<option value="' + item.value + '">' + item.text + '</option>';
-                            });
-                            $('#OnTime').html(options);
-                        }
-                    });
-                }
-            } else {
-                $("#ForTime").prop("disabled", true);
-            }
-        });
-
-        $("#Version").change(function () {
-            if ($(this).is(":checked")) {
-                $("#OnTimeDiv").show();
-                var selectedFrequency = $("#Frequency").val();
-                if (selectedFrequency) {
-                    $.ajax({
-                        url: '@Url.Action("BindTimeLevel", "SubjectArea")',
-                        type: 'GET',
-                        data: { frequency: selectedFrequency },
-                        success: function (data) {
-                            
-                            var options = '';
-                            $.each(data, function (i, item) {
-                                options += '<option value="' + item.value + '">' + item.text + '</option>';
-                            });
-                            $('#OnTime').html(options);
-                        }
-                    });
-                }
-            } else {
-                $("#OnTimeDiv").hide();
-            }
-        });
-    });
-
-</script>

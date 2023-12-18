@@ -15,7 +15,6 @@ namespace DAL.Models
         [Required(ErrorMessage = "This field is required")]
         public string SUBJECTAREA_NAME { get; set; }
         public string SUBJECTAREA_TABLE { get; set; }
-        [Required(ErrorMessage = "This field is required")]
         public string VERSION { get; set; }
         [Required(ErrorMessage = "This field is required")]
         public string ACTIVE_FLAG { get; set; }
