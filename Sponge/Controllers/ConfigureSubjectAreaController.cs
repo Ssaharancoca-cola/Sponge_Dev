@@ -104,7 +104,7 @@ namespace Sponge.Controllers
             foreach (var Master in dimensions)
             {
                 var selectedMaster = sPONGE_Context.SPG_SUBJECT_MASTER
-                    .Where(x => x.DIMENSION_TABLE == Master.Key)
+                    .Where(x => x.DIMENSION_TABLE == Master.Key && x.SUBJECTAREA_ID == selectedSubjectArea && x.IS_SHOW =="Y")
                     .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME= o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
                         .Distinct().ToList();
                 selectedMasters.AddRange(selectedMaster);
@@ -145,20 +145,19 @@ namespace Sponge.Controllers
                     DIMENSION_TABLE = x.DIMENSION_TABLE,
                     FIELD_NAME = x.COLUMN_NAME,
                     SUBJECTAREA_ID = selectedSubjectArea,
-                    IS_KEY = "N",
+                    IS_KEY = "Y",
                     IS_SHOW = "N",
-                    DISPLAY_NAME = master.DisplayName,
-                    MASTER_NAME = master.Master,
-                   
+                    DISPLAY_NAME = master.DisplayName +" Code",
+                    MASTER_NAME = master.Master
                 }));
                 resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
                 {
                     DIMENSION_TABLE = x.DIMENSION_TABLE,
                     FIELD_NAME = master.FieldName,
                     SUBJECTAREA_ID = selectedSubjectArea,
-                    IS_KEY = "Y",
+                    IS_KEY = "N",
                     IS_SHOW = "Y",
-                    DISPLAY_NAME = master.DisplayName + " Code",
+                    DISPLAY_NAME = master.DisplayName, 
                     MASTER_NAME = master.Master
                 }));
                 sPONGE_Context.SPG_SUBJECT_MASTER.AddRange(resultData);
@@ -379,7 +378,6 @@ namespace Sponge.Controllers
                                        CollectionType = "Master",
                                        LookUpType = "",
                                        IsLookUp = "N",
-                                       IsKey = p.IS_KEY,
                                        DataType = "",
                                        IsShow = p.IS_SHOW,
                                        MasterName = p.MASTER_NAME,
@@ -417,11 +415,12 @@ namespace Sponge.Controllers
             try
             {
                 string FormedQueryLookupType = string.Empty;
-                //if (IsGroupColumnNameExist)
-                
-                //else
-                   
-               
+                if (IsGroupColumnNameExist)
+                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL_BKP";
+                else
+                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL";
+                GetDataSet objDeleteSetValue = new GetDataSet();
+                // objDeleteSetValue.CreateViewforSubjectArea(FormedQueryLookupType, SubjectAreaId);
             }
             catch (Exception ex)
             {

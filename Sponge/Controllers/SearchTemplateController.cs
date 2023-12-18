@@ -106,14 +106,14 @@ namespace Sponge.Controllers
                                    && conf.ACTIVE_FLAG == active
             select new SearchDataList
             {
-
+                ConfigId = conf.CONFIG_ID,
+                SubjectAreaId = sa.SUBJECTAREA_ID,
                 SubjectAreaName = sa.SUBJECTAREA_NAME,
                 AssignedUser = u.Name,
                 Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
-                EffectiveDate = (DateTime)conf.Created_On,
-                ManualSendResendUrl = Url.Action("ManualSend", "SearchTemplate", new { id = conf.CONFIG_ID })
+                EffectiveDate = (DateTime)conf.Created_On,               
+            ManualSendResendUrl =(conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
             }).Distinct().ToList();
-
             return Json(SearchConfgData);
         }
         public IActionResult ManualSend()
