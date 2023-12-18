@@ -129,6 +129,11 @@ namespace Sponge.Controllers
                         {
                             return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
                         }
+                    }
+                    else
+                    {
+                        return View("CreateSubjectArea", subjectArea);
+                    }
 
                 }
                 catch (Exception ex)

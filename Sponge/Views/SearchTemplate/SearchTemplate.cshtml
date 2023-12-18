@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<DAL.Models.SPG_SUBFUNCTION>
+@{
+    // var selectedDataList = ViewBag.SearchDataList;
+
+}
 @using (Html.BeginForm("GetSearchData", "SearchTemplate", Model, FormMethod.Post))
 {
 <div class="row">
@@ -77,28 +81,8 @@
                                 <th>Manual Send / Resend</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>PGWA_CROSS_AUDIT</td>
-                                <td>22-08-2023</td>
-                                <td></td>
-                                <td>Y</td>
-                                <td>
-                                    <a href="#">Configuration in Progress</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>PGWA_CROSS_AUDIT</td>
-                                <td>22-08-2023</td>
-                                <td></td>
-                                <td>Y</td>
-                                <td>
-                                    <a href="@Url.Action("ManualSend", "SearchTemplate")" >Generate Template</a>
+                        <tbody>                            
 
-                                </td>
-                            </tr>
-                           
-                          
                         </tbody>
                     </table>
                 </div>
@@ -177,18 +161,27 @@
                         active: active,
                     },
                     success: function (data) {
-                        // clear previous data
-                        dataTable.clear().draw();
-
-                        // add new data
-                        $.each(data, function (i, row) {
-                            dataTable.row.add([
-                                row.SubjectArea,
-                                row.EffectiveDate,
-                                row.AssignedUser,
-                                row.Active,
-                                '<a href="' + row.ManualSendResendUrl + '">Generate Template</a>',
-                            ]).draw();
+                        // Here I get DataTable instance
+                        debugger;
+                        var table = $('#example').DataTable({
+                            destroy: true,
+                            data: data,
+                            columns: [
+                                { data: 'subjectAreaName' },
+                                { data: 'effectiveDate' },
+                                { data: 'assignedUser' },
+                                { data: 'active' },
+                                {
+                                    data: 'manualSendResendUrl',
+                                    render: function (data, type, row) {
+                                        if (data == 'Generate Template') {
+                                            return '<a href="/ManualSendResend/ManualSendResendExcel/' + row.configId + '/' + row.subjectAreaId + '">' + data + '</a>';
+                                        } else {
+                                            return data; // this will not be a link
+                                        }
+                                    }
+                                },
+                            ],
                         });
                         $('#resultsGrid').show();
                     },

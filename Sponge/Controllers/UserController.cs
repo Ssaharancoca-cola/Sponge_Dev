@@ -88,7 +88,7 @@ namespace Sponge.Controllers
         //}
         public ActionResult GetEmailSuggestions(string email)
         {
-            List<string> matchingEmails = new List<string>();
+           List<string> matchingEmails = new List<string>();
 
             using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
             {
