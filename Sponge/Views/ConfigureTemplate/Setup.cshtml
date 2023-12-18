@@ -2,7 +2,10 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
 @using (Html.BeginForm("SaveSetUp", "ConfigureTemplate", Model, FormMethod.Post))
 {
     <div class="row">
@@ -38,7 +41,7 @@
                             <div class="col">
                                 <label for="Active">Active</label>
                                 <select class="form-control" id="Active" name="ACTIVE_FLAG">
-                                    <option value="1">Yes</option>
+                                    <option selected value="1">Yes</option>
                                     <option value="0">No</option>
                                 </select>
                             </div>
@@ -52,7 +55,7 @@
 
                             <div class="col">
                                 <label for="lockDate">Lock Date</label>
-                                <input type="text" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">days after template generation date
+                                <input required type="number" min="0" max="30" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">days after template generation date
                             </div>
                         </div>
 
@@ -75,12 +78,26 @@
                                 <input type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich">day when template generated
                             </div>
                             <div class="col">
-                                <label for="lockDate">Upload Reminder Date</label>
-                                <input type="text" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days after template generation date
+                                <label for="uploadReminder">Upload Reminder Date</label>
+                                <input required type="number" min="0" max="15" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days after template generation date
                             </div>
                             <div class="col">
                                 <label for="EscalationDate">Escalation  Date</label>
-                                <input type="text" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
+                                <input required type="number" min="0" max="15" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
+                            </div>
+                        </div>
+                        <div>
+                            @{
+                                string dateEffective = "";
+                                if (@ViewBag.Result.EFFECTIVE_TO != null)
+                                {
+                                    dateEffective = @ViewBag.Result.EFFECTIVE_TO.ToString("yyyy-MM-dd");
+                                }
+                            }
+                            
+                            <div id="EffectiveToDivID" class="col-md-3" style="display:none">
+                                <label for="EffectiveToDate">Effective to Date</label>
+                                <input min="@ViewBag.Result.Created_On.ToString("yyyy-MM-dd")" id="effectiveToDateID" name="EFFECTIVE_TO" type="date" value="@dateEffective" class="form-control" />
                             </div>
                         </div>
                         <h6 class="mt-5 mb-3">Add Approver Details</h6>
@@ -105,6 +122,9 @@
                                        readonly>
                             </div>
                         </div>
+                        <div style="display:none">
+                            <input hidden type="text" id="createdOnID" value="@ViewBag.Result.Created_On" />
+                        </div>
                         <button class="btn btn-light mr-2">Cancel</button>
                         <button type="submit" id="Savebutton" class="btn btn-primary">Save</button>
 
@@ -122,7 +142,11 @@
 
     $(document).ready(function () {
         $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');
+        if ($("#Active").val() == '0') {  
+            $('#EffectiveToDivID').show();
+        }
         $("#Scheduled").val('@ViewBag.Result.SCHEDULED');
+        
         $("#PatternMonth").val('@ViewBag.Result.PATTERN_MONTH');
         if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "YEARLY") {
             $("#PatternMonth").show();
@@ -130,11 +154,32 @@
         if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "HALF_YEARLY") {
             $("#PatternMonth").show();
         }
-       
+        // The code to show effective to Date field on the form if value of Active is No
+        $('#Active').on('change', function () {
+            if($("#Active").val() == '0'){ 
+                $('#EffectiveToDivID').show();
+            }
+            else {
+                $('#EffectiveToDivID').hide();
+            }
+        });
+        $('#effectiveToDateID').on('blur', function () {
+            let createdOn = new Date($('#createdOnID').val());
+            let effectiveToDate = new Date($(this).val());
+
+            if (effectiveToDate < createdOn) {
+                alert('Effective To Date should not be earlier than Created On Date');
+                $(this).val('');  // Clear the input
+            }
+
+        });
+
         if ($("#Scheduled").val() == "Y") {
             $("#IsScheduled").show();
         } else {
             $("#IsScheduled").hide();
+            document.getElementById('uploadreminder').required = false;
+            document.getElementById('Escalation').required = false;
         }
 
         $("#Scheduled").change(function () {
@@ -144,6 +189,8 @@
             }
             else {
                 $("#IsScheduled").hide();
+                document.getElementById('uploadreminder').required = false;
+                document.getElementById('Escalation').required = false;
             }
         });
         $("#getapprover").click(function (e) {

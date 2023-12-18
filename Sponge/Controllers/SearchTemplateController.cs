@@ -97,23 +97,53 @@ namespace Sponge.Controllers
         [HttpPost]
         public JsonResult GetSearchData(int subFunctionId, int subjectAreaId, string assignToUser, DateTime dateFrom, DateTime dateTo, string active)
         {
+            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sponge_context = new();
-            var SearchConfgData = (from conf in sponge_context.SPG_CONFIGURATION
+            List<SearchDataList> SearchConfgData = new();
+            var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] || x.ROLE_ID == 5);
+            int RoleID = 0;
+            if (role != null)
+            {
+                RoleID = (int)role.ROLE_ID;
+            }
+            if (RoleID == 5)
+            {
+                SearchConfgData = (from conf in sponge_context.SPG_CONFIGURATION
+                                   join u in sponge_context.SPG_USERS on conf.USER_ID equals u.USER_ID
+                                   join sa in sponge_context.SPG_SUBJECTAREA on conf.SUBJECTAREA_ID equals sa.SUBJECTAREA_ID
+                                   join sf in sponge_context.SPG_SUBFUNCTION on sa.SUBFUNCTION_ID equals sf.SUBFUNCTION_ID
+                                   where sf.SUBFUNCTION_ID == subFunctionId && sa.SUBJECTAREA_ID == subjectAreaId
+                                   && conf.ACTIVE_FLAG == active
+                                   select new SearchDataList
+                                   {
+                                       ConfigId = conf.CONFIG_ID,
+                                       SubjectAreaId = sa.SUBJECTAREA_ID,
+                                       SubjectAreaName = sa.SUBJECTAREA_NAME,
+                                       AssignedUser = u.Name,
+                                       Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
+                                       EffectiveDate = (DateTime)conf.Created_On,
+                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
+                                   }).Distinct().ToList();
+            }
+            else
+            {
+                SearchConfgData = (from conf in sponge_context.SPG_CONFIGURATION
                                    join u in sponge_context.SPG_USERS on conf.USER_ID equals u.USER_ID
                                    join sa in sponge_context.SPG_SUBJECTAREA on conf.SUBJECTAREA_ID equals sa.SUBJECTAREA_ID
                                    join sf in sponge_context.SPG_SUBFUNCTION on sa.SUBFUNCTION_ID equals sf.SUBFUNCTION_ID
                                    where sf.SUBFUNCTION_ID == subFunctionId && sa.SUBJECTAREA_ID == subjectAreaId && u.USER_ID == assignToUser
                                    && conf.ACTIVE_FLAG == active
-            select new SearchDataList
-            {
-                ConfigId = conf.CONFIG_ID,
-                SubjectAreaId = sa.SUBJECTAREA_ID,
-                SubjectAreaName = sa.SUBJECTAREA_NAME,
-                AssignedUser = u.Name,
-                Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
-                EffectiveDate = (DateTime)conf.Created_On,               
-            ManualSendResendUrl =(conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
-            }).Distinct().ToList();
+                                   select new SearchDataList
+                                   {
+                                       ConfigId = conf.CONFIG_ID,
+                                       SubjectAreaId = sa.SUBJECTAREA_ID,
+                                       SubjectAreaName = sa.SUBJECTAREA_NAME,
+                                       AssignedUser = u.Name,
+                                       Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
+                                       EffectiveDate = (DateTime)conf.Created_On,
+                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
+                                   }).Distinct().ToList();
+            }
             return Json(SearchConfgData);
         }
         public IActionResult ManualSend()

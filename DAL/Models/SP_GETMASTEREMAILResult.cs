@@ -7,5 +7,6 @@ namespace DAL.Models
 {
     public partial class SP_GETMASTEREMAILResult
     {
+        public string Display_name { get; set; }
     }
 }
