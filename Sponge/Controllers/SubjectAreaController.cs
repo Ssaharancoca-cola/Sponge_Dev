@@ -84,8 +84,8 @@ namespace Sponge.Controllers
                     List<SelectListItem> timelvl = new List<SelectListItem>();
                     SelectListItem item = new SelectListItem();
                     ViewBag.Timelevel = timelvl;
-                    if (ModelState.IsValid)
-                    {
+                    //if (ModelState.IsValid)
+                    //{
                         SPONGE_Context sPONGE_Context = new SPONGE_Context();
                         var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
                                                      select new SearchFunctionList
@@ -121,11 +121,11 @@ namespace Sponge.Controllers
                         {
                             return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
                         }
-                    }
-                    else
-                    {
-                        return View("CreateSubjectArea", subjectArea);
-                    }
+                    //}
+                    //else
+                    //{
+                    //    return View("CreateSubjectArea", subjectArea);
+                    //}
 
                 }
                 catch (Exception ex)

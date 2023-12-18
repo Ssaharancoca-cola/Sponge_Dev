@@ -145,17 +145,18 @@ namespace Sponge.Controllers
                     DIMENSION_TABLE = x.DIMENSION_TABLE,
                     FIELD_NAME = x.COLUMN_NAME,
                     SUBJECTAREA_ID = selectedSubjectArea,
-                    IS_KEY = "Y",
+                    IS_KEY = "N",
                     IS_SHOW = "N",
                     DISPLAY_NAME = master.DisplayName,
-                    MASTER_NAME = master.Master
+                    MASTER_NAME = master.Master,
+                   
                 }));
                 resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
                 {
                     DIMENSION_TABLE = x.DIMENSION_TABLE,
                     FIELD_NAME = master.FieldName,
                     SUBJECTAREA_ID = selectedSubjectArea,
-                    IS_KEY = "N",
+                    IS_KEY = "Y",
                     IS_SHOW = "Y",
                     DISPLAY_NAME = master.DisplayName + " Code",
                     MASTER_NAME = master.Master
@@ -378,6 +379,7 @@ namespace Sponge.Controllers
                                        CollectionType = "Master",
                                        LookUpType = "",
                                        IsLookUp = "N",
+                                       IsKey = p.IS_KEY,
                                        DataType = "",
                                        IsShow = p.IS_SHOW,
                                        MasterName = p.MASTER_NAME,
@@ -415,12 +417,11 @@ namespace Sponge.Controllers
             try
             {
                 string FormedQueryLookupType = string.Empty;
-                if (IsGroupColumnNameExist)
-                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL_BKP";
-                else
-                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL";
-                GetDataSet objDeleteSetValue = new GetDataSet();
-                // objDeleteSetValue.CreateViewforSubjectArea(FormedQueryLookupType, SubjectAreaId);
+                //if (IsGroupColumnNameExist)
+                
+                //else
+                   
+               
             }
             catch (Exception ex)
             {

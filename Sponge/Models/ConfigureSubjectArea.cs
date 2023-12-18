@@ -43,6 +43,7 @@ namespace Sponge.Models
         public string UOM { get; set; }
         public string CollectionType { get; set; }
         public string IsShow { get; set; }
+        public string IsKey { get; set; }
         public string DimensionTable { get; set; }
         public string MasterName { get; set; }
     }
