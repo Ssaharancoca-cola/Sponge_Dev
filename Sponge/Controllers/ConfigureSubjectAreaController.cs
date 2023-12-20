@@ -226,7 +226,7 @@ namespace Sponge.Controllers
                 sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);
                 sPONGE_Ctx.SaveChanges();
             }
-            var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIG_STRUCTURE
+            var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIGURATION
                                   join user in sPONGE_Ctx.SPG_USERS on config.USER_ID equals user.USER_ID
                                   where config.SUBJECTAREA_ID == selectedSubjectArea
                                   select new 

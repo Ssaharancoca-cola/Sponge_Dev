@@ -15,7 +15,7 @@
                         <thead>
                             <tr>
                                 <th>
-                                    <input type="checkbox" id="=Select">
+                                        <input type="checkbox" id="select-all">
                                 </th>
                                 <th>User Name</th>
                             </tr>
@@ -39,22 +39,28 @@
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    var selectedUser = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.SelectedUser));
     $(document).ready(function () {
+        $('#select-all').click(function () {
+            var isChecked = $(this).prop('checked');
+            $('input[name="UserName"]').prop('checked', isChecked);
+        });
         $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
             debugger;
             var tableBody = $("#example tbody");
             usernames.forEach(function (username) {
-               
+                var isChecked = selectedUser.some(function (selected) {
+                    return selected.UserName === username.username;
+                }) ? 'checked' : '';
                 var row = `
-                        <tr>
-                            <td>
-                                 <input type="hidden" value="${username.userid}" name="userid">
-
-                                        <input type="checkbox" name="UserName" value="${username.username}">
-                            </td>
-                            <td>${username.username}</td>
-                        </tr>
-                    `;
+        <tr>
+            <td>
+                <input type="hidden" value="${username.userid}" name="userid">
+                <input type="checkbox" name="UserName" value="${username.username}" ${isChecked} ${isChecked === 'checked' ? 'disabled' : ''}>
+            </td>
+            <td>${username.username}</td>
+        </tr>
+        `;
                 tableBody.append(row);
             });
         });
@@ -86,17 +92,17 @@
             $.each(userkeyvaluepair, function (i, selecteduser) {
                 $('<input>').attr({
                     type: 'hidden',
-                    name: 'selectedusers[' + i + '].UserName',
+                    name: 'selectedusers[' + i + '][UserName]',
                     value: selecteduser.name
                 }).appendTo('form');
                 $('<input>').attr({
                     type: 'hidden',
-                    name: 'selectedusers[' + i + '].UserId',
+                    name: 'selectedusers[' + i + '][UserId]',
                     value: selecteduser.value
                 }).appendTo('form');
                 $('<input>').attr({
                     type: 'hidden',
-                    name: 'selectedusers[' + i + '].IsSelected',
+                    name: 'selectedusers[' + i + '][IsSelected]',
                     value: selecteduser.isSelected
                 }).appendTo('form');
             });
