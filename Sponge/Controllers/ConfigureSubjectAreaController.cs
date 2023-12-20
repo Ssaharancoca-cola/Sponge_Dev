@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using NuGet.Packaging;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
@@ -129,7 +130,7 @@ namespace Sponge.Controllers
         [HttpPost]
         public IActionResult SaveMasters(List<SaveMaster> data)
         {
-            var resultData = new List<SPG_SUBJECT_MASTER>();
+           
             SPONGE_Context sPONGE_Context = new();
             var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
             TempData.Keep();
@@ -140,30 +141,36 @@ namespace Sponge.Controllers
                     .Select(x => new { x.DIMENSION_TABLE, x.COLUMN_NAME })
                     .ToList();
 
-                resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
+                foreach (var item in dimensionData)
                 {
-                    DIMENSION_TABLE = x.DIMENSION_TABLE,
-                    FIELD_NAME = x.COLUMN_NAME,
-                    SUBJECTAREA_ID = selectedSubjectArea,
-                    IS_KEY = "Y",
-                    IS_SHOW = "N",
-                    DISPLAY_NAME = master.DisplayName +" Code",
-                    MASTER_NAME = master.Master
-                }));
-                resultData.AddRange(dimensionData.Select(x => new SPG_SUBJECT_MASTER
-                {
-                    DIMENSION_TABLE = x.DIMENSION_TABLE,
-                    FIELD_NAME = master.FieldName,
-                    SUBJECTAREA_ID = selectedSubjectArea,
-                    IS_KEY = "N",
-                    IS_SHOW = "Y",
-                    DISPLAY_NAME = master.DisplayName, 
-                    MASTER_NAME = master.Master
-                }));
-                sPONGE_Context.SPG_SUBJECT_MASTER.AddRange(resultData);
+                    var newSubjectMasterEntity1 = new SPG_SUBJECT_MASTER
+                    {
+                        DIMENSION_TABLE = item.DIMENSION_TABLE,
+                        FIELD_NAME = item.COLUMN_NAME,
+                        SUBJECTAREA_ID = selectedSubjectArea,
+                        IS_KEY = "Y",
+                        IS_SHOW = "N",
+                        DISPLAY_NAME = master.DisplayName + " Code",
+                        MASTER_NAME = master.Master
+                    };
+
+                    sPONGE_Context.SPG_SUBJECT_MASTER.Add(newSubjectMasterEntity1);
+
+                    var newSubjectMasterEntity2 = new SPG_SUBJECT_MASTER
+                    {
+                        DIMENSION_TABLE = item.DIMENSION_TABLE,
+                        FIELD_NAME = master.FieldName,
+                        SUBJECTAREA_ID = selectedSubjectArea,
+                        IS_KEY = "N",
+                        IS_SHOW = "Y",
+                        DISPLAY_NAME = master.DisplayName,
+                        MASTER_NAME = master.Master
+                    };
+
+                    sPONGE_Context.SPG_SUBJECT_MASTER.Add(newSubjectMasterEntity2);
+                }
                 sPONGE_Context.SaveChanges();
             }
-
             List<SPG_SUBJECT_DATACOLLECTION> selectedDataCollection = new();
            
             var selectedMaster = sPONGE_Context.SPG_SUBJECT_DATACOLLECTION
