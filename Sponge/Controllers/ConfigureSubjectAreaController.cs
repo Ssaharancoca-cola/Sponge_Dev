@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using NuGet.Packaging;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
