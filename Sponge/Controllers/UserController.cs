@@ -236,55 +236,102 @@ namespace Sponge.Controllers
         public IActionResult UpdateUser(IFormCollection data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            try
+            try 
             {
                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
+                var matchingRows = sPONGE_Context.SPG_USERS_FUNCTION.Where(u => u.USER_ID == data["userId"].ToString()).ToList();
 
+                // Remove each matching row
+                foreach (var row in matchingRows)
+                {
+                    sPONGE_Context.SPG_USERS_FUNCTION.Remove(row);
+                }
 
+                sPONGE_Context.SaveChanges();
 
                 string subFunctions = data["subFunction"];
                 string[] subFunctionArr = subFunctions.Split(',');
 
                 string Roles = data["Role"];
                 string[] RolesArr = Roles.Split(',');
-                int countRoleSub = 0;
-                foreach (string role in RolesArr)
+                var newRows = from role in RolesArr
+                              from subFunction in subFunctionArr
+                              select new SPG_USERS_FUNCTION
+                              {
+                                  USER_ID = data["userId"].ToString(),
+                                  ROLE_ID = int.Parse(role),
+                                  SUB_FUNCTION_ID = int.Parse(subFunction),
+                                  ACTIVE_FLAG = "Y"
+                              };
+
+                foreach (var newRow in newRows)
                 {
-                    foreach (string subFunction in subFunctionArr)
-                    {
-                        int subFunctionId = 0;
-                        Int32.TryParse(subFunction, out subFunctionId);
-                        int Roleid = 0;
-                        Int32.TryParse(role, out Roleid);
-                        int countSub = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() && o.SUB_FUNCTION_ID == subFunctionId && o.ROLE_ID == Roleid).Count();
-                        countRoleSub++;
-                        if ((Roleid != 1 && (countRoleSub == 0 && countSub == 0)) || (Roleid == 1 && countSub == 0))
-                        {
-                            SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
-
-                            {
-                                sPG_1.ACTIVE_FLAG = data["status"];
-                                sPG_1.USER_ID = data["userId"];
-
-                                sPG_1.SUB_FUNCTION_ID = subFunctionId;
-
-                                sPG_1.ROLE_ID = Roleid;
-                            }
-                            sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
-
-                            sPONGE_Context.SaveChanges();
-
-
-                        }
-                    }
-
+                    sPONGE_Context.SPG_USERS_FUNCTION.Add(newRow);
                 }
-                    return Json("User details updated successfully");
-            }
-            catch (Exception ex) { }
 
-            return Json("Some error occured");
+                // Save changes to the database
+                sPONGE_Context.SaveChanges();
+                return Json("User updated successfully");
+            }
+            catch(Exception ex) 
+            {
+                return Json("Error Occured: " + ex.Message);
+            }
+            
         }
+        
+        //public IActionResult UpdateUser(IFormCollection data)
+        //{
+        //    string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+        //    try
+        //    {
+        //        SPONGE_Context sPONGE_Context = new SPONGE_Context();
+
+
+
+        //        string subFunctions = data["subFunction"];
+        //        string[] subFunctionArr = subFunctions.Split(',');
+
+        //        string Roles = data["Role"];
+        //        string[] RolesArr = Roles.Split(',');
+        //        int countRoleSub = 0;
+        //        foreach (string role in RolesArr)
+        //        {
+        //            foreach (string subFunction in subFunctionArr)
+        //            {
+        //                int subFunctionId = 0;
+        //                Int32.TryParse(subFunction, out subFunctionId);
+        //                int Roleid = 0;
+        //                Int32.TryParse(role, out Roleid);
+        //                int countSub = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() && o.SUB_FUNCTION_ID == subFunctionId && o.ROLE_ID == Roleid).Count();
+        //                countRoleSub++;
+        //                if ((Roleid != 1 && (countRoleSub == 0 && countSub == 0)) || (Roleid == 1 && countSub == 0))
+        //                {
+        //                    SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
+
+        //                    {
+        //                        sPG_1.ACTIVE_FLAG = data["status"];
+        //                        sPG_1.USER_ID = data["userId"];
+
+        //                        sPG_1.SUB_FUNCTION_ID = subFunctionId;
+
+        //                        sPG_1.ROLE_ID = Roleid;
+        //                    }
+        //                    sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
+
+        //                    sPONGE_Context.SaveChanges();
+
+
+        //                }
+        //            }
+
+        //        }
+        //            return Json("User details updated successfully");
+        //    }
+        //    catch (Exception ex) { }
+
+        //    return Json("Some error occured");
+        //}
 
         public IActionResult ManageUser()
         {
@@ -303,7 +350,7 @@ namespace Sponge.Controllers
                             Email = g.Key.EMAIL_ID,
                             UserName = g.Key.Name,
                             Status = g.Key.ACTIVE_FLAG,
-                            SubFunction = string.Join(", ", g.Select(x => x.SF.SUBFUNCTION_NAME)),
+                            SubFunction = string.Join(", ", g.Select(x => x.SF.SUBFUNCTION_NAME).Distinct()),
                             Role = string.Join(", ", g.Select(x => x.R.ROLE_NAME).Distinct()),
                         };
 

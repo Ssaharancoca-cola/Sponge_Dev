@@ -63,8 +63,8 @@
 
                             <div class="col">
                                 <label for="scheduled">Month</label>
-                                <select class="form-control" id="PatternMonth" name="PATTERN_MONTH">
-                                    <option selected>Select</option>
+                                <select required class="form-control" id="PatternMonth" name="PATTERN_MONTH">
+                                    <option selected value="0">Select</option>
                                     @foreach (var f in ViewBag.Months)
                                     {
                                         <option value="@f.Value">@f.Text</option>
@@ -75,7 +75,7 @@
                             </div>
                             <div class="col">
                                 <label for="scheduled">Day</label>
-                                <input type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich">day when template generated
+                                <input required maxlength="2" type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich">day when template generated
                             </div>
                             <div class="col">
                                 <label for="uploadReminder">Upload Reminder Date</label>
@@ -104,7 +104,7 @@
                         <div class="form-group row">
                             <div class="col">
                                 <label for="approverEmailID">Approver Email ID</label>
-                                <input type="text" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
+                                <input required type="text" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
                             </div>
                             <div class="col btn-align">
                                 <button type="submit" id="getapprover" class="btn btn-primary">Get Approver Info</button>
@@ -113,12 +113,12 @@
                         <div class="form-group row">
                             <div class="col">
                                 <label for="approverName">Approver Name</label>
-                                <input type="text" value="@ViewBag.Result.APPROVER_NAME" class="form-control" name="APPROVER_NAME" id="approverName"
+                                <input type="text" rquired value="@ViewBag.Result.APPROVER_NAME" class="form-control" name="APPROVER_NAME" id="approverName"
                                        readonly>
                             </div>
                             <div class="col">
                                 <label for="approverID">Approver ID</label>
-                                <input type="email" value="@ViewBag.Result.APPROVER_ID" class="form-control" name="APPROVER_ID" id="approverID"
+                                <input type="email" required value="@ViewBag.Result.APPROVER_ID" class="form-control" name="APPROVER_ID" id="approverID"
                                        readonly>
                             </div>
                         </div>
@@ -178,17 +178,26 @@
             $("#IsScheduled").show();
         } else {
             $("#IsScheduled").hide();
+            document.getElementById('PatternMonth').required = false;
+            document.getElementById('datewhich').required = false;
             document.getElementById('uploadreminder').required = false;
             document.getElementById('Escalation').required = false;
+
         }
 
         $("#Scheduled").change(function () {
             var Scheduled = $(this).val();
-            if (Scheduled == "Y") {
+            if (Scheduled == "Y") {     
                 $("#IsScheduled").show();
             }
             else {
                 $("#IsScheduled").hide();
+                document.getElementById('PatternMonth').selectedIndex = -1;
+                document.getElementById('datewhich').value = '';
+                document.getElementById('uploadreminder').value = '';
+                document.getElementById('Escalation').value = '';
+                document.getElementById('PatternMonth').required = false;
+                document.getElementById('datewhich').required = false;
                 document.getElementById('uploadreminder').required = false;
                 document.getElementById('Escalation').required = false;
             }
