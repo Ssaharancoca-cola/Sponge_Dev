@@ -525,6 +525,7 @@ namespace Sponge.Controllers
                                 o.DISPLAY_NAME = item.DisplayName;
                                 o.DATA_TYPE = DataType;
                                 o.DISPLAY_TYPE = "Label";
+                                o.MASTER_NAME = item.MasterName;
                                 objModel.SPG_CONFIG_STRUCTURE.Add(o);
                                 objModel.SaveChanges();
 
