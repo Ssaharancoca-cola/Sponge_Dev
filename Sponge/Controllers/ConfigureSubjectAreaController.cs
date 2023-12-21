@@ -98,6 +98,7 @@ namespace Sponge.Controllers
                                              MASTER_DISPLAY_NAME = user.MASTER_DISPLAY_NAME
                                          }).Distinct().ToList();
                     spg_Masters.AddRange(spg_mpp_master);
+                    ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
                 }
 
             }
@@ -109,11 +110,12 @@ namespace Sponge.Controllers
                     .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME= o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
                         .Distinct().ToList();
                 selectedMasters.AddRange(selectedMaster);
+                
             }
             ViewBag.SelectedMaster = selectedMasters.ToList();
 
 
-            ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
+            
 
             return View("Views\\ConfigureSubjectArea\\ConfigureMasters.cshtml");
 

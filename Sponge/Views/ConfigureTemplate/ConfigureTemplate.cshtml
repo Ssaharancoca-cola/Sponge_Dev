@@ -91,7 +91,10 @@
                     success: function (data) {
                         var content = '';
                         if (data || data.length) {
-
+                            var table = document.getElementById('example');
+                            while (table.rows.length > 0) {
+                                table.deleteRow(0);
+                            }
                             var tableBody = $("#example tbody");
                             $.each(data, function (i, username) {
                                 var configID = username.configID;
