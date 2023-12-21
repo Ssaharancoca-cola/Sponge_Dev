@@ -73,12 +73,12 @@ namespace Sponge.Common
             else if (TIME_LEVEL.Equals("MONTHLY"))
             {
                 string monthName = "";//DateTime.Today;
-                for (int i = 7; i <= 12; i++)
+                for (int i = 1; i <= 6; i++)
                 {
                     monthName = new DateTime(DateTime.Now.AddYears(-2).Year, i, 1).ToString("MMM", CultureInfo.InvariantCulture);
                     headerList.Add(monthName);
                 }
-                for (int i = 1; i < 7; i++)
+                for (int i = 7; i <=12; i++)
                 {
                     monthName = new DateTime(DateTime.Now.AddYears(-1).Year, i, 1).ToString("MMM", CultureInfo.InvariantCulture);
                     headerList.Add(monthName);

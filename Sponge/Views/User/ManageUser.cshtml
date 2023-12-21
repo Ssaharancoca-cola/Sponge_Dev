@@ -42,7 +42,15 @@
                                     <td>@userInfo.Email</td>
                                     <td>@userInfo.Role</td>
                                     <td>@userInfo.SubFunction</td>
-                                    <td>@userInfo.Status</td>
+                                    @if (userInfo.Status == "Y")
+                                    {
+                                        <td style="color:green">Active</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color:red">Inactive</td>
+                                    }
+
                                     <td>                                       
                                         <a href="@Url.Action("EditUser", "User", new {id = userInfo.UserId})" class="btn btn-outline-primary btn-icon-text">
                                             <i class="ti-file btn-icon-prepend"></i>

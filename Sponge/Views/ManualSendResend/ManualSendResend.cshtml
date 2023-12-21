@@ -2,7 +2,8 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<script src="~/js/Common.js"></script>
+<script src="~/js/Granular.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 @using (Html.BeginForm("SaveManualSendResendExcel", "ManualSendResend", Model, FormMethod.Post))
 {
@@ -85,94 +86,7 @@
 }
 <script>
     $(document).ready(function () {
-        //debugger;
-        // if ($("#hdn_lockDate").val() == "" || $("#hdn_lockDate").val() == undefined || $("#hdn_lockDate").val() == null) {
-        //     $("#lockDate").datepicker({
-        //         changeMonth: true,
-        //         changeYear: true,
-        //         showButtonPanel: true,
-        //         dateFormat: 'dd/M/yy',
-        //         minDate: new Date()
-        //     });
-        // }
-        // if ($("#hdn_escalationAlertDate").val() == "" || $("#hdn_escalationAlertDate").val() == undefined || $("#hdn_escalationAlertDate").val() == null) {
-        //     $("#escalationAlertDate").datepicker({
-        //         changeMonth: true,
-        //         changeYear: true,
-        //         showButtonPanel: true,
-        //         dateFormat: 'dd/M/yy',
-        //         minDate: new Date()
-        //     });
-        // }
-
-        // if ($("#hdn_uploadReminderDate").val() == "" || $("#hdn_uploadReminderDate").val() == undefined || $("#hdn_uploadReminderDate").val() == null) {
-        //     $("#uploadReminderDate").datepicker({
-        //         changeMonth: true,
-        //         changeYear: true,
-        //         showButtonPanel: true,
-        //         dateFormat: 'dd/M/yy',
-        //         minDate: new Date()
-        //     });
-        // }
-        // if ($("#lockDate").val() == "01/01/0001") {
-        //     $("#lockDate").val('');
-        // }
-        // if ($("#lockDate").val() == "01/Jan/0001") {
-        //     $("#lockDate").val('');
-        // }
-
-        // if ($("#version").val() != "Y") {
-        //     $("#GranularTime").attr("readonly", "readonly");
-        // }
-        // else {
-        //     $("#GranularTime").removeAttr("readonly");
-        // }
-        // if ($("#uploadReminderDate").val() != "") {
-        //     $("#uploadReminderDate").attr("readonly", "readonly");
-        //     $("#uploadReminderDate").datepicker("destroy");
-        // }
-        // else {
-        //     $("#uploadReminderDate").removeAttr("readonly");
-        //     $("#uploadReminderDate").datepicker({
-        //         changeMonth: true,
-        //         changeYear: true,
-        //         showButtonPanel: true,
-        //         dateFormat: 'dd/M/yy',
-        //         minDate: new Date()
-        //     });
-        // }
-        // if ($("#escalationAlertDate").val() != "") {
-        //     $("#escalationAlertDate").attr("readonly", "readonly");
-        //     $("#escalationAlertDate").datepicker("destroy");
-        // }
-        // else {
-        //     $("#escalationAlertDate").removeAttr("readonly");
-        //     $("#escalationAlertDate").datepicker({
-        //         changeMonth: true,
-        //         changeYear: true,
-        //         showButtonPanel: true,
-        //         dateFormat: 'dd/M/yy',
-        //         minDate: new Date()
-        //     });
-        // }
-        // if ($("#lockDate").val() != "") {
-        //     $("#lockDate").attr("readonly", "readonly");
-        //     $("#lockDate").datepicker("destroy");
-        //     $("#escalationAlertDate").attr("readonly", "readonly");
-        //     $("#escalationAlertDate").datepicker("destroy");
-        //     $("#uploadReminderDate").attr("readonly", "readonly");
-        //     $("#uploadReminderDate").datepicker("destroy");
-        // }
-        // else {
-        //     $("#lockDate").removeAttr("readonly");
-        //     $("#lockDate").datepicker({
-        //         changeMonth: true,
-        //         changeYear: true,
-        //         showButtonPanel: true,
-        //         dateFormat: 'dd/M/yy',
-        //         minDate: new Date()
-        //     });
-        // }
+        //debugger;       
         var text = $("#onTime").find('option:selected').text();
         $('#hdnOnTimeText').val(text);
         OnChangeOnTime();       
@@ -187,15 +101,6 @@
     $('#lockDate').keypress(function (e) {
         e.preventDefault();
     });
-    // $(function () {
-    //     $(".datepicker").datepicker({
-    //         changeMonth: true,
-    //         changeYear: true,
-    //         showButtonPanel: true,
-    //         dateFormat: 'dd/M/yy',
-    //         minDate: new Date()
-    //     });
-    // });
     var FillReportingStartEndDate = function () {
         debugger;
         var frequency = $('#hdnFrequency').val();
@@ -355,121 +260,6 @@
             fortime: value,
             ontimecode: value
         }
-        $.ajax({
-            url: '@Url.Action("LoadLockDetails", "ManualSendResend")',
-            type: 'POST',
-            data: parameter,
-            dataType: "json",
-            async: false,
-            success: function (classesData) {
-                if (classesData.Error == 1) {
-                    classesData = null;
-                }
-                //debugger;
-                // $('#uploadReminderDate').attr("value", "");
-                // $('#uploadReminderDate').val("");
-                // $('#lockDate').attr("value", "");
-                // $('#lockDate').val("");
-                // $('#escalationAlertDate').attr("value", "");
-                // $('#escalationAlertDate').val("");
-                // if (classesData == null) {
-                //     //debugger;
-                //     $("#lockDate").removeAttr("readonly");
-                //     $("#lockDate").datepicker({
-                //         changeMonth: true,
-                //         changeYear: true,
-                //         showButtonPanel: true,
-                //         dateFormat: 'dd/M/yy',
-                //         minDate: new Date()
-                //     });
-                //     $("#uploadReminderDate").removeAttr("readonly");
-                //     $("#uploadReminderDate").datepicker({
-                //         changeMonth: true,
-                //         changeYear: true,
-                //         showButtonPanel: true,
-                //         dateFormat: 'dd/M/yy',
-                //         minDate: new Date()
-                //     });
-                //     $("#escalationAlertDate").removeAttr("readonly");
-                //     $("#escalationAlertDate").datepicker({
-                //         changeMonth: true,
-                //         changeYear: true,
-                //         showButtonPanel: true,
-                //         dateFormat: 'dd/M/yy',
-                //         minDate: new Date()
-                //     });
-                // }
-                // if (classesData != null) {
-                //     //debugger;
-                //     if (classesData.UploadReminderDate != null) {
-                //         var dateString = classesData.UploadReminderDate.substr(6);
-                //         var value = new Date(parseInt(dateString));
-                //         var uploaddat = value.getDate() + "/" + monthNames[value.getMonth()] + "/" + value.getFullYear();
-                //         $('#uploadReminderDate').val(uploaddat);
-                //         if (uploaddat.length > 0) {
-                //             $('#uploadReminderDate').prop("readonly", "readonly");
-                //             $('#uploadReminderDate').datepicker("destroy");
-                //         }
-                //     }
-                // }
-                // if (classesData != null) {
-                //     //debugger;
-                //     if (classesData.LockDate != null) {
-                //         var lockvalue = classesData.LockDate.substr(6);
-                //         var lockdate = new Date(parseInt(lockvalue));
-                //         var lockdat = lockdate.getDate() + "/" + monthNames[lockdate.getMonth()] + "/" + lockdate.getFullYear();
-                //         $('#lockDate').val(lockdat);
-                //         if (lockdat.length > 0) {
-                //             $('#lockDate').prop("readonly", "readonly");
-                //             $('#lockDate').datepicker("destroy");
-                //             $('#uploadReminderDate').prop("readonly", "readonly");
-                //             $('#uploadReminderDate').datepicker("destroy");
-                //             $('#escalationAlertDate').prop("readonly", "readonly");
-                //             $('#escalationAlertDate').datepicker("destroy");
-                //         }
-                //     }
-                //     else {
-                //         $("#lockDate").removeAttr("readonly");
-                //         $("#lockDate").datepicker({
-                //             changeMonth: true,
-                //             changeYear: true,
-                //             showButtonPanel: true,
-                //             dateFormat: 'dd/M/yy',
-                //             minDate: new Date()
-                //         });
-                //         $("#uploadReminderDate").removeAttr("readonly");
-                //         $("#uploadReminderDate").datepicker({
-                //             changeMonth: true,
-                //             changeYear: true,
-                //             showButtonPanel: true,
-                //             dateFormat: 'dd/M/yy',
-                //             minDate: new Date()
-                //         });
-                //         $("#escalationAlertDate").removeAttr("readonly");
-                //         $("#escalationAlertDate").datepicker({
-                //             changeMonth: true,
-                //             changeYear: true,
-                //             showButtonPanel: true,
-                //             dateFormat: 'dd/M/yy',
-                //             minDate: new Date()
-                //         });
-                //     }
-                // }
-                // if (classesData != null) {
-                //     //debugger;
-                //     if (classesData.EsclationDate != null) {
-                //         var escvalue = classesData.EsclationDate.substr(6);
-                //         var escdate = new Date(parseInt(escvalue));
-                //         var escdat = escdate.getDate() + "/" + monthNames[escdate.getMonth()] + "/" + escdate.getFullYear();
-                //         $('#escalationAlertDate').val(escdat);
-                //         if (escdat.length > 0) {
-                //             $('#escalationAlertDate').prop("readonly", "readonly");
-                //             $('#escalationAlertDate').datepicker("destroy");
-                //         }
-                //     }
-                // }
-            }
-        });
 
         FillReportingStartEndDate();
         FillGranularDropdown();

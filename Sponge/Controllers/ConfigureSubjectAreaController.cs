@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using NuGet.Packaging;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
@@ -97,6 +98,7 @@ namespace Sponge.Controllers
                                              MASTER_DISPLAY_NAME = user.MASTER_DISPLAY_NAME
                                          }).Distinct().ToList();
                     spg_Masters.AddRange(spg_mpp_master);
+                    ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
                 }
 
             }
@@ -108,11 +110,12 @@ namespace Sponge.Controllers
                     .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME= o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
                         .Distinct().ToList();
                 selectedMasters.AddRange(selectedMaster);
+                
             }
             ViewBag.SelectedMaster = selectedMasters.ToList();
 
 
-            ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
+            
 
             return View("Views\\ConfigureSubjectArea\\ConfigureMasters.cshtml");
 
@@ -225,7 +228,7 @@ namespace Sponge.Controllers
                 sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);
                 sPONGE_Ctx.SaveChanges();
             }
-            var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIG_STRUCTURE
+            var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIGURATION
                                   join user in sPONGE_Ctx.SPG_USERS on config.USER_ID equals user.USER_ID
                                   where config.SUBJECTAREA_ID == selectedSubjectArea
                                   select new 
@@ -524,6 +527,7 @@ namespace Sponge.Controllers
                                 o.DISPLAY_NAME = item.DisplayName;
                                 o.DATA_TYPE = DataType;
                                 o.DISPLAY_TYPE = "Label";
+                                o.MASTER_NAME = item.MasterName;
                                 objModel.SPG_CONFIG_STRUCTURE.Add(o);
                                 objModel.SaveChanges();
 

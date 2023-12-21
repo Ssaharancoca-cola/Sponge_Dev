@@ -630,7 +630,7 @@ namespace BatchJob
                                 objWorksheet.Cells["A2"].Value = "Reporting Start Date-" + Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["B2"].Value = "Reporting End Date-" + Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
-                                objWorksheet.Cells["B3"].Value = "Lock Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["B3"].Value = "Lock Date-" + dtlockdate;
                                 objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["A4"].Value = "";// customexcel;
                                 objWorksheet.Row(4).Hidden = true;//Hide 4th row
