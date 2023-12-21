@@ -24,7 +24,8 @@ namespace Sponge
         public string? BatchJobErrorlocation { get; set; }
         public string? UploadedDocumentsFilePath { get; set; }
         public string? WarningdocumentFilePath { get; set; }
-     
+        public string? NumberMin { get; set; }
+        public string? NumberMax { get; set; }
         public string? EmailTemplatePathForUploader { get; set; }
         public string? ApprovalmailToUploader { get; set; }
         public string? MailToApprover { get; set; }
