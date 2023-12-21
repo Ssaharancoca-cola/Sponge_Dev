@@ -261,7 +261,7 @@ namespace Sponge.Controllers
                                   USER_ID = data["userId"].ToString(),
                                   ROLE_ID = int.Parse(role),
                                   SUB_FUNCTION_ID = int.Parse(subFunction),
-                                  ACTIVE_FLAG = "Y"
+                                  ACTIVE_FLAG = data["status"]
                               };
 
                 foreach (var newRow in newRows)
@@ -271,6 +271,15 @@ namespace Sponge.Controllers
 
                 // Save changes to the database
                 sPONGE_Context.SaveChanges();
+                // To set the active status in SPG_Users Function
+                var user = sPONGE_Context.SPG_USERS.FirstOrDefault(u => u.USER_ID == data["userId"].ToString());
+                if (user != null)
+                {
+                    user.ACTIVE_FLAG = data["status"];
+
+                    sPONGE_Context.SaveChanges();
+                }
+
                 return Json("User updated successfully");
             }
             catch(Exception ex) 
@@ -338,12 +347,27 @@ namespace Sponge.Controllers
             SPONGE_Context context = new SPONGE_Context();
             List<GetUserinfo> UserInfo = new List<GetUserinfo>();
             var query = from U in context.SPG_USERS
-                        join UF in context.SPG_USERS_FUNCTION on U.USER_ID equals UF.USER_ID
-                        join SF in context.SPG_SUBFUNCTION on UF.SUB_FUNCTION_ID equals SF.SUBFUNCTION_ID
-                        join R in context.SPG_ROLE on UF.ROLE_ID equals R.ROLE_ID
-                        group new { U, UF, SF, R } by
-                            new { U.USER_ID, U.EMAIL_ID, U.Name, U.ACTIVE_FLAG }
-            into g
+                        join UF in context.SPG_USERS_FUNCTION on U.USER_ID equals UF.USER_ID into U_UF
+                        from UF in U_UF.DefaultIfEmpty()
+                        join SF in context.SPG_SUBFUNCTION on UF.SUB_FUNCTION_ID equals SF.SUBFUNCTION_ID into UF_SF
+                        from SF in UF_SF.DefaultIfEmpty()
+                        join R in context.SPG_ROLE on UF.ROLE_ID equals R.ROLE_ID into UF_R
+                        from R in UF_R.DefaultIfEmpty()
+                        select new
+                        {
+                            U,
+                            UF,
+                            SF,
+                            R
+                        } into x
+                        group x by new
+                        {
+                            x.U.USER_ID,
+                            x.U.EMAIL_ID,
+                            x.U.Name,
+                            x.U.ACTIVE_FLAG
+                        }
+                        into g
                         select new GetUserinfo
                         {
                             UserId = g.Key.USER_ID,
@@ -351,7 +375,7 @@ namespace Sponge.Controllers
                             UserName = g.Key.Name,
                             Status = g.Key.ACTIVE_FLAG,
                             SubFunction = string.Join(", ", g.Select(x => x.SF.SUBFUNCTION_NAME).Distinct()),
-                            Role = string.Join(", ", g.Select(x => x.R.ROLE_NAME).Distinct()),
+                            Role = string.Join(", ", g.Select(x => x.R.ROLE_NAME).Distinct())
                         };
 
             UserInfo = query.ToList();
@@ -396,7 +420,7 @@ namespace Sponge.Controllers
                                 UserName = u.Name,
                                 Email = u.EMAIL_ID,
 
-                                Status = f.ACTIVE_FLAG
+                                Status = u.ACTIVE_FLAG
                             }).FirstOrDefault();
                 userInfo.SubfunctionList = subFnList.ToList();
                 userInfo.RoleList = RoleList.ToList();

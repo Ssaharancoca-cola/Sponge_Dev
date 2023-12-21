@@ -21,7 +21,14 @@ namespace Sponge.Common
                                    NAME = user.Name,
                                    ROLE = role.ROLE_NAME
                                }).FirstOrDefault();
-            if (roleDetails == null)
+            var activeFlag = (from user in context1.SPG_USERS
+                              where user.USER_ID == userName[1]
+                              select new
+                              {
+                                  ACTIVE_FLAG = user.ACTIVE_FLAG
+                              }).FirstOrDefault();
+
+            if (roleDetails == null || activeFlag.ACTIVE_FLAG == "N")
             {
                 context.Result = new RedirectResult("~/Home/AccessDenied");
             }
