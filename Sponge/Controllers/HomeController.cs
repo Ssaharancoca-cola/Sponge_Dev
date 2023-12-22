@@ -30,7 +30,14 @@ namespace Sponge.Controllers
                                    ROLE = role.ROLE_NAME,
                                }).FirstOrDefault();
 
-            if (userDetails == null)
+            var activeFlag = (from user in context.SPG_USERS
+                              where user.USER_ID == userName[1]
+                              select new
+                              {
+                                  ACTIVE_FLAG = user.ACTIVE_FLAG
+                              }).FirstOrDefault();
+
+            if (userDetails == null || activeFlag.ACTIVE_FLAG == "N")
             {
                 return View("~/Views/Shared/AccessDenied.cshtml");
             }

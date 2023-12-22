@@ -30,15 +30,15 @@ namespace BatchJob
                 }
                 if (DateTime.Now.Month >= (int)Helper.Month.July)
                 {
-                    ForTime = string.Format("{0}07{1}06", ReportingYear, ReportingYear + 1);//string.Format("{0}-{1}", DateTime.Today.Year, (DateTime.Today.Year + 1));
-                    PeriodFrom = string.Format("01-Jul-{0}", ReportingYear);
-                    PeriodTo = string.Format("30-Jun-{0}", ReportingYear + 1);
+                    ForTime = string.Format("{0}01{1}12", ReportingYear, ReportingYear);//string.Format("{0}-{1}", DateTime.Today.Year, (DateTime.Today.Year + 1));
+                    PeriodFrom = string.Format("01-Jan-{0}", ReportingYear);
+                    PeriodTo = string.Format("31-Dec-{0}", ReportingYear);
                 }
                 else
                 {
-                    ForTime = string.Format("{0}07{1}06", (ReportingYear - 1), ReportingYear);
-                    PeriodFrom = string.Format("01-Jul-{0}", ReportingYear - 1);
-                    PeriodTo = string.Format("30-Jun-{0}", ReportingYear);
+                    ForTime = string.Format("{0}01{1}12", (ReportingYear), ReportingYear);
+                    PeriodFrom = string.Format("01-Jan-{0}", ReportingYear);
+                    PeriodTo = string.Format("31-Dec-{0}", ReportingYear);
                 }
 
             }
@@ -53,18 +53,18 @@ namespace BatchJob
                 {
                     ReportingDate = DateTime.Now.Date.AddMonths(-6);
                 }
-                if (ReportingDate.Month >= (int)Helper.Month.July)
+                if (ReportingDate.Month <= (int)Helper.Month.June)
                 {
-                    ForTime = string.Format("{0}07{1}12", ReportingDate.Year, ReportingDate.Year, "H1");
-                    PeriodFrom = string.Format("01-Jul-{0}", ReportingDate.Year);
-                    PeriodTo = string.Format("01-Dec-{0}", ReportingDate.Year);
+                    ForTime = string.Format("{0}01{1}06", ReportingDate.Year, ReportingDate.Year, "H1");
+                    PeriodFrom = string.Format("01-Jan-{0}", ReportingDate.Year);
+                    PeriodTo = string.Format("30-Jun-{0}", ReportingDate.Year);
                 }
 
                 else
                 {
-                    ForTime = string.Format("{0}01{1}06", ReportingDate.Year, ReportingDate.Year, "H2");
-                    PeriodFrom = string.Format("01-Jan-{0}", ReportingDate.Year);
-                    PeriodTo = string.Format("30-Jun-{0}", ReportingDate.Year);
+                    ForTime = string.Format("{0}07{1}12", ReportingDate.Year, ReportingDate.Year, "H2");
+                    PeriodFrom = string.Format("01-Jul-{0}", ReportingDate.Year);
+                    PeriodTo = string.Format("31-Dec-{0}", ReportingDate.Year);
                 }
             }
 
@@ -206,15 +206,15 @@ namespace BatchJob
                     {
                         ReportingDate = DateTime.Now.Date.AddMonths(-6);
                     }
-                    if (ReportingDate.Month >= (int)Helper.Month.July)
+                    if (ReportingDate.Month <= (int)Helper.Month.June)
                     {
-                        OnTime = string.Format("{0}07{1}12", ReportingDate.Year, ReportingDate.Year, "H1");
+                        OnTime = string.Format("{0}01{1}06", ReportingDate.Year, ReportingDate.Year, "H1");
                         //PeriodFrom = string.Format("01-Jul-{0}", ReportingDate.Year);
                         //PeriodTo = string.Format("01-Dec-{0}", ReportingDate.Year);
                     }
                     else
                     {
-                        OnTime = string.Format("{0}01{1}06", ReportingDate.Year, ReportingDate.Year, "H2");
+                        OnTime = string.Format("{0}07{1}12", ReportingDate.Year, ReportingDate.Year, "H2");
                         //PeriodFrom = string.Format("01-Jan-{0}", ReportingDate.Year);
                         //PeriodTo = string.Format("30-Jun-{0}", ReportingDate.Year);
                     }

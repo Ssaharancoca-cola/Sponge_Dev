@@ -73,11 +73,11 @@ namespace Sponge.Common
                         objtimeCode.TEMPLATE_ID = TemplateId;
                         if (item.DisplayName.Contains("H1"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "07" + PeriodFrom.Value.Year + "12".Trim();
+                            objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "01" + PeriodFrom.Value.Year + "06".Trim();
                         }
                         if (item.DisplayName.Contains("H2"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "01" + PeriodTO.Value.Year + "06".Trim();
+                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "07" + PeriodTO.Value.Year + "12".Trim();
                         }
                         objContext.SPG_GETTIMECODE.Add(objtimeCode);
                         objContext.SaveChanges();
@@ -99,19 +99,19 @@ namespace Sponge.Common
                         objtimeCode.TEMPLATE_ID = TemplateId;
                         if (item.DisplayName.Contains("Q1"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "07" + PeriodFrom.Value.Year + "09".Trim();
+                            objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "01" + PeriodFrom.Value.Year + "03".Trim();
                         }
                         else if (item.DisplayName.Contains("Q2"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "10" + PeriodFrom.Value.Year + "12".Trim();
+                            objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "04" + PeriodFrom.Value.Year + "06".Trim();
                         }
                         else if (item.DisplayName.Contains("Q3"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "01" + PeriodTO.Value.Year + "03".Trim();
+                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "06" + PeriodTO.Value.Year + "09".Trim();
                         }
                         else if (item.DisplayName.Contains("Q4"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "04" + PeriodTO.Value.Year + "06".Trim();
+                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "09" + PeriodTO.Value.Year + "12".Trim();
                         }
                         objContext.SPG_GETTIMECODE.Add(objtimeCode);
                         objContext.SaveChanges();

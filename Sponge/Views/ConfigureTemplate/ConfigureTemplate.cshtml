@@ -91,14 +91,16 @@
                     success: function (data) {
                         var content = '';
                         if (data || data.length) {
-
+                            var table = document.getElementById('example');
+                            while (table.rows.length > 0) {
+                                table.deleteRow(0);
+                            }
                             var tableBody = $("#example tbody");
                             $.each(data, function (i, username) {
                                 var configID = username.configID;
                                 var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '?configID=' + configID;
                                 var SetupUrl = '@Url.Action("SetUp", "ConfigureTemplate")' + '?configID=' + configID;
                                 let setupText = (username.activeflag == null ? 'Pending' : 'Done');
-
 
                                 var row = `
                                 <tr>

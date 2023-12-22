@@ -630,7 +630,7 @@ namespace BatchJob
                                 objWorksheet.Cells["A2"].Value = "Reporting Start Date-" + Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["B2"].Value = "Reporting End Date-" + Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
-                                objWorksheet.Cells["B3"].Value = "Lock Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["B3"].Value = "Lock Date-" + dtlockdate;
                                 objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["A4"].Value = "";// customexcel;
                                 objWorksheet.Row(4).Hidden = true;//Hide 4th row
@@ -1255,8 +1255,8 @@ namespace BatchJob
             var val = objWorksheet.DataValidations.AddDecimalValidation(resultchar.ToString());
             val.ShowErrorMessage = true;
             IExcelDataValidation dataValidation;
-            long minValue = Convert.ToInt64(System.Configuration.ConfigurationManager.AppSettings["NumberMin"]);
-            long maxValue = Convert.ToInt64(System.Configuration.ConfigurationManager.AppSettings["NumberMax"]);
+            long minValue = Convert.ToInt64(_settings.NumberMin);
+            long maxValue = Convert.ToInt64(_settings.NumberMax);
 
             // If UoM1 == 9Litres then Decimal else Integer
 
@@ -1271,7 +1271,7 @@ namespace BatchJob
             dataValidation.AllowBlank = true;
 
             //  objWorksheet.Cells[resultchar].Style.Numberformat.Format = "#.00";
-            objWorksheet.Cells[resultchar].Style.Numberformat.Format = "####.0000";
+            objWorksheet.Cells[resultchar].Style.Numberformat.Format = "####";
 
         }
         private void DateNumeric(ExcelWorksheet objWorksheet, char nextcharacter, int number)
@@ -1311,8 +1311,8 @@ namespace BatchJob
             var val = objWorksheet.DataValidations.AddDecimalValidation(resultchar.ToString());
             val.ShowErrorMessage = true;
             IExcelDataValidation dataValidation;
-            double minValue = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["PercentageMin"]);
-            double maxValue = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["PercentageMax"]);
+            double minValue = Convert.ToDouble(_settings.NumberMin);
+            double maxValue = Convert.ToDouble(_settings.NumberMax);
 
 
             // If UoM1 == 9Litres then Decimal else Integer
