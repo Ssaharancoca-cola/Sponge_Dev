@@ -419,17 +419,28 @@ namespace Sponge.Controllers
 
             return RedirectToAction("ConfigureTemplate", "ConfigureTemplate",selectedSubjectArea);
         }
-        public void CreateSubjectAreaView(decimal? SubjectAreaId, bool IsGroupColumnNameExist)
+        public void CreateSubjectAreaView(int? SubjectAreaId, bool IsGroupColumnNameExist)
         {
             try
             {
-                string FormedQueryLookupType = string.Empty;
+                var subjectAreaIdParam = new SqlParameter("@p_SubjectAreaId", SubjectAreaId ?? (object)DBNull.Value);
+                var isGroupColumnNameExistParam = new SqlParameter("@p_success", IsGroupColumnNameExist);
+                SPONGE_Context sPONGE_Context = new SPONGE_Context();
+
+                //string FormedQueryLookupType = string.Empty;
                 if (IsGroupColumnNameExist)
-                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL_BKP";
+                {
+                    sPONGE_Context.Database.ExecuteSqlRaw("EXEC dbo.SP_CREATEETLVIEW_GROUPCOLUMN @p_SubjectAreaId, @p_success", SubjectAreaId, IsGroupColumnNameExist);
+                    //FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL_BKP";
+                }
                 else
-                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL";
-                GetDataSet objDeleteSetValue = new GetDataSet();
-                // objDeleteSetValue.CreateViewforSubjectArea(FormedQueryLookupType, SubjectAreaId);
+                {
+                    sPONGE_Context.Database.ExecuteSqlRaw("EXEC dbo.SP_CREATEETLVIEW_NORMAL @p_SubjectAreaId, @p_success", SubjectAreaId, IsGroupColumnNameExist);
+                    //   FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL";
+                    //GetDataSet objDeleteSetValue = new GetDataSet();
+                    // objDeleteSetValue.CreateViewforSubjectArea(FormedQueryLookupType, SubjectAreaId);
+                }
+
             }
             catch (Exception ex)
             {

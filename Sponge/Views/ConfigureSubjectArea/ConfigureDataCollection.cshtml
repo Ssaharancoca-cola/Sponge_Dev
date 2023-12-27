@@ -6,26 +6,28 @@
     var selectedDataCollection = ViewBag.SelectedDataCollection as List<DAL.Models.SPG_SUBJECT_DATACOLLECTION>;
 
 }
-@using (Html.BeginForm("SaveDataCollection", "ConfigureSubjectArea",Model, FormMethod.Post))
-{
-<div class="row">
-    <div class="col-md-12 stretch-card grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Setup Data Collection </p>
-                <div class="table-responsive">
-                    <table id="example" class="display expandable-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Display Name</th>
-                                <th>Field Name</th>
-                                <th>Is Look Up</th>
-                                <th>Lookup Type</th>
-                                <th>Data Type</th>
-                                <th>UOM</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+
+<form asp-action="SaveDataCollection" asp-controller="ConfigureSubjectArea" method="post" id="ConfDataCollForm">
+
+
+    <div class="row">
+        <div class="col-md-12 stretch-card grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Setup Data Collection </p>
+                    <div class="table-responsive">
+                        <table id="example" class="display expandable-table" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Display Name</th>
+                                    <th>Field Name</th>
+                                    <th>Is Look Up</th>
+                                    <th>Lookup Type</th>
+                                    <th>Data Type</th>
+                                    <th>UOM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 @foreach (var master in selectedDataCollection)
                                 {
                                     <tr>
@@ -38,65 +40,91 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control prepopulated" id="IsLookup" name="data[0].IS_LOOKUP" value="@master.IS_LOOKUP" readonly>
+                                            @if (@master.IS_LOOKUP == "Y")
+                                            {
+                                                <input type="text" class="form-control prepopulated" id="IsLookup" name="data[0].IS_LOOKUP" value="Yes" readonly>
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control prepopulated" id="IsLookup" name="data[0].IS_LOOKUP" value="No" readonly>
+                                            }
+
                                         </td>
                                         <td>
                                             <input type="text" class="form-control prepopulated" id="LookUpType" name="data[0].LOOKUP_TYPE" value="@master.LOOKUP_TYPE" readonly>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="@master.DATA_TYPE" readonly>
+                                            @{
+                                                if (@master.DATA_TYPE == "VC")
+                                                {
+                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                }
+                                                else if (@master.DATA_TYPE == "N")
+                                                {
+                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                }
+                                                else if (@master.DATA_TYPE == "DT")
+                                                {
+                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                }
+                                                else if (@master.DATA_TYPE == "P")
+                                                {
+                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                }
+                                            }
+
                                         </td>
                                         <td>
                                             <input type="text" class="form-control prepopulated" id="Uom" name="data[0].UOM" value="@master.UOM" readonly>
                                         </td>
                                     </tr>
                                 }
-                            <tr>
-                                <td>
-                                        <input type="text" class="form-control displayName" name="data[0].DisplayName">
+                                <tr>
+                                    <td>
+                                        <input required type="text" class="form-control displayName" name="data[0].DisplayName">
                                     </td>
-                                <td>
-                                        <input type="text" class="form-control fieldName" name="data[0].FieldName">
+                                    <td>
+                                        <input required type="text" class="form-control fieldName" name="data[0].FieldName">
                                     </td>
-                                <td>
-                                        <select class="form-control isLookUp" name="data[0].IsLookUp">
+                                    <td>
+                                        <select required class="form-control isLookUp" name="data[0].IsLookUp">
                                             <option value="N" selected>No</option>
                                             <option value="Y">Yes</option>
-                                    </select>
-                                </td>
-                                <td>
-                                        <select class="form-control lookUpType" name="data[0].LookUpType">                                       
-
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control dataType" name="data[0].DataType">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-control lookUpType" name="data[0].LookUpType">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select required class="form-control dataType" name="data[0].DataType">
                                             <option value="VC">String</option>
                                             <option value="N">Number</option>
                                             <option value="DT">Date</option>
                                             <option value="P">Perchent</option>
-                                    </select>
-                                </td>
-                            
-                                <td>
-                                        <select class="form-control uOM" name="data[0].UOM">
-                                        <option selected>Select</option>
+                                        </select>
+                                    </td>
 
-                                    </select>
-                                </td>
-                            </tr>                           
-                        </tbody>
-                    </table>
-                        
+                                    <td>
+                                        <select required class="form-control uOM" name="data[0].UOM">
+                                            <option selected>Select</option>
 
-                </div>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
                     <button type="button" id="addRow" class="btn btn-success">Add Row</button>
                     <button type="submit" id="saveData" class="btn btn-primary " style="float:right">Next</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-}
+</form>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
@@ -104,11 +132,14 @@
         var counter = 1;
         var limit = 10;
 
+        
         $("#addRow").click(function () {
+            
             if (counter >= limit) {
                 alert('You can only add up to 10 rows');
                 return false;
             }
+           
 
             var newRowContents = '<tr>'
                 + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
