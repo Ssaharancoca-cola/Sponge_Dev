@@ -121,7 +121,7 @@ namespace Sponge.Controllers
                                        SubjectAreaName = sa.SUBJECTAREA_NAME,
                                        AssignedUser = u.Name,
                                        Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
-                                       EffectiveDate = (DateTime)conf.Created_On,
+                                       EffectiveDate = conf.Created_On,
                                        ManualSendResendUrl = (conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
                                    }).Distinct().ToList();
             }
@@ -140,7 +140,7 @@ namespace Sponge.Controllers
                                        SubjectAreaName = sa.SUBJECTAREA_NAME,
                                        AssignedUser = u.Name,
                                        Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
-                                       EffectiveDate = (DateTime)conf.Created_On,
+                                       EffectiveDate = conf.Created_On,
                                        ManualSendResendUrl = (conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
                                    }).Distinct().ToList();
             }

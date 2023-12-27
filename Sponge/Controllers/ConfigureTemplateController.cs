@@ -176,7 +176,7 @@ namespace Sponge.Controllers
                             join SPG in context.SPG_CONFIGURATION on U.USER_ID equals SPG.USER_ID
                             where SPG.SUBJECTAREA_ID == subjectAreaId
                             group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, SPG.ACTIVE_FLAG} into g
-                            select new
+                            select new 
                             {
                                 configID = g.Key.CONFIG_ID,
                                 username = g.Key.Name,

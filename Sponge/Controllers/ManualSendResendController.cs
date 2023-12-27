@@ -295,7 +295,7 @@ namespace Sponge.Controllers
         {
             SPONGE_Context objModel = new ();
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 SPG_SENDORRESENDTASK sendresendtask = new SPG_SENDORRESENDTASK();
                 sendresendtask.ATTEMPTS = 0;
@@ -315,7 +315,7 @@ namespace Sponge.Controllers
                 sendresendtask.IS_AUTO_MANUAL = "Manual";
                 objModel.SPG_SENDORRESENDTASK.Add(sendresendtask);
                 objModel.SaveChanges();
-                return RedirectToAction("SearchTemplate", new { Success = 1 });
+                return RedirectToAction("SearchTemplate");
             }
             else
             {
@@ -336,7 +336,7 @@ namespace Sponge.Controllers
                 //    ViewBag.ErrorMsg = "Select Is Pre Populated?";
                 //}
 
-                return View("~/Views/Configuration/ManualSendResendExcel.cshtml", model);
+                return View("~/Views/ManualSendResend/ManualSendResend.cshtml", model);
 
             }
 
