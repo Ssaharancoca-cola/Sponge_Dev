@@ -423,22 +423,38 @@ namespace Sponge.Controllers
         {
             try
             {
-                var subjectAreaIdParam = new SqlParameter("@p_SubjectAreaId", SubjectAreaId ?? (object)DBNull.Value);
-                var isGroupColumnNameExistParam = new SqlParameter("@p_success", IsGroupColumnNameExist);
-                SPONGE_Context sPONGE_Context = new SPONGE_Context();
+                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
 
                 //string FormedQueryLookupType = string.Empty;
                 if (IsGroupColumnNameExist)
                 {
-                    sPONGE_Context.Database.ExecuteSqlRaw("EXEC dbo.SP_CREATEETLVIEW_GROUPCOLUMN @p_SubjectAreaId, @p_success", SubjectAreaId, IsGroupColumnNameExist);
-                    //FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL_BKP";
-                }
+                    var SubjectAreaIdValue = new SqlParameter("p_SubjectAreaId", SubjectAreaId);
+                    var pSuccessParameter = new SqlParameter("@p_success", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+
+                    sPONGE_Context.Database.ExecuteSqlRaw(
+                            "EXEC dbo.SP_CREATEETLVIEW_GROUPCOLUMN @p_SubjectAreaId, @p_success",
+                            SubjectAreaIdValue,
+                            pSuccessParameter
+                    );
+                       }
                 else
                 {
-                    sPONGE_Context.Database.ExecuteSqlRaw("EXEC dbo.SP_CREATEETLVIEW_NORMAL @p_SubjectAreaId, @p_success", SubjectAreaId, IsGroupColumnNameExist);
-                    //   FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL";
-                    //GetDataSet objDeleteSetValue = new GetDataSet();
-                    // objDeleteSetValue.CreateViewforSubjectArea(FormedQueryLookupType, SubjectAreaId);
+                    var SubjectAreaIdValue = new SqlParameter("p_SubjectAreaId", SubjectAreaId);
+                    var pSuccessParameter = new SqlParameter("@p_success", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output,
+
+                      
+                    };
+
+                    sPONGE_Context.Database.ExecuteSqlRaw(
+                            "EXEC dbo.SP_CREATEETLVIEW_NORMAL @p_SubjectAreaId, @p_success",
+                            SubjectAreaIdValue,
+                            pSuccessParameter
+                    );
                 }
 
             }
