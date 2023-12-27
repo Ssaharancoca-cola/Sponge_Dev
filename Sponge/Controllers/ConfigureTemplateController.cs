@@ -123,7 +123,7 @@ namespace Sponge.Controllers
                 configRecord.APPROVER_ID = data.APPROVER_ID;
                 configRecord.MODIFIED_BY = userName[1];
                 configRecord.MODIFIED_DATE = DateTime.Now;
-                if (configRecord.EFFECTIVE_TO == null)
+                if (data.ACTIVE_FLAG == "Y")
                 {
                     configRecord.EFFECTIVE_TO = Convert.ToDateTime(defaultEffectiveToDate);
                 }

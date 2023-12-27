@@ -145,8 +145,10 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        
+
         $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');
-        if ($("#Active").val() == '0') {  
+        if ($("#Active").val() == 'N') {  
             $('#EffectiveToDivID').show();
         }
         $("#Scheduled").val('@ViewBag.Result.SCHEDULED');
@@ -160,10 +162,13 @@
         }
         // The code to show effective to Date field on the form if value of Active is No
         $('#Active').on('change', function () {
-            if($("#Active").val() == '0'){ 
+            if($("#Active").val() == 'N'){ 
+                $('#effectiveToDateID').val('');
+                document.getElementById('effectiveToDateID').required = true;
                 $('#EffectiveToDivID').show();
             }
             else {
+                document.getElementById('effectiveToDateID').required = false;
                 $('#EffectiveToDivID').hide();
             }
         });
@@ -287,5 +292,12 @@
             e.preventDefault();
             alert('Please fill the approver details');
         }
+        // if ($('#effectiveToDateID').val() == null || $('#effectiveToDateID').val() == '') 
+        // {
+        //     e.preventDefault();
+        //     alert('Please select effective to date');
+        // }
+
+
     });
 </script>
