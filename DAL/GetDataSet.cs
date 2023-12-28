@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.OleDb;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using DAL.Common;
@@ -841,9 +835,7 @@ namespace DAL
                 data.Add(item);
             }
             return data;
-        }
-
-       
+        }       
         private static T GetItem<T>(DataRow dr)
         {
             Type temp = typeof(T);
@@ -941,7 +933,6 @@ namespace DAL
 
             return lst;
         }
-
         static object GetValue(object ob, Type targetType)
         {
             if (targetType == null)
@@ -1030,123 +1021,107 @@ namespace DAL
 
             return ob;
         }
+        public string InsertDataSetValueStringParam(string selectCommand, string dynamicsqlquery)
+        {
+            string result = "";
+            using (var context = new SPONGE_Context())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    using (var cmd = context.Database.GetDbConnection().CreateCommand())
+                    {
+                        cmd.Transaction = context.Database.CurrentTransaction.GetDbTransaction();
+                        cmd.CommandText = selectCommand;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter param = new ();
+                        param.ParameterName = "p_dynamicsqlquery";
+                        param.SqlDbType = SqlDbType.NVarChar;
+                        param.Direction = ParameterDirection.Input;
+                        param.Value = dynamicsqlquery;
 
-        //public string InsertDataSetValueStringParam(string selectCommand, string dynamicsqlquery)
-        //{
-        //    string result = "";// new DataSet();
-        //    using (var context = new SPONGE_Context())
-        //    {
-        //        using (var transaction = context.Database.BeginTransaction(IsolationLevel.ReadCommitted))
-        //        {
-        //            using (var cmd = context.Database.Connection.CreateCommand())
-        //            {
-        //                cmd.Transaction = transaction.UnderlyingTransaction;
-        //                //var cmd = context.Database.Connection.CreateCommand();
-        //                cmd.CommandText = selectCommand;
-        //                cmd.CommandType = CommandType.StoredProcedure;
-        //                OracleParameter param = new OracleParameter();
-        //                param.ParameterName = "p_dynamicsqlquery";
-        //                param.OracleDbType = OracleDbType.Varchar2;
-        //                param.Direction = ParameterDirection.Input;
-        //                param.Value = dynamicsqlquery;
+                        SqlParameter parameter2 = new();
+                        parameter2.ParameterName = "Config_C";
+                        parameter2.Direction = ParameterDirection.Output;
+                        parameter2.Size = 2000;
+                        parameter2.SqlDbType = SqlDbType.NVarChar;
 
+                        cmd.Parameters.Add(param);
 
-        //                OracleParameter parameter2 = new OracleParameter();
-        //                parameter2.ParameterName = "Config_C";
-        //                parameter2.Direction = ParameterDirection.Output;
-        //                parameter2.Size = 2000;
-        //                parameter2.OracleDbType = OracleDbType.Varchar2;
+                        cmd.Parameters.Add(parameter2);
 
-        //                cmd.Parameters.Add(param);
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                            result = parameter2.Value.ToString();
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorLog lgerr = new ErrorLog();
+                            lgerr.LogErrorInTextFile(ex);
+                            SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
+                        }
+                        finally
+                        {
+                            context.Database.CloseConnection();
+                        }
+                    }
+                    return result;
 
-        //                cmd.Parameters.Add(parameter2);
+                }
+            }
+        }
+        public DataSet GetDataSetValueStringParam(string selectCommand, string dynamicSqlQuery)
+        {
+            var result = new DataSet();
+            using (var context = new SPONGE_Context())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    using (var cmd = context.Database.GetDbConnection().CreateCommand())
+                    {
+                        cmd.Transaction = context.Database.CurrentTransaction.GetDbTransaction();
+                        cmd.CommandText = selectCommand;
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-        //                try
-        //                {
-        //                    // context.Database.Connection.Open();
-        //                    //var dtDataTable = new DataTable();
-        //                    cmd.ExecuteNonQuery();
-        //                    result = parameter2.Value.ToString();
-        //                    //do
-        //                    //{
-        //                    //    dtDataTable.Load(reader);
-        //                    //    result.Tables.Add(dtDataTable);
+                        var param = new SqlParameter("@p_dynamicSqlQuery", SqlDbType.NVarChar)
+                        {
+                            Direction = ParameterDirection.Input,
+                            Value = dynamicSqlQuery
+                        };
 
-        //                    //} while (!reader.IsClosed);
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    ErrorLog lgerr = new ErrorLog();
-        //                    lgerr.LogErrorInTextFile(ex);
-        //                    SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
-        //                }
-        //                finally
-        //                {
-        //                    context.Database.Connection.Close();
-        //                }
-        //            }
-        //            return result;
+                        var parameter2 = new SqlParameter("@Config_C", SqlDbType.NVarChar)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
 
-        //        }
-        //    }
-        //}
+                        cmd.Parameters.Add(param);
+                        cmd.Parameters.Add(parameter2);
 
-        //public DataSet GetDataSetValueStringParam(string selectCommand, string dynamicsqlquery)
-        //{
-        //    var result = new DataSet();
-        //    using (var context = new SPONGE_Context())
-        //    {
-        //        using (var transaction = context.Database.BeginTransaction(IsolationLevel.ReadCommitted))
-        //        {
-        //            using (var cmd = context.Database.Connection.CreateCommand())
-        //            {
-        //                cmd.Transaction = transaction.UnderlyingTransaction;
-        //                //var cmd = context.Database.Connection.CreateCommand();
-        //                cmd.CommandText = selectCommand;
-        //                cmd.CommandType = CommandType.StoredProcedure;
-
-        //                OracleParameter param = new OracleParameter();
-        //                param.ParameterName = "p_dynamicsqlquery";
-        //                param.OracleDbType = OracleDbType.Varchar2;
-        //                param.Direction = ParameterDirection.Input;
-        //                param.Value = dynamicsqlquery;
-
-        //                OracleParameter parameter2 = new OracleParameter();
-        //                parameter2.ParameterName = "Config_C";
-        //                parameter2.Direction = ParameterDirection.Output;
-        //                parameter2.OracleDbType = OracleDbType.RefCursor;
-
-        //                cmd.Parameters.Add(param);
-
-        //                cmd.Parameters.Add(parameter2);
-
-        //                try
-        //                {
-        //                    // context.Database.Connection.Open();
-        //                    var dtDataTable = new DataTable();
-        //                    var reader = cmd.ExecuteReader();
-        //                    do
-        //                    {
-        //                        dtDataTable.Load(reader);
-        //                        result.Tables.Add(dtDataTable);
-
-        //                    } while (!reader.IsClosed);
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    ErrorLog lgerr = new ErrorLog();
-        //                    lgerr.LogErrorInTextFile(ex);
-        //                    SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
-        //                }
-        //                finally
-        //                {
-        //                    context.Database.Connection.Close();
-        //                }
-        //            }
-        //            return result;
-        //        }
-        //    }
-        //}
+                        try
+                        {
+                            context.Database.OpenConnection();
+                            using (var reader = cmd.ExecuteReader())
+                            {
+                                var dtDataTable = new DataTable();
+                                dtDataTable.Load(reader);
+                                result.Tables.Add(dtDataTable);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorLog lgerr = new ErrorLog();
+                            lgerr.LogErrorInTextFile(ex);
+                            //SentErrorMail.SendEmailToError("InnerException: " + ex.InnerException?.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
+                        }
+                        finally
+                        {
+                            context.Database.CloseConnection();
+                        }
+                    }
+                }
+            }
+            return result;
+        }
         //public void ExecuteDynamicQuery(string selectCommand, string dynamicsqlquery)
         //{
         //    var result = new DataSet();
@@ -1165,7 +1140,7 @@ namespace DAL
         //                param.OracleDbType = OracleDbType.Varchar2;
         //                param.Direction = ParameterDirection.Input;
         //                param.Value = dynamicsqlquery;
-                       
+
         //                cmd.Parameters.Add(param);
         //                try
         //                {

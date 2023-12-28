@@ -2,12 +2,14 @@ using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using Sponge;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -18,6 +20,7 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
    .AddNegotiate();
 
