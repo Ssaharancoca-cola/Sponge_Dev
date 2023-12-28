@@ -59,16 +59,15 @@
                             $.each(data, function (i, dimension) {
                                 debugger;
                                 content += `
-                                                                              <div class="form-check form-check-flat form-check-primary">
-                                                                                  <label class="form-check-label">
-                                                                                      ${dimension.text}
-                                                                                      <input type="hidden" value="${dimension.value}" name="MPP_DIMENSION_NAME">
-                                                                                                  <input type="checkbox" class="form-check-input" value="${dimension.text}" name="DIMENSION_TABLE">
-                                                                                 <i class="input-helper">
-                                                                                         </i>
-                                                                                              </label>
-                                                                              </div>
-                                                                          `;
+                                                   <div class="form-check form-check-flat form-check-primary">
+                                                       <label class="form-check-label">
+                                                           ${dimension.text}
+                                                           <input type="hidden" value="${dimension.value}" name="MPP_DIMENSION_NAME">
+                                                           <input type="checkbox" class="form-check-input" value="${dimension.text}" name="DIMENSION_TABLE">
+                                                      <i class="input-helper"> </i>
+                                                       </label>
+                                                   </div>
+                                                    `;
                             });
                             $('#btnSave').prop('disabled', false);
                         }
@@ -76,17 +75,17 @@
                             $.each(data, function (i, dimension) {
                                 debugger;
                                 content += `
-                                                                          <div class="form-check form-check-flat form-check-primary">
-                                                                              <label class="form-check-label">
-                                                                                      ${dimension.dimensioN_NAME}
-                                                                                          <input type="hidden" value="${dimension.dimensiontablename}" name="MPP_DIMENSION_NAME">
-                                                                                    
-                                                                                                          <input type="checkbox" disabled checked class="form-check-input" value="${dimension.dimensioN_NAME}" name="DIMENSION_TABLE">
-                                                                                 <i class="input-helper">
-                                                                                         </i>
-                                                                              </label>
-                                                                          </div>
-                                                                      `;
+                                                                                  <div class="form-check form-check-flat form-check-primary">
+                                                                                      <label class="form-check-label">
+                                                                                              ${dimension.dimensioN_NAME}
+                                                                                                  <input type="hidden" value="${dimension.dimensiontablename}" name="MPP_DIMENSION_NAME">
+
+                                                                                                                  <input type="checkbox" disabled checked class="form-check-input" value="${dimension.dimensioN_NAME}" name="DIMENSION_TABLE">
+                                                                                         <i class="input-helper">
+                                                                                                 </i>
+                                                                                      </label>
+                                                                                  </div>
+                                                                              `;
                             });
                             $('#btnSave').prop('disabled', false);
                         }
@@ -101,7 +100,7 @@
         $('#btnSave').click(function (e) {
             e.preventDefault();
             var selectedDimensions = $('input[name="DIMENSION_TABLE"]:checked');
-            if (!selectedDimensions.length ) {
+            if (!selectedDimensions.length) {
                 alert('Please select at least one dimension');
                 return;
             }
@@ -121,7 +120,7 @@
                     isSelected: isSelected // This property will have 'true' if the dimension is already selected, 'false' otherwise
                 });
             });
-        
+
             // Add the dimensions to the form as hidden inputs
             $.each(dimensionsKeyValuePair, function (i, dimension) {
                 $('<input>').attr({

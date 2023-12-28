@@ -5,70 +5,70 @@
     TempData.Keep();
     var selectedMasters = ViewBag.SelectedMaster as List<DAL.Models.SPG_SUBJECT_MASTER>;
 }
-@using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea",Model, FormMethod.Post))
+@using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea", Model, FormMethod.Post))
 {
 
-<div class="row">
-    <div class="col-md-12 stretch-card grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Manage Master </p>
-                <div class="table-responsive">
-                    <table id="example" class="display expandable-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Masters</th>
-                                <th>Field Name</th>
-                                <th>Display Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>                               
-                            @foreach (var master in selectedMasters)
-                            {
-                            <tr>
-                                <td>
+    <div class="row">
+        <div class="col-md-12 stretch-card grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Manage Master </p>
+                    <div class="table-responsive">
+                        <table id="example" class="display expandable-table" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Masters</th>
+                                    <th>Field Name</th>
+                                    <th>Display Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var master in selectedMasters)
+                                {
+                                    <tr>
+                                        <td>
                                             <select class="form-control master prepopulated" name="data[0].Master">
-                                        <option selected>@master.MASTER_NAME</option>
-                                    </select>
-                                </td>
-                                <td>
+                                                <option selected>@master.MASTER_NAME</option>
+                                            </select>
+                                        </td>
+                                        <td>
                                             <select class="form-control fieldName prepopulated" id="fieldName" name="data[0].FieldName">
-                                        <option selected>@master.FIELD_NAME</option>
-                                    </select>
-                                </td>
-                                <td>
-                                            <input type="text" class="form-control prepopulated" id="displayName" name="data[0].DisplayName" value="@master.DISPLAY_NAME" readonly>
-                                </td>
-                            </tr>
-                            }
-                           
-                            <tr>
-                                <td>
-                                    <select class="form-control master" name="data[0].Master">
-                                        <option>Select Master</option>
-                                        @foreach (var f in ViewBag.SPG_MASTER)
-                                        {
-                                            <option value="@f.Value">@f.Text</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                        <select class="form-control fieldName" id="fieldName" name="data[0].FieldName"></select>
-                                </td>
-                                <td>
-                                        <input type="text" class="form-control" id="displayName" name="data[0].DisplayName" placeholder="Display Name">
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                        
-                </div>
+                                                <option selected>@master.FIELD_NAME</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input required type="text" class="form-control prepopulated" id="displayName" name="data[0].DisplayName" value="@master.DISPLAY_NAME" readonly>
+                                        </td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td>
+                                        <select  class="form-control master" name="data[0].Master">
+                                            <option>Select Master</option>
+                                            @foreach (var f in ViewBag.SPG_MASTER)
+                                            {
+                                                <option value="@f.Value">@f.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select  class="form-control fieldName" id="fieldName" name="data[0].FieldName"></select>
+                                    </td>
+                                    <td>
+                                        <input  type="text" class="form-control" id="displayName" name="data[0].DisplayName" placeholder="Display Name">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="submit" style="float:right" class="btn btn-primary" id="nextButton">Next</button>
                 </div>
+            </div>
         </div>
     </div>
-</div>
 }
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
@@ -76,7 +76,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var rowIndex = 1;
-        
+
         $(document).on('change', '.master', function () {
             if ($(this).val() !== "Select Master") {
                 $('#addRow').prop('disabled', false);
@@ -86,7 +86,7 @@
         });
 
         $('#addRow').click(function () {
-            var newRow = '<tr><td><select class="form-control master" name="data[' + rowIndex + '].Master"><option>Select Master</option></select></td><td><select class="form-control fieldName" id="fieldName' + rowIndex + '" name="data[' + rowIndex + '].fieldName"></select></td><td><input type="text" class="form-control" id="displayName' + rowIndex + '" name="data[' + rowIndex + '].DisplayName" placeholder="Display Name"></td></tr>'; $('#example tbody').append(newRow); // Append the new row to the table's body, not the non-existing 'tableBody'
+            var newRow = '<tr><td><select class="form-control master" name="data[' + rowIndex + '].Master"><option>Select Master</option></select></td><td><select class="form-control fieldName" id="fieldName' + rowIndex + '" name="data[' + rowIndex + '].fieldName"></select></td><td><input required type="text" class="form-control" id="displayName' + rowIndex + '" name="data[' + rowIndex + '].DisplayName" placeholder="Display Name"></td></tr>'; $('#example tbody').append(newRow); // Append the new row to the table's body, not the non-existing 'tableBody'
 
             // Clone options from the original dropdown to the new one
             $('select.master:first option:not(:first)').clone().appendTo('select.master:last');
@@ -123,5 +123,5 @@
             $('.prepopulated').prop('disabled', true);
         });
     });
-   
+
 </script>

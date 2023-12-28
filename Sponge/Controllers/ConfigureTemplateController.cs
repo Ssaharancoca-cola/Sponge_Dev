@@ -32,7 +32,7 @@ namespace Sponge.Controllers
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME, o.SUBJECTAREA_ID }).Distinct();
             ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
-            
+           
             return View();
         }
         public IActionResult SetUp(int configID)
@@ -123,7 +123,7 @@ namespace Sponge.Controllers
                 configRecord.APPROVER_ID = data.APPROVER_ID;
                 configRecord.MODIFIED_BY = userName[1];
                 configRecord.MODIFIED_DATE = DateTime.Now;
-                if (configRecord.EFFECTIVE_TO == null)
+                if (data.ACTIVE_FLAG == "Y")
                 {
                     configRecord.EFFECTIVE_TO = Convert.ToDateTime(defaultEffectiveToDate);
                 }

@@ -419,17 +419,44 @@ namespace Sponge.Controllers
 
             return RedirectToAction("ConfigureTemplate", "ConfigureTemplate",selectedSubjectArea);
         }
-        public void CreateSubjectAreaView(decimal? SubjectAreaId, bool IsGroupColumnNameExist)
+        public void CreateSubjectAreaView(int? SubjectAreaId, bool IsGroupColumnNameExist)
         {
             try
             {
-                string FormedQueryLookupType = string.Empty;
+                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
+
+                //string FormedQueryLookupType = string.Empty;
                 if (IsGroupColumnNameExist)
-                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL_BKP";
+                {
+                    var SubjectAreaIdValue = new SqlParameter("p_SubjectAreaId", SubjectAreaId);
+                    var pSuccessParameter = new SqlParameter("@p_success", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+
+                    sPONGE_Context.Database.ExecuteSqlRaw(
+                            "EXEC dbo.SP_CREATEETLVIEW_GROUPCOLUMN @p_SubjectAreaId, @p_success",
+                            SubjectAreaIdValue,
+                            pSuccessParameter
+                    );
+                       }
                 else
-                    FormedQueryLookupType = "SP_CREATEETLVIEW_NORMAL";
-                GetDataSet objDeleteSetValue = new GetDataSet();
-                // objDeleteSetValue.CreateViewforSubjectArea(FormedQueryLookupType, SubjectAreaId);
+                {
+                    var SubjectAreaIdValue = new SqlParameter("p_SubjectAreaId", SubjectAreaId);
+                    var pSuccessParameter = new SqlParameter("@p_success", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output,
+
+                      
+                    };
+
+                    sPONGE_Context.Database.ExecuteSqlRaw(
+                            "EXEC dbo.SP_CREATEETLVIEW_NORMAL @p_SubjectAreaId, @p_success",
+                            SubjectAreaIdValue,
+                            pSuccessParameter
+                    );
+                }
+
             }
             catch (Exception ex)
             {

@@ -104,7 +104,8 @@
                         <div class="form-group row">
                             <div class="col">
                                 <label for="approverEmailID">Approver Email ID</label>
-                                <input required type="text" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
+                                <input required type="email" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
+                                <div id="emailSuggestions" style="border:1px solid;display:none"></div>
                             </div>
                             <div class="col btn-align">
                                 <button type="submit" id="getapprover" class="btn btn-primary">Get Approver Info</button>
@@ -118,15 +119,18 @@
                             </div>
                             <div class="col">
                                 <label for="approverID">Approver ID</label>
-                                <input type="email" required value="@ViewBag.Result.APPROVER_ID" class="form-control" name="APPROVER_ID" id="approverID"
+                                <input type="email" value="@ViewBag.Result.APPROVER_ID" class="form-control" name="APPROVER_ID" id="approverID"
                                        readonly>
                             </div>
                         </div>
                         <div style="display:none">
                             <input hidden type="text" id="createdOnID" value="@ViewBag.Result.Created_On" />
                         </div>
-                        <button class="btn btn-light mr-2">Cancel</button>
-                        <button type="submit" id="Savebutton" class="btn btn-primary">Save</button>
+                        <div>
+                            <button class="btn btn-light mr-2">Cancel</button>
+                            <button @* style="visibility:hidden" *@ type="submit" id="Savebutton" class="btn btn-primary">Save</button>
+                        </div>
+                        
 
                     </div>
                 </div>
@@ -141,8 +145,10 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        
+
         $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');
-        if ($("#Active").val() == '0') {  
+        if ($("#Active").val() == 'N') {  
             $('#EffectiveToDivID').show();
         }
         $("#Scheduled").val('@ViewBag.Result.SCHEDULED');
@@ -156,10 +162,13 @@
         }
         // The code to show effective to Date field on the form if value of Active is No
         $('#Active').on('change', function () {
-            if($("#Active").val() == '0'){ 
+            if($("#Active").val() == 'N'){ 
+                $('#effectiveToDateID').val('');
+                document.getElementById('effectiveToDateID').required = true;
                 $('#EffectiveToDivID').show();
             }
             else {
+                document.getElementById('effectiveToDateID').required = false;
                 $('#EffectiveToDivID').hide();
             }
         });
@@ -210,12 +219,85 @@
 
             // Make an AJAX request to your action
             $.getJSON('/ConfigureTemplate/GetUserInfoByEmail', { email: email }, function (data) {
-                // Fill the approver name and ID fields with the returned data
-                $("#approverName").val(data.userName);
-                $("#approverID").val(data.userId);
+                if (data.userName == null || data.userId == null) {
+                    alert('Unable to get details, please enter correct email');
+                }
+                else 
+                { 
+                    // Fill the approver name and ID fields with the returned data
+                    $("#approverName").val(data.userName);
+                    $("#approverID").val(data.userId);
+                }
+
             });
         });
     });
+//Email Autocomplete
+    $('#approverEmailID').on('keyup', function () {
+        var email = $(this).val();
+        if (email == "") {
+            $('#emailSuggestions').empty();
+        }
+
+        // Only make the AJAX call if at least 3 characters have been entered
+        if (email.length >= 3) {
+            $.ajax({
+                url: '/User/GetEmailSuggestions',
+                type: 'GET',
+                data: { 'email': email },
+                success: function (result) {
+                    // clear old suggestions
+                    $('#emailSuggestions').empty();
+                    $('#emailSuggestions').show();
+
+                    // loop through result and append to suggestions div
+                    $.each(result, function (key, value) {
+                        $('#emailSuggestions').append('<div class="suggestion">' + value + '</div>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('An error occurred: ', error);
+                }
+            });
+        }
+    });
+
+    // add click event to all suggestion divs
+    $(document).on('click', '.suggestion', function () {
+        var selectedEmail = $(this).text();
+        $('#approverEmailID').val(selectedEmail);
+        $('#emailSuggestions').empty();
+    });
+    // hide suggestions div when input loses focus, after a short delay
+    var timeoutId;
+    $('#approverEmailID').on('blur', function () {
+        if ($('#approverEmailID').text() == '') 
+        { 
+            $("#approverName").val('');
+            $("#approverID").val('');
+        }
+        timeoutId = setTimeout(function () {
+            $('#emailSuggestions').hide();
+        }, 500); // 500 ms delay
+    });
+
+    $(document).on('mousedown', '.suggestion', function () {
+        clearTimeout(timeoutId);
+    });
+
+    // To prevent form from submitting if the approver details are blank
+    $('#Savebutton').on('click', function (e) {
+        if ($("#approverName").val() == '' || $("#approverID").val() == '') 
+        { 
+            e.preventDefault();
+            alert('Please fill the approver details');
+        }
+        // if ($('#effectiveToDateID').val() == null || $('#effectiveToDateID').val() == '') 
+        // {
+        //     e.preventDefault();
+        //     alert('Please select effective to date');
+        // }
 
 
+    });
 </script>
