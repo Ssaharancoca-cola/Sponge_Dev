@@ -34,6 +34,7 @@ namespace DAL.Models
 
         protected void OnModelCreatingGeneratedProcedures(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<SP_CREATEETLVIEW_GROUPCOLUMNResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GET_MPP_DIMENSIONSResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GET_MPP_MASTERSResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GETMASTEREMAILResult>().HasNoKey().ToView(null);
@@ -47,6 +48,76 @@ namespace DAL.Models
         public SPONGE_ContextProcedures(SPONGE_Context context)
         {
             _context = context;
+        }
+
+        public virtual async Task<List<SP_CREATEETLVIEW_GROUPCOLUMNResult>> SP_CREATEETLVIEW_GROUPCOLUMNAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterp_success = new SqlParameter
+            {
+                ParameterName = "p_success",
+                Direction = System.Data.ParameterDirection.InputOutput,
+                Value = p_success?._value ?? Convert.DBNull,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_SubjectAreaId",
+                    Value = p_SubjectAreaId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterp_success,
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<SP_CREATEETLVIEW_GROUPCOLUMNResult>("EXEC @returnValue = [dbo].[SP_CREATEETLVIEW_GROUPCOLUMN] @p_SubjectAreaId, @p_success OUTPUT", sqlParameters, cancellationToken);
+
+            p_success.SetValue(parameterp_success.Value);
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<int> SP_CREATEETLVIEW_NORMALAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterp_success = new SqlParameter
+            {
+                ParameterName = "p_success",
+                Direction = System.Data.ParameterDirection.InputOutput,
+                Value = p_success?._value ?? Convert.DBNull,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_SubjectAreaId",
+                    Value = p_SubjectAreaId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterp_success,
+                parameterreturnValue,
+            };
+            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[SP_CREATEETLVIEW_NORMAL] @p_SubjectAreaId, @p_success OUTPUT", sqlParameters, cancellationToken);
+
+            p_success.SetValue(parameterp_success.Value);
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
         }
 
         public virtual async Task<List<SP_GET_MPP_DIMENSIONSResult>> SP_GET_MPP_DIMENSIONSAsync(OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)

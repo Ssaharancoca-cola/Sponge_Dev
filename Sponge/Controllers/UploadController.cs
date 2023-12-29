@@ -395,7 +395,7 @@ namespace Sponge.Controllers
                     List<SelectListItem> List2 = new List<SelectListItem>();
                     List<SelectListItem> List22 = new List<SelectListItem>();
                     List<SelectListItem> List3 = new List<SelectListItem>();
-                    List1 = dbcontext.SPG_CONFIG_STRUCTURE.Where(w => w.CONFIG_ID == objFileModel.ConFigId && w.COLLECTION_TYPE == "Master" && w.GROUPCOLUMNNAME == null).Select(s => new SelectListItem { Text = s.DISPLAY_NAME, Value = s.DATA_TYPE }).ToList();
+                    List1 = dbcontext.SPG_CONFIG_STRUCTURE.Where(w => w.CONFIG_ID == objFileModel.ConFigId && w.COLLECTION_TYPE == "Master" && string.IsNullOrEmpty(w.GROUPCOLUMNNAME)).Select(s => new SelectListItem { Text = s.DISPLAY_NAME, Value = s.DATA_TYPE }).ToList();
                     List2 = dbcontext.SPG_CONFIG_STRUCTURE.Where(w => w.CONFIG_ID == objFileModel.ConFigId && w.COLLECTION_TYPE == "Measure" && w.GROUPCOLUMNNAME != null && w.IS_SHOW == "Y").Select(s => new SelectListItem { Text = s.DISPLAY_NAME, Value = s.DATA_TYPE }).ToList();
                     List22 = dbcontext.SPG_GETTIMECODE.Where(w => w.CONFIG_ID == objFileModel.ConFigId && w.TEMPLATE_ID == objFileModel.TemplateID).Select(s => new SelectListItem { Text = s.DISPLAY_NAME, Value = s.DATA_TYPE }).ToList();
                     List3 = List1.Concat(List2).ToList();
@@ -527,7 +527,7 @@ namespace Sponge.Controllers
                             if (listOfColumnnames[j].Contains("VC"))
                             {
 
-                                StrInsertQuery.Append(!string.IsNullOrEmpty(dt.Rows[i].ItemArray[j].ToString().Replace("'", "''").Replace("&", "'||'&'||'")) ? "'" + dt.Rows[i].ItemArray[j].ToString().Replace("'", "''").Replace("&", "'||'&'||'") + "'," : nullvalue + ",");
+                                StrInsertQuery.Append(!string.IsNullOrEmpty(dt.Rows[i].ItemArray[j].ToString().Replace("'", "''").Replace("&", "'+'&'+'")) ? "'" + dt.Rows[i].ItemArray[j].ToString().Replace("'", "''").Replace("&", "'+'&'+'") + "'," : nullvalue + ",");
                             }
                             if (listOfColumnnames[j].Contains("DT"))
                             {
@@ -669,7 +669,8 @@ namespace Sponge.Controllers
                 FILE_NAME = FILE_NAME,
                 FILE_PATH = FILE_PATH,
                 APPROVERID = approverUserId,
-                APPROVER_NAME = ApproverName
+                APPROVER_NAME = ApproverName,
+                ID = Guid.NewGuid().ToString()
 
             };
             dbContext.SPG_DOCUMENT.Add(saveepdocument);

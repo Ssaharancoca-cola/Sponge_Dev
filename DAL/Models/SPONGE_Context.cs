@@ -540,7 +540,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_DOCUMENT>(entity =>
             {
                 entity.HasKey(e => e.DocumentID)
-                    .HasName("PK__SPG_DOCU__1ABEEF6FD3693C9B");
+                    .HasName("PK__SPG_DOCU__1ABEEF6F4384A35C");
 
                 entity.Property(e => e.APPROVEDON).HasColumnType("date");
 
@@ -565,8 +565,9 @@ namespace DAL.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.ID)
-                    .HasMaxLength(2000)
-                    .IsUnicode(false);
+                    .IsRequired()
+                    .IsUnicode(false)
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.UPLOADDATE).HasColumnType("datetime");
 
