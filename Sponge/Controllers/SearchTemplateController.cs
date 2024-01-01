@@ -146,10 +146,7 @@ namespace Sponge.Controllers
             }
             return Json(SearchConfgData);
         }
-        //public IActionResult ManualSend()
-        //{
-        //    return View("Views\\SearchTemplate\\ManualSendResend.cshtml");
-        //}
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
