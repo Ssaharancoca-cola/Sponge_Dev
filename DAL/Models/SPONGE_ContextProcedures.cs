@@ -35,6 +35,7 @@ namespace DAL.Models
         protected void OnModelCreatingGeneratedProcedures(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SP_CREATEETLVIEW_GROUPCOLUMNResult>().HasNoKey().ToView(null);
+            modelBuilder.Entity<SP_CREATEETLVIEW_NORMALResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GET_MPP_DIMENSIONSResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GET_MPP_MASTERSResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GETMASTEREMAILResult>().HasNoKey().ToView(null);
@@ -85,7 +86,7 @@ namespace DAL.Models
             return _;
         }
 
-        public virtual async Task<int> SP_CREATEETLVIEW_NORMALAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        public virtual async Task<List<SP_CREATEETLVIEW_NORMALResult>> SP_CREATEETLVIEW_NORMALAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
         {
             var parameterp_success = new SqlParameter
             {
@@ -112,7 +113,7 @@ namespace DAL.Models
                 parameterp_success,
                 parameterreturnValue,
             };
-            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[SP_CREATEETLVIEW_NORMAL] @p_SubjectAreaId, @p_success OUTPUT", sqlParameters, cancellationToken);
+            var _ = await _context.SqlQueryAsync<SP_CREATEETLVIEW_NORMALResult>("EXEC @returnValue = [dbo].[SP_CREATEETLVIEW_NORMAL] @p_SubjectAreaId, @p_success OUTPUT", sqlParameters, cancellationToken);
 
             p_success.SetValue(parameterp_success.Value);
             returnValue?.SetValue(parameterreturnValue.Value);
