@@ -43,6 +43,8 @@ namespace Sponge.Controllers
         public IActionResult SelectedDimension(int? subjectAreaId)
         {
             SPONGE_Context spONGE_Ctx = new();
+
+
             var dimensionlist = (from user in spONGE_Ctx.SPG_SUBJECT_DIMENSION
                                  where user.SUBJECTAREA_ID == subjectAreaId
                                  select new
@@ -64,6 +66,15 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             TempData["selectedSubjectArea"] = selectedSubjectArea;
             SPONGE_Context sPONGE_Context = new();
+            // Code to store the subject area name to display in next subsequent views
+            var subjectArea = sPONGE_Context.SPG_SUBJECTAREA.Find(selectedSubjectArea);
+            string subjectAreaName = String.Empty;
+            if (subjectArea != null)
+            {
+                subjectAreaName = subjectArea.SUBJECTAREA_NAME;
+            }
+            HttpContext.Session.SetString("SubjectAreaName", subjectAreaName);
+
             List<SPG_MPP_MASTER> spg_Masters = new List<SPG_MPP_MASTER>();
 
             foreach (var Dimension in dimensions)
@@ -91,12 +102,12 @@ namespace Sponge.Controllers
                 {
 
                     List<SPG_MPP_MASTER> spg_mpp_master = (from user in sPONGE_Context.SPG_MPP_MASTER
-                                         where user.MPP_DIMENSION_NAME ==Dimension.Value
-                                         select new SPG_MPP_MASTER
-                                         {
-                                             MASTER_NAME = user.MASTER_NAME,
-                                             MASTER_DISPLAY_NAME = user.MASTER_DISPLAY_NAME
-                                         }).Distinct().ToList();
+                                                           where user.MPP_DIMENSION_NAME == Dimension.Value
+                                                           select new SPG_MPP_MASTER
+                                                           {
+                                                               MASTER_NAME = user.MASTER_NAME,
+                                                               MASTER_DISPLAY_NAME = user.MASTER_DISPLAY_NAME
+                                                           }).Distinct().ToList();
                     spg_Masters.AddRange(spg_mpp_master);
                     ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
                 }
@@ -106,33 +117,34 @@ namespace Sponge.Controllers
             foreach (var Master in dimensions)
             {
                 var selectedMaster = sPONGE_Context.SPG_SUBJECT_MASTER
-                    .Where(x => x.DIMENSION_TABLE == Master.Key && x.SUBJECTAREA_ID == selectedSubjectArea && x.IS_SHOW =="Y")
-                    .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME= o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
+                    .Where(x => x.DIMENSION_TABLE == Master.Key && x.SUBJECTAREA_ID == selectedSubjectArea && x.IS_SHOW == "Y")
+                    .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME = o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
                         .Distinct().ToList();
                 selectedMasters.AddRange(selectedMaster);
-                
+
             }
             ViewBag.SelectedMaster = selectedMasters.ToList();
 
+            ViewBag.SubjectAreaName = subjectAreaName;
 
-            
 
             return View("Views\\ConfigureSubjectArea\\ConfigureMasters.cshtml");
 
         }
         public IActionResult GetFieldName(string? masterName)
         {
+
             SPONGE_Context sPONGE_Context = new();
             var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.MASTER_NAME == masterName && o.IS_KEY != "Y")
                 .Select(o => new { o.COLUMN_DISPLAY_NAME, o.COLUMN_NAME }).Distinct();
-            ViewBag.FieldName = new SelectList(fieldName.ToList(), "COLUMN_NAME", "COLUMN_DISPLAY_NAME");
+            //ViewBag.FieldName = new SelectList(fieldName.ToList(), "COLUMN_NAME", "COLUMN_DISPLAY_NAME");
             return Json(fieldName);
         }
 
         [HttpPost]
         public IActionResult SaveMasters(List<SaveMaster> data)
         {
-           
+
             SPONGE_Context sPONGE_Context = new();
             var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
             TempData.Keep();
@@ -174,15 +186,25 @@ namespace Sponge.Controllers
                 sPONGE_Context.SaveChanges();
             }
             List<SPG_SUBJECT_DATACOLLECTION> selectedDataCollection = new();
-           
+
             var selectedMaster = sPONGE_Context.SPG_SUBJECT_DATACOLLECTION
                 .Where(x => x.SUBJECTAREA_ID == selectedSubjectArea)
-                .Select(o => new SPG_SUBJECT_DATACOLLECTION { DISPLAY_NAME = o.DISPLAY_NAME, FIELD_NAME = o.FIELD_NAME, IS_LOOKUP = o.IS_LOOKUP,
-                LOOKUP_TYPE = o.LOOKUP_TYPE, DATA_TYPE = o.DATA_TYPE, UOM = o.UOM})
+                .Select(o => new SPG_SUBJECT_DATACOLLECTION
+                {
+                    DISPLAY_NAME = o.DISPLAY_NAME,
+                    FIELD_NAME = o.FIELD_NAME,
+                    IS_LOOKUP = o.IS_LOOKUP,
+                    LOOKUP_TYPE = o.LOOKUP_TYPE,
+                    DATA_TYPE = o.DATA_TYPE,
+                    UOM = o.UOM
+                })
                     .Distinct().ToList();
             selectedDataCollection.AddRange(selectedMaster);
-            
+
             ViewBag.SelectedDataCollection = selectedDataCollection.ToList();
+
+            var subjectAreaName = HttpContext.Session.GetString("SubjectAreaName");
+            ViewBag.SubjectAreaName = subjectAreaName;
 
             return View("Views\\ConfigureSubjectArea\\ConfigureDataCollection.cshtml");
         }
@@ -207,37 +229,50 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
             TempData.Keep();
+
             foreach (var collection in data)
             {
-                SPG_SUBJECT_DATACOLLECTION sPG_1 = new();
+                if (collection.DisplayName == null && collection.FieldName == null)
                 {
-                    sPG_1.SUBJECTAREA_ID = selectedSubjectArea;
-                    sPG_1.DISPLAY_NAME = collection.DisplayName;
-                    sPG_1.FIELD_NAME = collection.FieldName;
-                    sPG_1.DATA_TYPE = collection.DataType;
-                    sPG_1.UOM = collection.UOM;
-                    sPG_1.IS_LOOKUP = collection?.IsLookUp;
-                    if (collection?.IsLookUp == "Y")
-                        sPG_1.DISPLAY_TYPE = "DropDown";
-                    else sPG_1.DISPLAY_TYPE = "TextBox";
-                    sPG_1.LOOKUP_TYPE = collection?.LookUpType;
-                    sPG_1.ACTIVE_FLAG = "Y";
-                    sPG_1.CREATED_DATE = DateTime.Now;
-                    sPG_1.CREATED_BY = userName[1].ToString();
+                    //To avoid empty row from saving don't add the data in Model
                 }
-                sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);
-                sPONGE_Ctx.SaveChanges();
+                else
+                {
+                    SPG_SUBJECT_DATACOLLECTION sPG_1 = new();
+                    {
+                        sPG_1.SUBJECTAREA_ID = selectedSubjectArea;
+                        sPG_1.DISPLAY_NAME = collection.DisplayName;
+                        sPG_1.FIELD_NAME = collection.FieldName;
+                        sPG_1.DATA_TYPE = collection.DataType;
+                        sPG_1.UOM = collection.UOM;
+                        sPG_1.IS_LOOKUP = collection?.IsLookUp;
+                        if (collection?.IsLookUp == "Y")
+                            sPG_1.DISPLAY_TYPE = "DropDown";
+                        else sPG_1.DISPLAY_TYPE = "TextBox";
+                        sPG_1.LOOKUP_TYPE = collection?.LookUpType;
+                        sPG_1.ACTIVE_FLAG = "Y";
+                        sPG_1.CREATED_DATE = DateTime.Now;
+                        sPG_1.CREATED_BY = userName[1].ToString();
+                    }
+                    sPONGE_Ctx.SPG_SUBJECT_DATACOLLECTION.Add(sPG_1);
+                    sPONGE_Ctx.SaveChanges();
+                }
             }
+
+
             var selectedUser = (from config in sPONGE_Ctx.SPG_CONFIGURATION
-                                  join user in sPONGE_Ctx.SPG_USERS on config.USER_ID equals user.USER_ID
-                                  where config.SUBJECTAREA_ID == selectedSubjectArea
-                                  select new 
-                                  {
-                                      UserId = config.USER_ID,
-                                      UserName = user.Name
-                                  }).Distinct().ToList();
+                                join user in sPONGE_Ctx.SPG_USERS on config.USER_ID equals user.USER_ID
+                                where config.SUBJECTAREA_ID == selectedSubjectArea
+                                select new
+                                {
+                                    UserId = config.USER_ID,
+                                    UserName = user.Name
+                                }).Distinct().ToList();
 
             ViewBag.SelectedUser = selectedUser.ToList();
+
+            var subjectAreaName = HttpContext.Session.GetString("SubjectAreaName");
+            ViewBag.SubjectAreaName = subjectAreaName;
 
             return View("Views\\ConfigureSubjectArea\\AssignUsers.cshtml");
         }
@@ -417,7 +452,7 @@ namespace Sponge.Controllers
             catch (Exception ex)
             { }
 
-            return RedirectToAction("ConfigureTemplate", "ConfigureTemplate",selectedSubjectArea);
+            return RedirectToAction("ConfigureTemplate", "ConfigureTemplate", selectedSubjectArea);
         }
         public void CreateSubjectAreaView(int? SubjectAreaId, bool IsGroupColumnNameExist)
         {
@@ -502,7 +537,7 @@ namespace Sponge.Controllers
                     foreach (var item in data)
                     {
 
-                      if (!string.IsNullOrEmpty(item.DisplayName))
+                        if (!string.IsNullOrEmpty(item.DisplayName))
                         {
 
                             int ConfigUserId = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.USER_ID == i.UserId && x.CONFIG_ID == configId).Select(x => x.CONFIGUSER_ID).FirstOrDefault();
@@ -512,8 +547,8 @@ namespace Sponge.Controllers
 
                                 if (headerList.Count <= 0 && headerlist_definer == "Y")
                                 {
-                                  SaveConfigMeasure(objModel, ConfigUserId, i.UserId, id, configId, item, item.DisplayName, grpcolumnname_definer);
-}
+                                    SaveConfigMeasure(objModel, ConfigUserId, i.UserId, id, configId, item, item.DisplayName, grpcolumnname_definer);
+                                }
                                 else
                                 {
                                     foreach (var header in headerList)
@@ -521,7 +556,7 @@ namespace Sponge.Controllers
                                         SaveConfigMeasure(objModel, ConfigUserId, i.UserId, id, configId, item, header, headerlist_definer);
 
                                     }
-                                 }
+                                }
                             }
                             else if (item.CollectionType == "Master" && ConfigUserId == 0)
                             {
@@ -538,7 +573,7 @@ namespace Sponge.Controllers
                                 o.DIMENSION_TABLE = item.DimensionTable;
                                 o.CONFIG_ID = configId;
                                 string DataType = objModel.SPG_CONFIG_STRUCTURE.Where(x => x.FIELD_NAME == item.FieldName && x.SUBJECTAREA_ID == id && x.COLLECTION_TYPE == "Master").Select(x => x.DATA_TYPE).FirstOrDefault();
-                               
+
                                 if (DataType == null)
                                 {
 
@@ -577,7 +612,7 @@ namespace Sponge.Controllers
                 }
             }
         }
-        public string GetDataTypeCounter(SPONGE_Context objModel,int ?id, string dataType)
+        public string GetDataTypeCounter(SPONGE_Context objModel, int? id, string dataType)
         {
             var outputParameter = new SqlParameter()
             {
@@ -610,9 +645,9 @@ namespace Sponge.Controllers
 
             return RedirectToAction("Function");
         }
-        private void SaveConfigMeasure(SPONGE_Context objModel,int ConfigUserId, string userId, int? id, int configId, UserConfiguration item,string  header, string grpcolumnname_definer)
+        private void SaveConfigMeasure(SPONGE_Context objModel, int ConfigUserId, string userId, int? id, int configId, UserConfiguration item, string header, string grpcolumnname_definer)
         {
-           
+
             SPG_CONFIG_STRUCTURE o = new SPG_CONFIG_STRUCTURE();
             if (ConfigUserId > 0)
             {

@@ -14,7 +14,7 @@
         <div class="col-md-12 stretch-card grid-margin">
             <div class="card">
                 <div class="card-body">
-                    <p class="card-title">Setup Data Collection </p>
+                    <p class="card-title">Setup Data Collection - @ViewBag.SubjectAreaName</p>
                     <div class="table-responsive">
                         <table id="example" class="display expandable-table" style="width:100%">
                             <thead>
@@ -32,10 +32,10 @@
                                 {
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control prepopulated" id="displayName" name="data[0].DISPLAY_NAME" value="@master.DISPLAY_NAME" readonly>
+                                            <input type="text" class="form-control displayNamePrepopulated" id="displayName" name="data[0].DISPLAY_NAME" value="@master.DISPLAY_NAME" readonly>
                                         </td>
                                         <td>
-                                            <select class="form-control fieldName prepopulated" id="fieldName" name="data[0].FIELD_NAME">
+                                            <select class="form-control fieldNamePrepopulated" id="fieldName" name="data[0].FIELD_NAME">
                                                 <option selected>@master.FIELD_NAME</option>
                                             </select>
                                         </td>
@@ -57,19 +57,19 @@
                                             @{
                                                 if (@master.DATA_TYPE == "VC")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "N")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "DT")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
                                                 }
                                             }
 
@@ -117,7 +117,7 @@
 
 
                     </div>
-                    <button type="button" id="addRow" class="btn btn-success">Add Row</button>
+                    <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="submit" id="saveData" class="btn btn-primary " style="float:right">Next</button>
                 </div>
             </div>
@@ -128,60 +128,205 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
+    //To check the duplicates in Display Name and to enable and disable add row button
+    $(document).on('blur', '.displayName', function () {
+        var table = document.getElementById("example");
+
+        // Get the last row
+        var lastRow = table.rows[table.rows.length - 1];
+
+        // Get the text type input elements
+        var inputs = lastRow.querySelectorAll("input[type='text']");
+        var selects = lastRow.getElementsByTagName('select');
+        var lastDisplayNameValue = inputs[0].value;
+        var lastMasterValue = selects[0].value;
+
+        var currentInput = $(this);
+        var currentValue = currentInput.val().toLowerCase();
+        var isDuplicate = false;
+
+        // If value is blank, don't proceed with duplicate check
+        if (currentValue.trim() === '') {
+
+        }
+        else {
+            $('.displayName').each(function () {
+
+                // Skip checking against its own value
+                if (this === currentInput[0]) {
+                    return true;
+                }
+
+                if ($(this).val().toLowerCase() === currentValue) {
+                    isDuplicate = true;
+                    return false; // exit from each loop
+                }
+
+            });
+            $('.displayNamePrepopulated').each(function () {
+
+                // Skip checking against its own value
+                if (this === currentInput[0]) {
+                    return true;
+                }
+
+                if ($(this).val().toLowerCase() === currentValue) {
+                    isDuplicate = true;
+                    return false; // exit from each loop
+                }
+
+            });
+        }
+
+
+        // If value exists in other inputs clear the value
+        if (isDuplicate) {
+            currentInput.val('');
+            alert('Duplicates are not allowed in Display Name');
+        }
+        else {
+            
+            var input1 = $(lastRow).find('.displayName');
+            var input2 = $(lastRow).find('.fieldName');
+
+            if (input1.val() && input2.val()) {
+                $('#addRow').prop('disabled', false);
+            }
+            else {
+                $('#addRow').prop('disabled', true);
+            }
+        }
+
+    });
+    // To check duplicates in Field Name and to enable and disable add row button
+    $(document).on('blur', '.fieldName', function () {
+        var table = document.getElementById("example");
+
+        // Get the last row
+        var lastRow = table.rows[table.rows.length - 1];
+
+        // Get the text type input elements
+        var inputs = lastRow.querySelectorAll("input[type='text']");
+        var selects = lastRow.getElementsByTagName('select');
+        var lastDisplayNameValue = inputs[0].value;
+        var lastMasterValue = selects[0].value;
+
+        var currentInput = $(this);
+        var currentValue = currentInput.val().toLowerCase();
+        var isDuplicate = false;
+
+        // If value is blank, don't proceed with duplicate check 
+        if (currentValue.trim() === '') {
+
+        }
+        else {
+            $('.fieldName').each(function () {
+
+                // Skip checking against its own value
+                if (this === currentInput[0]) {
+                    return true;
+                }
+
+                if ($(this).val().toLowerCase() === currentValue) {
+                    isDuplicate = true;
+                    return false; // exit from each loop
+                }
+
+            });
+            $('.fieldNamePrepopulated').each(function () {
+
+                // Skip checking against its own value
+                if (this === currentInput[0]) {
+                    return true;
+                }
+
+                if ($(this).val().toLowerCase() === currentValue) {
+                    isDuplicate = true;
+                    return false; // exit from each loop
+                }
+
+            });
+        }
+
+
+        // If value exists in other inputs clear the value
+        if (isDuplicate) {
+            currentInput.val('');
+            alert('Duplicates are not allowed in Field Name');
+        }
+        else {
+
+            var input1 = $(lastRow).find('.displayName');
+            var input2 = $(lastRow).find('.fieldName');
+
+            if (input1.val() && input2.val()) {
+                $('#addRow').prop('disabled', false);
+            }
+            else {
+                $('#addRow').prop('disabled', true);
+            }
+        }
+
+    });
+
     $(document).ready(function () {
         var counter = 1;
         var limit = 10;
-
         
         $("#addRow").click(function () {
-            
-            if (counter >= limit) {
-                alert('You can only add up to 10 rows');
-                return false;
+
+            if (counter > 10) {
+                alert('You can only add 10 rows');
             }
-           
 
-            var newRowContents = '<tr>'
-                + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
-                + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
-                + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
-                + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
-                + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="String" selected>String</option><option value="Number">Number</option><option value="Date">Date</option><option value="Perchent">Perchent</option></select></td>'
-                + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
-                + '</tr>';
-            counter++;
+            else 
+            { 
 
-            $("#example tbody").append(newRowContents);
 
-            // Populate UOM dropdown for newly added row
-            populateUOM($("#example tbody tr:last .uOM"));
+                var newRowContents = '<tr>'
+                    + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
+                    + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
+                    + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
+                    + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
+                    + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Perchent</option></select></td>'
+                    + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
+                    + '</tr>';
+                counter++;
 
-            // Add change event for newly added IsLookUp select
-            $("#example tbody tr:last .isLookUp").change(function () {
-                var lookupTypeField = $(this).closest('tr').find('.lookUpType');
-                if ($(this).val() == "1") {
-                    $.ajax({
-                        url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            lookupTypeField.empty();
-                            $.each(data, function (i, item) {
-                                lookupTypeField.append($('<option>', {
-                                    value: item.masteR_NAME,
-                                    text: item.masteR_NAME
-                                }));
-                            });
-                            lookupTypeField.prop('disabled', false);
-                        },
-                        error: function () {
-                            alert('Failed to retrieve master name.');
-                        }
-                    });
-                } else {
-                    lookupTypeField.prop('disabled', true);
-                }
-            });
+                $("#example tbody").append(newRowContents);
+
+                $(this).prop('disabled', true);
+                // Populate UOM dropdown for newly added row
+                populateUOM($("#example tbody tr:last .uOM"));
+
+                // Add change event for newly added IsLookUp select
+                $("#example tbody tr:last .isLookUp").change(function () {
+                    var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+                    if ($(this).val() == "1") {
+                        $.ajax({
+                            url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (data) {
+                                lookupTypeField.empty();
+                                $.each(data, function (i, item) {
+                                    lookupTypeField.append($('<option>', {
+                                        value: item.masteR_NAME,
+                                        text: item.masteR_NAME
+                                    }));
+                                });
+                                lookupTypeField.prop('disabled', false);
+                            },
+                            error: function () {
+                                alert('Failed to retrieve master name.');
+                            }
+                        });
+                    } else {
+                        lookupTypeField.prop('disabled', true);
+                    }
+                });
+            }
+            
         });
         // Make the LookupType readonly by default
         $(".lookUpType").prop('disabled', true);
@@ -217,7 +362,56 @@
                 lookupTypeField.prop('disabled', true);
             }
         });
-        $('#saveData').click(function () {
+        $('#saveData').click(function (e) {
+            var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+
+            var actualRowCount = rows.length - 1; // subtracting 1 for header row
+
+            if (actualRowCount === 1) {
+                var row = rows[1];
+                for (var i = 0; i < row.cells.length; i++) {
+                    var inputs = row.cells[i].querySelectorAll('input[type=text]');
+                    var selects = row.cells[i].getElementsByTagName('select');
+
+                    for (var j = 0; j < inputs.length; j++) {
+                        inputs[j].required = true;
+                        inputs[j].style.borderColor = 'red'; // set border color to red
+                    }
+
+                    for (var j = 0; j < selects.length; j++) {
+                        selects[j].required = true;
+                        selects[j].style.borderColor = 'red'; // set border color to red
+                    }
+                }
+            }
+            else {
+                var lastRow = rows[rows.length - 1];
+
+                // get the inputs from the last row
+                var input1 = $(lastRow).find('.displayName');
+                var input2 = $(lastRow).find('.fieldName');
+
+                if (input1.val() && !input2.val()) {
+                    e.preventDefault();
+                    // If the first input is filled and the second is empty, add 'required' class
+                    input2.attr('required', true);
+                    input2.css("border-color", "red");
+                }
+                else if (input2.val() && !input1.val()) {
+                    e.preventDefault();
+                    // If the second input is filled and the first is empty, mark the first as required
+                    input1.attr('required', true);
+                    input1.css("border-color", "red");
+                }
+                else {
+                    // Otherwise, remove the 'required' class
+                    input1.attr('required', false);
+                    input1.css("border-color", "none");
+                    input2.attr('required', false);
+                    input2.css("border-color", "none");
+                }
+            }
             $('.prepopulated').prop('disabled', true);
         });
     });
