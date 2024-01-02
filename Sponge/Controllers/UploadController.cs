@@ -786,21 +786,21 @@ namespace Sponge.Controllers
         {
             SPONGE_Context dbcontext = new();            
             string UploadedDocumentsFilePath = _configuration["AppSettings:UploadedDocumentsFilePath"];
-            string WarningdocumentFilePath = _configuration["AppSettings:WarningdocumentFilePath"];
+            string WarningDocumentFilePath = _configuration["AppSettings:WarningDocumentFilePath"];
             string msgerror = "";
             string UserRole = HttpContext.Session.GetString("ROLE").ToString();
             string UserName = HttpContext.Session.GetString("NAME").ToString();
             string[] userId = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             int DataApproverRoleId = Convert.ToInt16(_configuration["AppSettings:DataApproverRoleId"]);
             string approverUserId = string.Empty;
-            string FilePath = WarningdocumentFilePath + "\\" + FileName;
+            string FilePath = WarningDocumentFilePath + "\\" + FileName;
             List<TemplateFile> listErros = new List<TemplateFile>();
             
             try
             {
 
-                if (!Directory.Exists(WarningdocumentFilePath))
-                    Directory.CreateDirectory(WarningdocumentFilePath);
+                if (!Directory.Exists(WarningDocumentFilePath))
+                    Directory.CreateDirectory(WarningDocumentFilePath);
                 if (System.IO.File.Exists(FilePath))
                 {
                     FileModel objFileModel = new FileModel();
@@ -815,7 +815,7 @@ namespace Sponge.Controllers
                             if (objFileModel != null)
                             {
                                 approverUserId = userId[1];
-                                listErros = SaveUploadedExcelFile(listErros, WarningdocumentFilePath + "\\" + FileName, WarningdocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningdocumentFilePath);                               
+                                listErros = SaveUploadedExcelFile(listErros, WarningDocumentFilePath + "\\" + FileName, WarningDocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);                               
                                 if (listErros[0].ErrorType == "S")
                                     //SentMailToUploader(objFileModel);
                                 return Json(new { msgerror = listErros });
@@ -839,7 +839,7 @@ namespace Sponge.Controllers
                             approverUserId = objFileModel.ApproverID;
                             try
                             {
-                                listErros = SaveUploadedExcelFile(listErros, WarningdocumentFilePath + "\\" + FileName, WarningdocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningdocumentFilePath);
+                                listErros = SaveUploadedExcelFile(listErros, WarningDocumentFilePath + "\\" + FileName, WarningDocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);
                                 if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S") { }
                                     //SentMailToUploaderAndApprover(objFileModel, "Approver");
                                 else if (ErrorType.Equals("W") && listErros[0].ErrorType == "S")
@@ -863,7 +863,7 @@ namespace Sponge.Controllers
                             if (objFileModel != null)
                             {
                                 approverUserId = objFileModel.ApproverID;
-                                listErros = SaveUploadedExcelFile(listErros, WarningdocumentFilePath + "\\" + FileName, WarningdocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningdocumentFilePath);
+                                listErros = SaveUploadedExcelFile(listErros, WarningDocumentFilePath + "\\" + FileName, WarningDocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);
                                 if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S")
                                     //SentMailToUploaderAndApprover(objFileModel, "Approver");
                                 if (ErrorType.Equals("W") && listErros[0].ErrorType == "S")
