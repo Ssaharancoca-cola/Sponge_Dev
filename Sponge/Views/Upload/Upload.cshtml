@@ -126,7 +126,51 @@
             contentType: false,
             type: 'POST',
             success: function(data){
-                alert('File Uploaded Successfully');
+                debugger;
+                    // if there are errors, display them
+                    if (data.errorList && data.errorList.length > 0) {
+                        var errorListElement = document.createElement('ul');
+                        for (var i = 0; i < data.errorList.length; i++) {
+                            var listItem = document.createElement('li');
+                            listItem.textContent = data.errorList[i].errorMessage;
+                            // if errorType is W, add Yes and No buttons
+                            if (data.errorList[i].errorType === 'W') {
+                                var yesButton = document.createElement('button');
+                                yesButton.textContent = 'Yes';
+                                yesButton.addEventListener('click', function () {
+                                    // call LoadWraningMessageFile action
+                                    $.ajax({
+                                        url: '@Url.Action("LoadWraningMessageFile", "Upload")',
+                                        data: data.errorList[i].fileName,
+                                        type: 'POST',
+                                        success: function (response) {
+                                            // handle the response from the LoadWraningMessageFile action
+                                        },
+                                        error: function () {
+                                            alert('Error in calling LoadWraningMessageFile action');
+                                        }
+                                    });
+                                });
+
+                                var noButton = document.createElement('button');
+                                noButton.textContent = 'No';
+                                noButton.addEventListener('click', function () {
+                                    // reload the page
+                                    location.reload();
+                                });
+
+                                listItem.appendChild(yesButton);
+                                listItem.appendChild(noButton);
+                            }
+
+                            errorListElement.appendChild(listItem);
+                        }
+                        document.getElementById('file-list').appendChild(errorListElement);
+                    }
+                    else
+                    {
+                        alert('File Uploaded Successfully. ' + data.uploadedFileCount + ' file(s) uploaded.');
+                    }
             },
             error: function(){
                 alert('Error in Uploading File');

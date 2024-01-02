@@ -781,6 +781,114 @@ namespace Sponge.Controllers
 
             return LookVal;
         }
+
+        public JsonResult LoadWraningMessageFile(string FileName, string ErrorType = null)
+        {
+            SPONGE_Context dbcontext = new();            
+            string UploadedDocumentsFilePath = _configuration["AppSettings:UploadedDocumentsFilePath"];
+            string WarningdocumentFilePath = _configuration["AppSettings:WarningdocumentFilePath"];
+            string msgerror = "";
+            string UserRole = HttpContext.Session.GetString("ROLE").ToString();
+            string UserName = HttpContext.Session.GetString("NAME").ToString();
+            string[] userId = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+            int DataApproverRoleId = Convert.ToInt16(_configuration["AppSettings:DataApproverRoleId"]);
+            string approverUserId = string.Empty;
+            string FilePath = WarningdocumentFilePath + "\\" + FileName;
+            List<TemplateFile> listErros = new List<TemplateFile>();
+            
+            try
+            {
+
+                if (!Directory.Exists(WarningdocumentFilePath))
+                    Directory.CreateDirectory(WarningdocumentFilePath);
+                if (System.IO.File.Exists(FilePath))
+                {
+                    FileModel objFileModel = new FileModel();
+                    ApproverModel objApproverModel = new ApproverModel();
+                    objFileModel = Checkauthorizeduser(FileName, userId, objFileModel, false);// //Check authorized user
+
+                    if (UserRole.ToUpper() == "ADMIN")
+                    {
+                        objFileModel = Checkauthorizeduser(FileName, userId, objFileModel, true);// //Check authorized user
+                        try
+                        {
+                            if (objFileModel != null)
+                            {
+                                approverUserId = userId[1];
+                                listErros = SaveUploadedExcelFile(listErros, WarningdocumentFilePath + "\\" + FileName, WarningdocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningdocumentFilePath);                               
+                                if (listErros[0].ErrorType == "S")
+                                    //SentMailToUploader(objFileModel);
+                                return Json(new { msgerror = listErros });
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorLog srsEx = new();
+                            srsEx.LogErrorInTextFile(ex);
+                            listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                        }
+                    }
+                    else if (UserRole.ToUpper() == "DATA APPROVER")
+                    {
+                        objFileModel = Checkauthorizeduser(FileName, userId, objFileModel, true);// //Check authorized user
+                                                                                                 // decimal? SubfunctionId = ValidateAdminDetails(fileName);
+                        if (objFileModel != null)
+                        {
+
+                            approverUserId = objFileModel.ApproverID;
+                            try
+                            {
+                                listErros = SaveUploadedExcelFile(listErros, WarningdocumentFilePath + "\\" + FileName, WarningdocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningdocumentFilePath);
+                                if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S") { }
+                                    //SentMailToUploaderAndApprover(objFileModel, "Approver");
+                                else if (ErrorType.Equals("W") && listErros[0].ErrorType == "S")
+                                    //SentMailToUploader(objFileModel);
+                                return Json(new { msgerror = listErros });
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorLog srsEx = new();
+                                srsEx.LogErrorInTextFile(ex);
+                                listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                            }
+
+                        }
+                    }
+
+                    else
+                    {
+                        try
+                        {
+                            if (objFileModel != null)
+                            {
+                                approverUserId = objFileModel.ApproverID;
+                                listErros = SaveUploadedExcelFile(listErros, WarningdocumentFilePath + "\\" + FileName, WarningdocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningdocumentFilePath);
+                                if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S")
+                                    //SentMailToUploaderAndApprover(objFileModel, "Approver");
+                                if (ErrorType.Equals("W") && listErros[0].ErrorType == "S")
+                                    //SentMailToUploader(objFileModel);
+                                return Json(new { msgerror = listErros });
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorLog srsEx = new();
+                            srsEx.LogErrorInTextFile(ex);
+                            listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLog srsEx = new();
+                srsEx.LogErrorInTextFile(ex);
+                listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+            }
+            return Json(new { msgerror = listErros });
+        }
         //public void SentMailToUploader(FileModel objFileModel)
         //{
         //    NameValueCollection mailBodyplaceHolders = new NameValueCollection();
