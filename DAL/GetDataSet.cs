@@ -1067,48 +1067,34 @@ namespace DAL
             var result = new DataSet();
             using (var context = new SPONGE_Context())
             {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var cmd = context.Database.GetDbConnection().CreateCommand())
                 {
-                    using (var cmd = context.Database.GetDbConnection().CreateCommand())
+                    cmd.CommandText = selectCommand;
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    var param = new SqlParameter("@dynamicSqlQuery", SqlDbType.NVarChar)
                     {
-                        cmd.Transaction = context.Database.CurrentTransaction.GetDbTransaction();
-                        cmd.CommandText = selectCommand;
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        Direction = ParameterDirection.Input,
+                        Value = dynamicSqlQuery
+                    };
 
-                        var param = new SqlParameter("@p_dynamicSqlQuery", SqlDbType.NVarChar)
+                    cmd.Parameters.Add(param);
+
+                    try
+                    {
+                        context.Database.OpenConnection();
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            Direction = ParameterDirection.Input,
-                            Value = dynamicSqlQuery
-                        };
-
-                        var parameter2 = new SqlParameter("@Config_C", SqlDbType.NVarChar)
-                        {
-                            Direction = ParameterDirection.Output
-                        };
-
-                        cmd.Parameters.Add(param);
-                        cmd.Parameters.Add(parameter2);
-
-                        try
-                        {
-                            context.Database.OpenConnection();
-                            using (var reader = cmd.ExecuteReader())
-                            {
-                                var dtDataTable = new DataTable();
-                                dtDataTable.Load(reader);
-                                result.Tables.Add(dtDataTable);
-                            }
+                            var dtDataTable = new DataTable();
+                            dtDataTable.Load(reader);
+                            result.Tables.Add(dtDataTable);
                         }
-                        catch (Exception ex)
-                        {
-                            ErrorLog lgerr = new ErrorLog();
-                            lgerr.LogErrorInTextFile(ex);
-                            //SentErrorMail.SendEmailToError("InnerException: " + ex.InnerException?.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
-                        }
-                        finally
-                        {
-                            context.Database.CloseConnection();
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorLog lgerr = new ErrorLog();
+                        lgerr.LogErrorInTextFile(ex);
+                        //SentErrorMail.SendEmailToError("InnerException: " + ex.InnerException?.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
                     }
                 }
             }
