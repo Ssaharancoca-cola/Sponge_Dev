@@ -13,7 +13,7 @@ namespace DAL.Models
     public partial interface ISPONGE_ContextProcedures
     {
         Task<List<SP_CREATEETLVIEW_GROUPCOLUMNResult>> SP_CREATEETLVIEW_GROUPCOLUMNAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
-        Task<int> SP_CREATEETLVIEW_NORMALAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<SP_CREATEETLVIEW_NORMALResult>> SP_CREATEETLVIEW_NORMALAsync(int? p_SubjectAreaId, OutputParameter<int?> p_success, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GET_MPP_DIMENSIONSResult>> SP_GET_MPP_DIMENSIONSAsync(OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GET_MPP_MASTERSResult>> SP_GET_MPP_MASTERSAsync(string Dimension_Name, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<int> SP_GETDATATYPECOUNTERAsync(int? p_subjectAreaID, string p_DATA_TYPE, OutputParameter<string> outputParameter, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);

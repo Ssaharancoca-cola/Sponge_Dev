@@ -1,6 +1,7 @@
 ﻿using DAL;
 using DAL.Common;
 using DAL.Models;
+using LinqToExcel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
@@ -73,7 +74,8 @@ namespace Sponge.Controllers
             {
                 subjectAreaName = subjectArea.SUBJECTAREA_NAME;
             }
-            HttpContext.Session.SetString("SubjectAreaName", subjectAreaName);
+            HttpContext.Session.SetString("SubjectAreaName", subjectAreaName); // To show subject area name on the next pages
+            HttpContext.Session.SetString("Dimensions", JsonConvert.SerializeObject(dimensions)); // Storing dimensions in order to get them on the users page
 
             List<SPG_MPP_MASTER> spg_Masters = new List<SPG_MPP_MASTER>();
 
@@ -81,6 +83,37 @@ namespace Sponge.Controllers
             {
                 if (!Dimension.IsSelected)
                 {
+                    //Code to save Data in SPG_SUBJECT_GENERIC_MASTER table
+                    for (int i = 1; i <= 3; i++)
+                    {
+                        SPG_SUBJECT_GENERIC_MASTER sPG_SGM = new();
+                        {
+                            sPG_SGM.DIMENSION_TABLE = Dimension.Key;
+                            sPG_SGM.MASTER_NAME = null;
+                            switch (i)
+                            {
+                                case 1:
+                                    sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Level";
+                                    sPG_SGM.FIELD_NAME = Dimension.Value + "_Level";
+                                    break;
+                                case 2:
+                                    sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Code";
+                                    sPG_SGM.FIELD_NAME = Dimension.Value + "_Code";
+                                    break;
+                                case 3:
+                                    sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Description";
+                                    sPG_SGM.FIELD_NAME = Dimension.Value + "_Description";
+                                    break;
+                            }
+                            sPG_SGM.SUBJECTAREA_ID = selectedSubjectArea;
+                            sPG_SGM.IS_KEY = "Y";
+                            sPG_SGM.IS_SHOW = "Y";
+
+                        }
+                        sPONGE_Context.SPG_SUBJECT_GENERIC_MASTER.Add(sPG_SGM);
+                        sPONGE_Context.SaveChanges();
+                    }
+
                     SPG_SUBJECT_DIMENSION sPG_1 = new();
                     {
                         sPG_1.MPP_DIMENSION_NAME = Dimension.Value;
@@ -230,6 +263,10 @@ namespace Sponge.Controllers
             var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
             TempData.Keep();
 
+            // Retrieving the list of selected dimensions
+            string dimensionsString = HttpContext.Session.GetString("Dimensions");
+            List<Dimension> dimensions = JsonConvert.DeserializeObject<List<Dimension>>(dimensionsString);
+
             foreach (var collection in data)
             {
                 if (collection.DisplayName == null && collection.FieldName == null)
@@ -274,6 +311,33 @@ namespace Sponge.Controllers
             var subjectAreaName = HttpContext.Session.GetString("SubjectAreaName");
             ViewBag.SubjectAreaName = subjectAreaName;
 
+
+            //To show the list of Mastres on user page
+            // Create a Dictionary where each key is a dimension and the value is a list of corresponding names.
+            Dictionary<string, List<string>> dimensionData = new Dictionary<string, List<string>>();
+
+            foreach (var dimension in dimensions)
+            {
+                List<SPG_MPP_MASTER> spg_mpp_master =
+                                                (
+                                                    from user in sPONGE_Ctx.SPG_MPP_MASTER
+                                                    where user.MPP_DIMENSION_NAME == dimension.Value
+                                                    group user by user.MASTER_DISPLAY_NAME into g
+                                                    select g.First()
+                                                ).ToList();
+
+                List<string> names = new List<string>();
+
+                foreach (var item in spg_mpp_master)
+                {
+                    names.Add(item.MASTER_DISPLAY_NAME);
+                }
+
+                dimensionData.Add(dimension.Value, names);
+            }
+
+            ViewBag.DimensionData = dimensionData;
+
             return View("Views\\ConfigureSubjectArea\\AssignUsers.cshtml");
         }
         public IActionResult GetUserList()
@@ -299,7 +363,7 @@ namespace Sponge.Controllers
             // UserInfo = query.ToList();
             return Json(usernames);
         }
-        public IActionResult SaveUsersConfiguration(List<SaveUsers> selectedusers)
+        public IActionResult SaveUsersConfiguration(List<SaveUsers> selectedusers, IFormCollection formData)
         {
             SPONGE_Context sPONGE_Ctx = new();
             SPG_CONFIG_STRUCTURE SPG_CONFIG_STRUCTURE = new SPG_CONFIG_STRUCTURE();
@@ -411,6 +475,8 @@ namespace Sponge.Controllers
 
                                           }).ToList();
 
+                    
+
                     var Masters = (from p in sPONGE_Ctx.SPG_SUBJECT_MASTER
                                    where p.SUBJECTAREA_ID == selectedSubjectArea
                                    select new UserConfiguration
@@ -427,8 +493,35 @@ namespace Sponge.Controllers
                                        MasterName = p.MASTER_NAME,
                                        DimensionTable = p.DIMENSION_TABLE
                                    }).ToList();
-
                     var UserConfigurations = Masters.Concat(DataCollection).ToList();
+
+                    //Code to save Masters at Assign users page
+                    //var formDataValues = formData.Keys.Select(k => formData[k].ToString()).ToList();
+                    //var matchingData = sPONGE_Ctx.SPG_MPP_MASTER
+                    //                    .Where(o => formDataValues.Contains(o.MASTER_DISPLAY_NAME))
+                    //                    .Select(o => o.COLUMN_NAME)
+                    //                    .ToList();
+                    //// TO get the values with only SHORT_NAME and CODE
+                    //var shortNameAndCode = matchingData.Where(s => s.Contains("_SHORT_NAME") || s.Contains("_CODE")).ToList();
+
+                    //var Masters2 = (from p in sPONGE_Ctx.SPG_SUBJECT_MASTER
+                    //               where p.SUBJECTAREA_ID == selectedSubjectArea
+                    //               select new UserConfiguration
+                    //               {
+                    //                   //FieldName = ShortName from spg_mpp_master
+                    //                   DisplayName = null,
+                    //                   UOM = "",
+                    //                   DisplayType = "",
+                    //                   CollectionType = "Master",
+                    //                   LookUpType = "",
+                    //                   IsLookUp = "N",
+                    //                   DataType = "",
+                    //                   IsShow = "Y",       //Enter 2 rows When ENT_COUNTRY_CODE then isShow will be "N" if shortname then "Y" 
+                    //                   MasterName = p.MASTER_NAME,
+                    //                   DimensionTable = p.DIMENSION_TABLE
+                    //               }).ToList();
+
+                    
 
                     SaveConfigStructure(selectedusers, sPONGE_Ctx, selectedSubjectArea, UserConfigurations, headerList, headerlist_definer, grpcolumnname_definer);
                     try
@@ -454,11 +547,12 @@ namespace Sponge.Controllers
 
             return RedirectToAction("ConfigureTemplate", "ConfigureTemplate", selectedSubjectArea);
         }
+
         public void CreateSubjectAreaView(int? SubjectAreaId, bool IsGroupColumnNameExist)
         {
             try
             {
-                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
+                SPONGE_Context sPONGE_Context = new SPONGE_Context();
 
                 //string FormedQueryLookupType = string.Empty;
                 if (IsGroupColumnNameExist)
@@ -474,7 +568,7 @@ namespace Sponge.Controllers
                             SubjectAreaIdValue,
                             pSuccessParameter
                     );
-                       }
+                }
                 else
                 {
                     var SubjectAreaIdValue = new SqlParameter("p_SubjectAreaId", SubjectAreaId);
@@ -482,7 +576,7 @@ namespace Sponge.Controllers
                     {
                         Direction = ParameterDirection.Output,
 
-                      
+
                     };
 
                     sPONGE_Context.Database.ExecuteSqlRaw(
