@@ -2,40 +2,55 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var SelectedUser = ViewBag.SelectedUser;
+    var dimensionData = ViewBag.DimensionData as Dictionary<string, List<string>>;
 }
 @using (Html.BeginForm("SaveUsersConfiguration", "ConfigureSubjectArea", FormMethod.Post))
 {
-<div class="row">
-    <div class="col-md-12 stretch-card grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Assign Users - @ViewBag.SubjectAreaName</p>
-                <div class="table-responsive">
-                    <table id="example" class="display expandable-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>
+    <div class="row">
+        <div class="col-md-12 stretch-card grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Assign Users - @ViewBag.SubjectAreaName</p>
+                    <div class="table-responsive">
+                        <table id="example" class="display expandable-table" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>
                                         <input type="checkbox" id="select-all">
-                                </th>
-                                <th>User Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>                        
-                           
-                            <tr>
-                              
-                                
-                            </tr>                           
-                           
-                        </tbody>
-                    </table>
+                                    </th>
+                                    <th>User Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            @foreach (var item in dimensionData)
+                            {
+                                <div class="form-group col-md-3">
+                                    <label>@item.Key</label>
+                                        <select class="form-control" name="@item.Key">
+                                        <option value="">Please select</option>
+                                        @foreach (var name in item.Value)
+                                        {
+                                            <option>@name</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        </div>
+                        
+                    </div>
+                    <button class="btn btn-light mr-2">Cancel</button>
+                    <button type="submit" id="saveusers" class="btn btn-primary ">Save</button>
                 </div>
-                <button class="btn btn-light mr-2">Cancel</button>
-                    <button type="submit" id="saveusers"  class="btn btn-primary ">Save</button>
             </div>
         </div>
     </div>
-</div>
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -53,14 +68,14 @@
                     return selected.UserName === username.username;
                 }) ? 'checked' : '';
                 var row = `
-        <tr>
-            <td>
-                <input type="hidden" value="${username.userid}" name="userid">
-                <input type="checkbox" name="UserName" value="${username.username}" ${isChecked} ${isChecked === 'checked' ? 'disabled' : ''}>
-            </td>
-            <td>${username.username}</td>
-        </tr>
-        `;
+            <tr>
+                <td>
+                    <input type="hidden" value="${username.userid}" name="userid">
+                    <input type="checkbox" name="UserName" value="${username.username}" ${isChecked} ${isChecked === 'checked' ? 'disabled' : ''}>
+                </td>
+                <td>${username.username}</td>
+            </tr>
+            `;
                 tableBody.append(row);
             });
         });
@@ -74,7 +89,7 @@
             // Get the selected subjectArea value
             var selectedSubjectArea = $('#subjectArea').val();
             debugger;
-           
+
             var userkeyvaluepair = [];
             selectedusers.each(function () {
                 debugger;
@@ -112,6 +127,24 @@
                 name: 'selectedSubjectArea',
                 value: selectedSubjectArea
             }).appendTo('form');
+
+            // Get all select elements
+            var dropdowns = $('.form-control');
+
+            // Loop over each dropdown
+            dropdowns.each(function (index, dropdown) {
+                var selectedValue = $(dropdown).val(); // Get selected value
+
+                // Create a hidden input
+                var hiddenInput = $('<input>').attr({
+                    type: 'hidden',
+                    name: 'dropValues[' + index + ']',
+                    value: selectedValue
+                });
+
+                // Append the hidden input to the form
+                hiddenInput.appendTo('form');
+            });
 
             // Submit the form
             $(this).closest('form').submit();
