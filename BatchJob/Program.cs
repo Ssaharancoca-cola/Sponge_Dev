@@ -448,7 +448,7 @@ namespace BatchJob
                             else
                             {
 
-                                FormedQuery3 = "SP_GETVIEWDATA_STEENA";
+                                FormedQuery3 = "GET_TEMPLATE_DATA_EDIT";
                                 using (GetDataSet objDataSetValue = new GetDataSet())
                                 {
 
@@ -559,21 +559,20 @@ namespace BatchJob
                             var MasterShowColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { DATA_TYPE = s.DATA_TYPE, IS_SHOW = s.IS_SHOW });
 
                             FileName = ot_details.SubjectArea + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
+                        string FormedQuery4 = "SP_GETLOOKUPDATA";
                         DataSet ds4 = new DataSet();
-                        //string FormedQuery4 = "SP_GETDROPDOWNDATA";
-                        //    DataSet ds4 = new DataSet();
-                        //    try
-                        //    {
-                        //        using (GetDataSet objDataSetValue = new GetDataSet())
-                        //        {
-                        //            ds4 = objDataSetValue.GetDataSetValue(FormedQuery4, configId);
-                        //        }
-                        //    }
-                        //    catch (Exception ex)
-                        //    { 
+                        try
+                        {
+                            using (GetDataSet objDataSetValue = new GetDataSet())
+                            {
+                                ds4 = objDataSetValue.GetDataSetValue(FormedQuery4, configId);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
 
 
-                        //}
+                        }
                         //ProcessDataSetHeader(ref ds3, ref ds33, configId);
                         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                         using (ExcelPackage objExcelPackage = new ExcelPackage())
