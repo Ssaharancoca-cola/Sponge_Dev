@@ -53,21 +53,14 @@ namespace Sponge.Controllers
                 viewModel = (from vd in viewModel
                              where vd.Document.APPROVERID == userid[1]
                              select vd).ToList();
-            }
-            foreach (var item in viewModel)
-            {
-                var name = objFunction.SPG_USERS.Where(w => w.USER_ID == item.Document.UPLOADEDBY).Select(s => new { Name = s.Name }).FirstOrDefault();
-                item.Document.UPLOADEDBY = name.Name;
-                name = (dynamic)null;
-            }
+            }           
             return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult save(IFormCollection form, ApprovalModel model, string command, string[] SelectedChkBox, string comment)
         {
-            if (ModelState.IsValid)
-            {
+            string[] UserName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None );
                 SPONGE_Context objModel = new();
                 if (SelectedChkBox != null && SelectedChkBox.Length > 0)
                 {
@@ -152,28 +145,35 @@ namespace Sponge.Controllers
                             //    }
                             //}
                             #endregion
+                            if(command == "Approve")
+                        {
+                            document.APPROVALSTATUSID = (int)Helper.ApprovalStatusEnum.Approved;
+                        }
+                        else
+                        {
+                            document.APPROVALSTATUSID = (int)Helper.ApprovalStatusEnum.Rejected;
+                        }
                             document.APPROVEDON = DateTime.Now;
-                            document.APPROVERID = _httpSession.HttpContext.Session.GetString("NAME");
+                            document.APPROVERID = UserName[1];
                             document.COMMENTS = comment;
                             objModel.SaveChanges();
                         }
                     }
                 }
-            }
             return RedirectToAction("MyApproval");
         }
 
         //public virtual ActionResult Download(string documentId, int configId)
         //{
 
-        //    PortalModelDev objFunction = new PortalModelDev();
+        //    SPONGE_Context objFunction = new();
         //    ApprovalModel model = new ApprovalModel();
 
         //    string fileName = documentId + ".xlsx";
         //    var fileURI =
-        //   (from doc in objFunction.EP_DOCUMENT
-        //    join temp in objFunction.EP_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
-        //    join conf in objFunction.POC_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
+        //   (from doc in objFunction.SPG_DOCUMENT
+        //    join temp in objFunction.SPG_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
+        //    join conf in objFunction.SPG_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
         //    where conf.CONFIG_ID == configId && doc.ID == documentId
         //    select new { doc.FILE_PATH, doc.ID, temp.FILE_NAME }).First();
         //    string filepath = fileURI.FILE_PATH + "\\" + fileName;

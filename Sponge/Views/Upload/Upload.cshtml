@@ -135,13 +135,14 @@
                             listItem.textContent = data.errorList[i].errorMessage;
                             // if errorType is W, add Yes and No buttons
                             if (data.errorList[i].errorType === 'W') {
+                                var fileName = data.errorList[i].fileName;
                                 var yesButton = document.createElement('button');
                                 yesButton.textContent = 'Yes';
                                 yesButton.addEventListener('click', function () {
                                     // call LoadWraningMessageFile action
                                     $.ajax({
-                                        url: '@Url.Action("LoadWraningMessageFile", "Upload")',
-                                        data: data.errorList[i].fileName,
+                                        url: '@Url.Action("LoadWarningMessageFile", "Upload")',
+                                        data: { FileName: fileName },
                                         type: 'POST',
                                         success: function (response) {
                                             // handle the response from the LoadWraningMessageFile action

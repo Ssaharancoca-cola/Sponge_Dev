@@ -13,12 +13,12 @@ namespace Sponge.Controllers
     public class SearchTemplateController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        //private readonly string AdminRoleId = System.Configuration.ConfigurationManager.AppSettings["AdminRoleId"];
 
         public SearchTemplateController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             return View();
@@ -60,7 +60,7 @@ namespace Sponge.Controllers
             }
             if (RoleID == 5)
             {
-                subjectArea = sPONGE_Context.SPG_SUBJECTAREA.ToList();
+                subjectArea = sPONGE_Context.SPG_SUBJECTAREA.Where(x=> x.SUBFUNCTION_ID == subFunctionId).ToList();
             }
             else
             {
@@ -101,6 +101,8 @@ namespace Sponge.Controllers
             SPONGE_Context sponge_context = new();
             List<SearchDataList> SearchConfgData = new();
             var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] || x.ROLE_ID == 5);
+            var AdminRoleId = System.Configuration.ConfigurationManager.AppSettings["AdminRoleId"];
+
             int RoleID = 0;
             if (role != null)
             {

@@ -427,7 +427,7 @@ namespace Sponge.Controllers
                 else
                 {
                     string Dynamic_SP_name = "SP_GET_DYNAMIC_QUERY_RESULTS";
-                    string dynamicsqlQuery = "SELECT DATA_TYPE,CASE WHEN GROUPCOLUMNNAME IS NOT NULL THEN GROUPCOLUMNNAME|| '-' || Display_Name    ELSE Display_Name END as Display_Name FROM  POC_CONFIG_STRUCTURE where config_id = " + objFileModel.ConFigId + "";
+                    string dynamicsqlQuery = "SELECT DATA_TYPE,CASE WHEN ISNULL(GROUPCOLUMNNAME, '' )!='' THEN GROUPCOLUMNNAME + '-' + Display_Name    ELSE Display_Name END as Display_Name FROM  SPG_CONFIG_STRUCTURE where config_id = " + objFileModel.ConFigId + "";
                     DataSet dsResults = new DataSet();
                     using (GetDataSet objGetDataSetValue = new GetDataSet())
                     {
@@ -538,7 +538,6 @@ namespace Sponge.Controllers
                             }
                             if (listOfColumnnames[j].Contains("P"))
                             {
-
                                 StrInsertQuery.Append(!string.IsNullOrEmpty(dt.Rows[i].ItemArray[j].ToString()) ? dt.Rows[i].ItemArray[j] + "," : nullvalue + ",");
                             }
                         }
@@ -782,7 +781,7 @@ namespace Sponge.Controllers
             return LookVal;
         }
 
-        public JsonResult LoadWraningMessageFile(string FileName, string ErrorType = null)
+        public JsonResult LoadWarningMessageFile(string FileName, string ErrorType = null)
         {
             SPONGE_Context dbcontext = new();            
             string UploadedDocumentsFilePath = _configuration["AppSettings:UploadedDocumentsFilePath"];

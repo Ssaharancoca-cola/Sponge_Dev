@@ -315,7 +315,7 @@ namespace Sponge.Controllers
                 sendresendtask.IS_AUTO_MANUAL = "Manual";
                 objModel.SPG_SENDORRESENDTASK.Add(sendresendtask);
                 objModel.SaveChanges();
-                return RedirectToAction("SearchTemplate");
+                return RedirectToAction("SearchTemplate", "SearchTemplate");
             }
             else
             {
