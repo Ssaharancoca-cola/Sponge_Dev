@@ -11,32 +11,41 @@
                         <div class="form-group row ">
                             <div class="col">
                                 <label for="Search">Remarks</label>
-                                <input type="text"  class="form-control" id="" placeholder="type here...">
+                                <input type="text" name="comment" class="form-control" id="" placeholder="type here...">
                             </div>
                             <div class="col btn-align">
-                                <button type="submit" id="btnApprove" class="btn btn-primary">Approve</button>
-                                <button type="submit" id="btnReject" class="btn btn-primary">Reject</button>
-
+                                <button type="submit" id="btnApprove" value="Approve" name="command" class="btn btn-primary">Approve</button>
+                                <button type="submit" id="btnReject" value="Reject" name="command" class="btn btn-primary">Reject</button>
                             </div>
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="example" class="display expandable-table" style="width:100%">
+                        <table id="example" class="display expandable-table" style="width:90%">
                             <thead>
                                 <tr>
 
                                     <th><input type="checkbox" id="selectAll"> Select All</th>
                                     <th>Assigned User</th>
-                                    <th>Subject Area Name </th>
-                                    <th>Upload Date</th>
-                                    <th>File Name</th>
+                                    <th>Lock Date </th>
+                                    <th>Upload Date </th>
+                                    <th>Data Collection For</th>
                                     <th>Download</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (Model.Count == 0)
+                                @if (Model.Count != 0)
                                 {
-                                    // Code to display rows for each item in Model
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td><input type="checkbox" class="selectItem" name="SelectedChkBox" value="@item.Document.ID"></td>
+                                            <td>@item.Document.UPLOADEDBY</td>
+                                            <td>@item.Template.LOCK_DATE</td>
+                                            <td>@item.Document.UPLOADDATE</td>
+                                            <td>@item.SubjectArea.SUBJECTAREA_NAME</td>
+                                            <td>@Html.ActionLink("Download", "Download", new {configId = item.Configuration.CONFIG_ID, documentId = @item.Document.ID }, new { @class = "btn btn-primary" })</td>
+                                        </tr>
+                                    }
                                 }
                                 else
                                 {
@@ -52,27 +61,40 @@
         </div>
     </div>
 }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script type="text/javascript">
-    function Checked() {
-        var checkedVals = $('.chkClass:checkbox:checked').map(function () {
-            return this.value;
-        }).get();
-        //alert(checkedVals.join(","));
-        if (checkedVals == undefined || checkedVals == null || checkedVals == "") {
-            $('#btnApprove').attr('disabled', 'disabled');
-            $('#btnReject').attr('disabled', 'disabled');
-            //alert("Please select atleast one check box for proceed.")
-            //return true;
-        }
-        else {
-            $('#btnApprove').removeAttr('disabled');
-            $('#btnReject').removeAttr('disabled');
-        }
-
-    }
     $(document).ready(function () {
-        $('#ApprovalGrid').DataTable();
+        $("#btnApprove").prop('disabled', true);
+        $("#btnReject").prop('disabled', true);
+
+        $('.selectItem').on('change', function () {
+            var selectedItems = $('.selectItem:checked').length;
+            if (selectedItems > 0) {
+                $("#btnApprove").prop('disabled', false);
+                $("#btnReject").prop('disabled', false);
+            } else {
+                $("#btnApprove").prop('disabled', true);
+                $("#btnReject").prop('disabled', true);
+            }
+        });
+
+        $('#btnApprove, #btnReject').on('click', function (e) {
+            var selectedItems = $('.selectItem:checked').length;
+            if (selectedItems < 1) {
+                e.preventDefault();
+                alert("Please select at least one checkbox to proceed.");
+            }
+        });
+
+        $('#selectAll').on('change', function () {
+            var isChecked = $(this).prop("checked");
+            $('.selectItem').prop('checked', isChecked);
+            $("#btnApprove").prop('disabled', !isChecked);
+            $("#btnReject").prop('disabled', !isChecked);
+        });
+
+        $('#ApprovalGrid table').DataTable();
     });
 
     function DownLoadTemplate(configId, documentId) {

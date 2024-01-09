@@ -1165,7 +1165,7 @@ namespace DAL
                         {
                             ErrorLog lgerr = new ErrorLog();
                             lgerr.LogErrorInTextFile(ex);
-                            SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
+                            //SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
                         }
                         finally
                         {

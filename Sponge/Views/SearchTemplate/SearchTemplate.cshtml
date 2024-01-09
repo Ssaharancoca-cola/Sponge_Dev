@@ -15,6 +15,7 @@
                         <div class="col">
                             <label for="subFunction">SubFunction</label>
                             <select class="form-control" id="subFunction">
+                            <option selected value="">Select</option>
                                 @foreach (var subfunction in Model)
                                 {
                                     <option value="@subfunction.SUBFUNCTION_ID">@subfunction.SUBFUNCTION_NAME</option>
@@ -168,7 +169,18 @@
                             data: data,
                             columns: [
                                 { data: 'subjectAreaName' },
-                                { data: 'effectiveDate' },
+                                {
+                                    data: 'effectiveDate',
+                                    render: function (data, type, row) {
+                                        if (data) {
+                                            var date = new Date(data);
+                                            var formattedDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+                                            return formattedDate;
+                                        } else {
+                                            return '';
+                                        }
+                                    }
+                                },
                                 { data: 'assignedUser' },
                                 { data: 'active' },
                                 {
