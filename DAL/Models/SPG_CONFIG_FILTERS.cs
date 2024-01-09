@@ -9,7 +9,7 @@ namespace DAL.Models
     {
         public int CONFIG_FILTER_ID { get; set; }
         public int? CONFIG_ID { get; set; }
-        public string MASTER_NAME { get; set; }
+        public string DIMENSION_TABLE { get; set; }
         public string MASTER_COLUMN { get; set; }
         public string ACTIVE_FLAG { get; set; }
         public string CREATED_BY { get; set; }

@@ -31,5 +31,6 @@ namespace DAL.Models
         public string IS_SHOW { get; set; }
         public string UOM { get; set; }
         public string IS_KEY { get; set; }
+        public string ISGENERATE_MPP { get; set; }
     }
 }

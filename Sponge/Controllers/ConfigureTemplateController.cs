@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using Newtonsoft.Json;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
@@ -178,6 +179,7 @@ namespace Sponge.Controllers
                             group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, SPG.ACTIVE_FLAG} into g
                             select new 
                             {
+                                subjectAreaid = subjectAreaId,
                                 configID = g.Key.CONFIG_ID,
                                 username = g.Key.Name,
                                 activeflag  = g.Key.ACTIVE_FLAG
@@ -194,5 +196,125 @@ namespace Sponge.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+
+        [Route("ConfigureTemplate/DataFilter/subjectAreaId/{subjectAreaId:int}/configID/{configId:int}")]
+        public IActionResult DataFilter(int subjectAreaId,int configId) {
+            SPONGE_Context spONGE_Ctx = new();
+            //var subjectAreaId = spONGE_Ctx.SPG_CONFIG_STRUCTURE.Where(x => x.CONFIG_ID == configID).Select(x => x.SUBJECTAREA_ID).FirstOrDefault();
+            ViewBag.ConfigID = configId;
+
+            var dimensionList = (from x in spONGE_Ctx.SPG_SUBJECT_DIMENSION
+                                 where x.SUBJECTAREA_ID == subjectAreaId
+                                 select new
+                                 {
+                                     DIMENSION_NAME = x.MPP_DIMENSION_NAME,
+                                     DIMENSIONTABLENAME = x.DIMENSION_TABLE
+                                 }).Distinct().ToList();
+            ViewBag.Dimensions = new SelectList(dimensionList, "DIMENSIONTABLENAME", "DIMENSION_NAME");
+
+            return View();
+        }
+        [HttpPost]
+        public JsonResult GetSubDimensionsList(List<string> dimensions) 
+        {
+            SPONGE_Context spONGE_Ctx = new();
+            //To get the subdimensions list
+             //Create a Dictionary where each key is a dimension and the value is a list of corresponding names.
+            Dictionary<string, List<string>> dimensionData = new Dictionary<string, List<string>>();
+
+            foreach (var dimension in dimensions)
+            {
+                List<SPG_MPP_MASTER> spg_mpp_master =
+                                                (
+                                                    from x in spONGE_Ctx.SPG_MPP_MASTER
+                                                    where x.MPP_DIMENSION_NAME == dimension
+                                                    group x by x.MASTER_DISPLAY_NAME into g
+                                                    select g.First()
+                                                ).ToList();
+
+                List<string> names = new List<string>();
+
+                foreach (var item in spg_mpp_master)
+                {
+                    names.Add(item.MASTER_DISPLAY_NAME);
+                }
+
+                dimensionData.Add(dimension, names);
+            }
+            return Json(dimensionData);
+        }
+        public IActionResult SaveFilter(IFormCollection formData)
+        {
+            int count = 0;
+            foreach (var key in formData.Keys)
+            {
+                if (key.StartsWith("completeText"))
+                {
+                    count++;
+                }
+            }
+            try
+            {
+                if (count > 0)
+                {
+                    SPONGE_Context sPONGE_Context = new();
+                    string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+                    foreach (var dmensionName in formData["dimensionSelect"])
+                    {
+                        var currentDimensionName = dmensionName;
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            // Fetch the value associated with each completeText key
+                            string completeTextKey = "completeText" + i;
+                            string completeTextValue = formData[completeTextKey];
+
+                            // Split and store in a new array.
+                            string[] array = completeTextValue
+                                                .Split(',')
+                                                .Select(p => p.Trim())
+                                                .Where(p => !string.IsNullOrEmpty(p))
+                                                .ToArray();
+
+                            foreach (var item in array)
+                            {
+                                //Get the Master name for current selected sub dimension checkbox item
+                                var currentMasterName = (
+                                                            from x in sPONGE_Context.SPG_MPP_MASTER
+                                                            where x.MASTER_DISPLAY_NAME == item
+                                                            select x.MASTER_NAME
+                                                        ).FirstOrDefault();
+                                // Create object to save the data
+                                SPG_CONFIG_FILTERS sPG_CONFIG_FILTERS = new()
+                                {
+                                    CONFIG_ID = Int32.Parse(formData["configID"].ToString()),
+                                    DIMENSION_TABLE = dmensionName,
+                                    MASTER_COLUMN = currentMasterName,
+                                    ACTIVE_FLAG = "Y",
+                                    CREATED_BY = userName.ToString(),
+                                    CREATED_ON = DateTime.Now,
+                                    MODIFIED_BY = null,
+                                    MODIFIED_ON = null,
+                                    MASTER_COLUMN_LEVEL = null,
+
+                                };
+                                sPONGE_Context.Add(sPG_CONFIG_FILTERS);
+                                sPONGE_Context.SaveChanges();
+                            }
+
+                        }
+                    }
+                    
+
+                }
+            }
+            catch (Exception e)
+            {
+                ViewBag.ErrorMessage = e.Message;
+            }
+
+
+            return null;
+        }
     }
 }

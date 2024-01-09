@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "DataFilter";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form asp-controller="ConfigureTemplate" asp-action="SaveFilter" type="post">
+    <div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">
+                    Data Filter
+                </p>
+                <div class="forms-sample" id="dataFilterFormID">
+                    <div class="form-group row">
+                        <div class="col ">
+                            <div class="row">
+                                <input hidden name="configID" value="@ViewBag.ConfigID" />
+                                    <label>Select Dimensions:</label>
+                                
+                                    <button class="btn dropdown-toggle bth-custom-multi" name="dimensionSelect" type="button" id="dimensionSelectID"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        Select
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
+
+                                        @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
+                                        {
+                                            <li>
+                                                <label id="@("S"+item.Value)" for=@item.Value>
+                                                    <input type="checkbox" name="dimensionSelect" value=@item.Value>@item.Text
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                @* <div class="col-md-3">
+                                    <label sty>Effective from:</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <div>
+                                        <input class="form-control" min="@DateTime.Today.Date" type="date" />
+                                    </div>
+                                </div> *@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="row">
+                            <button  type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
+                                Get Sub Dimensions
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="row">
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-row">
+                        <div class="row" id="dropdownsContainer">
+                            
+                        </div>
+                        <div class="row" id="selectionContainerID">
+                            
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-group-row">
+                        <div class="">
+                            <button type="submit" asp-action="SaveFilter" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+<!-- Plugin js for this page -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<link href="~/css/multiselect.css" rel="stylesheet" />
+<script src="~/assists/js/template.js"></script>
+<script src="~/js/configuretemplate/datafilter.js"></script>

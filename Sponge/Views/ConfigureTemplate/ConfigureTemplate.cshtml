@@ -98,7 +98,8 @@
                             var tableBody = $("#example tbody");
                             $.each(data, function (i, username) {
                                 var configID = username.configID;
-                                var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '?configID=' + configID;
+                                var subjectAreaID = username.subjectAreaid
+                                var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '/subjectAreaID/' + subjectAreaID + '/configID/' + configID;
                                 var SetupUrl = '@Url.Action("SetUp", "ConfigureTemplate")' + '?configID=' + configID;
                                 let setupText = (username.activeflag == null ? 'Pending' : 'Done');
 

@@ -16,6 +16,22 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "[dbo].[DIM_BUSINESSORG]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_GEOGRAPHY]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_OUTLETSEGMENTATION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_PRODUCT]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[SPG_APPROVALSTATUS]",
          "ObjectType": 0
       },
@@ -49,6 +65,10 @@
       },
       {
          "Name": "[dbo].[SPG_GETTIMECODE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SPG_MPP_HIERARCHY]",
          "ObjectType": 0
       },
       {
@@ -109,6 +129,14 @@
       },
       {
          "Name": "[dbo].[SPG_USERS_FUNCTION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[v_tversion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[v_version]",
          "ObjectType": 0
       },
       {
