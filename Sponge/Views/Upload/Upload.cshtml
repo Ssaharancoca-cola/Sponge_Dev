@@ -163,7 +163,14 @@
                                 listItem.appendChild(yesButton);
                                 listItem.appendChild(noButton);
                             }
-
+                            else if (data.errorList[i].errorType === 'S') {
+                                var listItem = document.createElement('li');
+                                listItem.textContent = data.errorList[i].errorMessage;
+                            }
+                            else if (data.errorList[i].errorType === 'F'){
+                                var listItem = document.createElement('li');
+                                listItem.textContent = data.errorList[i].errorMessage;
+                            }
                             errorListElement.appendChild(listItem);
                         }
                         document.getElementById('file-list').appendChild(errorListElement);
