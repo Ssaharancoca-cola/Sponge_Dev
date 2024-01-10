@@ -389,7 +389,7 @@ namespace BatchJob
                                 using (GetDataSet objDataSetValue = new GetDataSet())
                                 {
 
-                                    ds3 = objDataSetValue.GetDataSetValueForBatchJob(FormedQuery3, configId, documentid, Convert.ToDateTime(PeriodTo).ToString("dd-MMM-yyyy"));
+                                    ds3 = objDataSetValue.GetDataSetValueForBatchJob(FormedQuery3, configId, documentid, Convert.ToDateTime(PeriodTo).ToString("dd-MM-yyyy"));
 
                                     if (ds3 == null)
                                     {
@@ -452,7 +452,7 @@ namespace BatchJob
                                 using (GetDataSet objDataSetValue = new GetDataSet())
                                 {
 
-                                    ds3 = objDataSetValue.GetDataSetValueForEditBatchjob(FormedQuery3, configId, documentid, Convert.ToDateTime(PeriodTo).ToString("dd-MMM-yyyy"));
+                                    ds3 = objDataSetValue.GetDataSetValueForEditBatchjob(FormedQuery3, configId, documentid, Convert.ToDateTime(PeriodTo).ToString("dd-MM-yyyy"));
 
                                     if (ds3 == null)
                                     {
