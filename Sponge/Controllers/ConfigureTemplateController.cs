@@ -243,7 +243,7 @@ namespace Sponge.Controllers
             }
             return Json(dimensionData);
         }
-        public IActionResult SaveFilter(IFormCollection formData)
+        public IActionResult SaveDataFilter(IFormCollection formData)
         {
             int count = 0;
             foreach (var key in formData.Keys)
@@ -291,7 +291,7 @@ namespace Sponge.Controllers
                                     DIMENSION_TABLE = dmensionName,
                                     MASTER_COLUMN = currentMasterName,
                                     ACTIVE_FLAG = "Y",
-                                    CREATED_BY = userName.ToString(),
+                                    CREATED_BY = userName[1],
                                     CREATED_ON = DateTime.Now,
                                     MODIFIED_BY = null,
                                     MODIFIED_ON = null,
@@ -301,20 +301,17 @@ namespace Sponge.Controllers
                                 sPONGE_Context.Add(sPG_CONFIG_FILTERS);
                                 sPONGE_Context.SaveChanges();
                             }
-
                         }
-                    }
-                    
-
+                    }                 
                 }
             }
             catch (Exception e)
             {
                 ViewBag.ErrorMessage = e.Message;
             }
-
-
-            return null;
+            return View(SaveDataFilter);
         }
+
+
     }
 }
