@@ -32,5 +32,6 @@ namespace DAL.Models
         public string UOM { get; set; }
         public string IS_KEY { get; set; }
         public string ISGENERATE_MPP { get; set; }
+        public string LOOKUP_CODE { get; set; }
     }
 }
