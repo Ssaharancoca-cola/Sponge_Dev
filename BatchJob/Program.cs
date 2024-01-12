@@ -17,6 +17,8 @@ using OfficeOpenXml.Style;
 using Sponge.Common;
 using Sponge;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Data.SqlClient;
+using System.Linq.Expressions;
 
 namespace BatchJob
 {  /// <summary>
@@ -24,8 +26,8 @@ namespace BatchJob
    /// </summary>
     public class Program
     {
-       
-      private readonly AppSettings _settings;
+
+        private readonly AppSettings _settings;
 
         public Program()
         {
@@ -44,7 +46,7 @@ namespace BatchJob
                 Console.WriteLine("----Start Job-----");
                 Program batchJob = new Program();
                 DataSet ds = new DataSet();
-              
+                Console.WriteLine("----Called Batch Job Procedure-----");
                 ds = batchJob.GetConfigForExcelGeneration(0, "Y");
                 //ds = batchJob.GetPrepopulatedConfigForExcelGeneration(0, "N");
                 Console.WriteLine("----End Job-----");
@@ -55,6 +57,12 @@ namespace BatchJob
                 srsEx.LogErrorInTextFile(ex);
                 //throw ex;
             }
+        }
+        private void HandleException(int TemplateId, Exception ex)
+        {
+            DeleteTemplateID(TemplateId);
+            ErrorLog srsEx = new ErrorLog();
+            srsEx.LogErrorInTextFile(ex);
         }
         public void PeriodFromPeriodTo(string fortime, string ontime, string frequency, string TimeLevel, out string PeriodFrom, out string PeriodTo)
         {
@@ -85,7 +93,7 @@ namespace BatchJob
 
         }
 
-        public void DeleteTemplateID(decimal templateId)
+        public void DeleteTemplateID(int templateId)
         {
             if (templateId > 0)
             {
@@ -141,8 +149,22 @@ namespace BatchJob
 
             }
         }
+        public void UpdateSendResendTasktableDatasetNull(int SendResendId, SPONGE_Context m)
+        {
+            if (SendResendId > 0)
+            {
+                SPG_SENDORRESENDTASK esppp = m.SPG_SENDORRESENDTASK.Where(x => x.ID == SendResendId).FirstOrDefault();
+               
+                esppp.ATTEMPTS++;
+                esppp.ID = SendResendId;
+                m.SaveChanges();
+
+            }
+        }
         public DataSet GetConfigForExcelGeneration(decimal configid, string p_IS_PREPOPULATE)
         {
+
+
             DataSet ds = new DataSet();
             ErrorLog lg = new ErrorLog();
 
@@ -153,6 +175,8 @@ namespace BatchJob
 
                 List<SPG_CONFIG_STRUCTURE> lstConfigEntity = new List<SPG_CONFIG_STRUCTURE>();
                 GetDataSet gd = new GetDataSet();
+                ErrorLog srsLogFile = new ErrorLog();
+                srsLogFile.LogTextInTextFile("Calling Batch Job");
                 ds = gd.GetBatchJobDataSetValue("SP_GET_CONFIG_BATCH", Convert.ToInt32(configid), p_IS_PREPOPULATE);
                 CommonUtility objutility = new CommonUtility();
 
@@ -198,7 +222,7 @@ namespace BatchJob
                                 break;
                             }
                         }
-
+                        srsLogFile.LogTextInTextFile("checking  Auto/Manual Template" + configId);
                         if (IsFlagContinue == true)
                             continue;
                         if (Convert.ToString(dr["MANUALFLAG"]) == "AUTO")
@@ -216,7 +240,7 @@ namespace BatchJob
                             m.SPG_SENDORRESENDTASK.Add(esp);
                             m.SaveChanges();
                             SendResendId = esp.ID;
-
+                            srsLogFile.LogTextInTextFile("Save Data into SPG_SENDRESENDTASK done" + configId);
                         }
                         else
                         {
@@ -239,7 +263,7 @@ namespace BatchJob
                         StringBuilder custom = new StringBuilder();
                         StringBuilder customexcel = new StringBuilder();
                         StringBuilder customonline = new StringBuilder();
-
+                        srsLogFile.LogTextInTextFile("Before Calling  SP_GETMASTEREMAIL" + configId);
                         DataSet custom_ds = new DataSet();
                         custom_ds = gd.GetDataSetValue("SP_GETMASTEREMAIL", configId);
                         for (int v = 0; v < custom_ds.Tables[0].Rows.Count; v++)
@@ -263,7 +287,7 @@ namespace BatchJob
                         string documentid = "";
                         int TemplateChkId = 0;
                         documentidtest = gds.GetDataSetValueCheck("SP_CHECKTEMPLATE", configId, ForTime, OnTime, out TemplateChkId);
-
+                        srsLogFile.LogTextInTextFile("After Calling  SP_CHECKTEMPLATE" + configId);
                         documentid = m.SPG_DOCUMENT.Where(w => w.TEMPLATEID == TemplateChkId && w.APPROVALSTATUSID != 4).OrderByDescending(d => d.UPLOADDATE).Select(s => s.ID).FirstOrDefault();
 
                         if (TemplateChkId == 0)
@@ -284,20 +308,34 @@ namespace BatchJob
                             m.SPG_TEMPLATE.Add(SPGTemplate);
                             m.SaveChanges();
                             TemplateId = SPGTemplate.TEMPLATE_ID;
-
+                            srsLogFile.LogTextInTextFile("After Saving Data in SPG_TEMPLATE" + configId);
                             FileCode = Guid.NewGuid().ToString();
                             objutility.GenerateDynamicColumnNames(configId, Convert.ToDateTime(PeriodFrom), Convert.ToDateTime(PeriodTo), TimeLevel, frequency, TemplateId, out IsGroupColumnNameExist, null);
 
                             FormedQuery3 = "GET_TEMPLATE_DATA";
                             using (GetDataSet objDataSetValue = new GetDataSet())
                             {
-                                ds3 = objDataSetValue.GetDataSetValueForBatchJob(FormedQuery3, configId, documentid, Convert.ToDateTime(SPGTemplate.PERIOD_TO).ToString("dd-MMM-yyyy"));
+                                try
+                                {
+                                    ds3 = objDataSetValue.GetDataSetValueForBatchJob(FormedQuery3, configId, documentid, Convert.ToDateTime(SPGTemplate.PERIOD_TO).ToString("dd-MMM-yyyy"));
+                                    srsLogFile.LogTextInTextFile("After Calling GET_TEMPLATE_DATA" + configId);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                   
+                                    HandleException(TemplateId, ex);
+                                }
+
+
+                               
+
 
                                 if (ds3 == null)
                                 {
                                     try
                                     {
-                                        UpdateSendResendTasktable(SendResendId, m);
+                                        UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                         DeleteTemplateID(TemplateId);
                                         SendEmailForERROR(SubjectAreaId, configId);
                                         continue;
@@ -317,7 +355,7 @@ namespace BatchJob
                                 {
                                     try
                                     {
-                                        UpdateSendResendTasktable(SendResendId, m);
+                                        UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                         DeleteTemplateID(TemplateId);
                                         SendEmailForERROR(SubjectAreaId, configId);
                                         continue;
@@ -335,7 +373,7 @@ namespace BatchJob
                                 {
                                     try
                                     {
-                                        UpdateSendResendTasktable(SendResendId, m);
+                                        UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                         DeleteTemplateID(TemplateId);
                                         SendEmailForERROR(SubjectAreaId, configId);
                                         continue;
@@ -395,7 +433,7 @@ namespace BatchJob
                                     {
                                         try
                                         {
-                                            UpdateSendResendTasktable(SendResendId, m);
+                                            UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                             SendEmailForERROR(SubjectAreaId, configId);
                                             continue;
                                         }
@@ -413,7 +451,7 @@ namespace BatchJob
                                     {
                                         try
                                         {
-                                            UpdateSendResendTasktable(SendResendId, m);
+                                            UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                             SendEmailForERROR(SubjectAreaId, configId);
                                             continue;
                                         }
@@ -430,7 +468,7 @@ namespace BatchJob
                                     {
                                         try
                                         {
-                                            UpdateSendResendTasktable(SendResendId, m);
+                                            UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                             SendEmailForERROR(SubjectAreaId, configId);
                                             continue;
                                         }
@@ -444,6 +482,7 @@ namespace BatchJob
                                         }
                                     }
                                 }
+                            
                             }
                             else
                             {
@@ -453,12 +492,11 @@ namespace BatchJob
                                 {
 
                                     ds3 = objDataSetValue.GetDataSetValueForEditBatchjob(FormedQuery3, configId, documentid, Convert.ToDateTime(PeriodTo).ToString("dd-MM-yyyy"));
-
                                     if (ds3 == null)
                                     {
                                         try
                                         {
-                                            UpdateSendResendTasktable(SendResendId, m);
+                                            UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                             SendEmailForERROR(SubjectAreaId, configId);
                                             continue;
                                         }
@@ -476,7 +514,7 @@ namespace BatchJob
                                     {
                                         try
                                         {
-                                            UpdateSendResendTasktable(SendResendId, m);
+                                            UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                             SendEmailForERROR(SubjectAreaId, configId);
                                             continue;
                                         }
@@ -493,7 +531,7 @@ namespace BatchJob
                                     {
                                         try
                                         {
-                                            UpdateSendResendTasktable(SendResendId, m);
+                                            UpdateSendResendTasktableDatasetNull(SendResendId, m);
                                             SendEmailForERROR(SubjectAreaId, configId);
                                             continue;
                                         }
@@ -553,16 +591,18 @@ namespace BatchJob
                         //}
                         //else
                         //{
-                            int MasterColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
-                            int MeasureColmnsCount = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
-                            var measurecolumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { Text = s.DATA_TYPE, Value = s.DISPLAY_TYPE, ConfigUserId = s.CONFIGUSER_ID }).OrderBy(s => s.ConfigUserId);
-                            var MasterShowColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { DATA_TYPE = s.DATA_TYPE, IS_SHOW = s.IS_SHOW });
+                        int MasterColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
+                        int MeasureColmnsCount = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
+                        var measurecolumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { Text = s.DATA_TYPE, Value = s.DISPLAY_TYPE, ConfigUserId = s.CONFIGUSER_ID }).OrderBy(s => s.ConfigUserId);
+                        var MasterShowColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { DATA_TYPE = s.DATA_TYPE, IS_SHOW = s.IS_SHOW });
 
-                            FileName = ot_details.SubjectArea + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
+                        FileName = ot_details.SubjectArea + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
                         string FormedQuery4 = "SP_GETLOOKUPDATA";
                         DataSet ds4 = new DataSet();
                         try
                         {
+                            srsLogFile.LogTextInTextFile("After SP_GETLOOKUPDATA" + configId);
+
                             using (GetDataSet objDataSetValue = new GetDataSet())
                             {
                                 ds4 = objDataSetValue.GetDataSetValue(FormedQuery4, configId);
@@ -571,7 +611,8 @@ namespace BatchJob
                         catch (Exception ex)
                         {
 
-
+                            ErrorLog srsEx = new ErrorLog();
+                            srsEx.LogErrorInTextFile(ex);
                         }
                         //ProcessDataSetHeader(ref ds3, ref ds33, configId);
                         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -609,7 +650,7 @@ namespace BatchJob
                                     }
                                     table.Columns[column.DATA_TYPE].ColumnName = displayName;
                                 }
-                           
+
                                 table.AcceptChanges();
                                 dsExcel = table;
                             }
@@ -643,7 +684,8 @@ namespace BatchJob
                                 {
                                     string ErrorDetails = "Error Details:Total Rows " + dsExcel.Rows.Count + " and ConfigId :" + configId + " and Subject Area Name:" + ot_details.SubjectArea + "  Assigned User: " + ot_details.UserName;
                                     ErrorLog srsEx = new ErrorLog();
-                                    //srsEx.LogErrorInTextFile(ex, ErrorDetails);
+                                    srsEx.LogErrorInTextFile(ex);
+                                    srsEx.LogTextInTextFile(ErrorDetails);
                                     continue;
 
                                 }
@@ -768,7 +810,7 @@ namespace BatchJob
                                     ////objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Justify;
                                     ////objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                                     ////objRange.Style.Font.Color.SetColor(Color.Black);
-                                   // objRange.Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
+                                    // objRange.Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
 
                                     /*Border lines should be added*/
                                     //objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -811,7 +853,7 @@ namespace BatchJob
                                     objWorksheet.Cells["A" + (rows + 6).ToString() + ""].Value = "Grand Total";
 
                                     objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Fill.BackgroundColor.SetColor(Color.DarkRed);
                                     /*Border lines should be added*/
                                     objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                                     objWorksheet.Cells["A" + (dsExcel.Rows.Count + 6) + ":" + total.ToString() + "" + (dsExcel.Rows.Count + 6) + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -842,7 +884,7 @@ namespace BatchJob
                                     objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                                     objRange.Style.Font.Color.SetColor(Color.White);
 
-                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkRed);
                                     /*Border lines should be added*/
                                     objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                                     objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -857,7 +899,7 @@ namespace BatchJob
                                     objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                                     objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                                     objRange.Style.Font.Color.SetColor(Color.White);
-                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkRed);
                                     /*Border lines should be added*/
                                     objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                                     objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -871,7 +913,7 @@ namespace BatchJob
                                     objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                                     objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                                     objRange.Style.Font.Color.SetColor(Color.White);
-                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkRed);
                                     /*Border lines should be added*/
                                     objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                                     objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -885,7 +927,7 @@ namespace BatchJob
                                     objRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                                     objRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                                     objRange.Style.Font.Color.SetColor(Color.White);
-                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.MidnightBlue);
+                                    objRange.Style.Fill.BackgroundColor.SetColor(Color.DarkRed);
                                     /*Border lines should be added*/
                                     objRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                                     objRange.Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -934,7 +976,7 @@ namespace BatchJob
                             }
                         }
 
-                        
+
                         SPG_TEMPLATE EPM = m.SPG_TEMPLATE.Where(x => x.TEMPLATE_ID == TemplateId).FirstOrDefault();
                         if (FileName != "")
                         {
@@ -971,7 +1013,7 @@ namespace BatchJob
                     {
                         string ErrorDetails = "Error Details: Config Id :" + configId + " Subject Area Id" + SubjectAreaId + " and Assigned Userid : " + UserId;
                         ErrorLog srsEx = new ErrorLog();
-                       // srsEx.LogErrorInTextFile(ex, ErrorDetails);
+                        srsEx.LogErrorInTextFile(ex, ErrorDetails);
                         continue;
                     }
                 }//Main For loop Close
@@ -983,7 +1025,7 @@ namespace BatchJob
             {
                 string ErrorDetails = "Error Details: No data return from SP: SP_GETCONFIG_BATCH for IsPopulated 'Y' and  Function Name:GetConfigForExcelGeneration() ";
                 ErrorLog srsEx = new ErrorLog();
-                //srsEx.LogErrorInTextFile(ex, ErrorDetails);
+                srsEx.LogErrorInTextFile(ex, ErrorDetails);
                 //throw ex;
 
             }
@@ -991,7 +1033,7 @@ namespace BatchJob
             return ds;
 
         }
-            public void SendUploadMail()
+        public void SendUploadMail()
         {
             SPONGE_Context m = new SPONGE_Context();
             GetDataSet gd = new GetDataSet();
@@ -1030,18 +1072,18 @@ namespace BatchJob
                     string DataCollectionSubject = "[Sponge] - Upload Reminder template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
                     string mailbody = "";
                     string messageTemplatePath = "";
-                   
-                        messageTemplatePath = System.IO.File.ReadAllText(_settings.UploadReminderMailExcelTemplate.ToString());
-                    
+
+                    messageTemplatePath = System.IO.File.ReadAllText(_settings.UploadReminderMailExcelTemplate.ToString());
+
                     mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.UserEmail);
-                    // lg.LogMessageInTextFile("Mail Sent Upload Reminder ID - " + configId + DateTime.Now.ToString());
+                   lg.LogTextInTextFile("Mail Sent Upload Reminder ID - " + configId + DateTime.Now.ToString());
 
 
                     SPG_TEMPLATE et = m.SPG_TEMPLATE.Where(x => x.TEMPLATE_ID == TemplateId).FirstOrDefault();
                     et.UPLOAD_REMINDER_SENT = 1;
                     m.SaveChanges();
-                    //  lg.LogMessageInTextFile("Updated SPG_TEMPLATE ID-" + configId + DateTime.Now.ToString());
+                     lg.LogTextInTextFile("Updated SPG_TEMPLATE ID-" + configId + DateTime.Now.ToString());
                 }
 
             }
@@ -1093,19 +1135,19 @@ namespace BatchJob
                     string DataCollectionSubject = "[Sponge] - Escalation template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
                     string mailbody = "";
                     string messageTemplatePath = "";
-                   
-                        messageTemplatePath = System.IO.File.ReadAllText(_settings.EscalationMailExcelTemplate);
-                    
+
+                    messageTemplatePath = System.IO.File.ReadAllText(_settings.EscalationMailExcelTemplate);
+
                     mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.UserEMail);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.ApproverEmail);
                     SendMail("", DataCollectionSubject, mailbody, ot_details.ManagerEmail);
-                    //lg.LogMessageInTextFile("Mail Sent Esclataion Reminder" + DateTime.Now.ToString());
+                   lg.LogTextInTextFile("Mail Sent Esclataion Reminder" + DateTime.Now.ToString());
 
                     SPG_TEMPLATE et = m.SPG_TEMPLATE.Where(x => x.TEMPLATE_ID == TemplateId).FirstOrDefault();
                     et.ESCALATION_REMINDER_SENT = 1;
                     m.SaveChanges();
-                    // lg.LogMessageInTextFile("Updated in SPG_Template  ID-" + configId + DateTime.Now.ToString());
+                    lg.LogTextInTextFile("Updated in SPG_Template  ID-" + configId + DateTime.Now.ToString());
                 }
             }
             catch (Exception ex)
