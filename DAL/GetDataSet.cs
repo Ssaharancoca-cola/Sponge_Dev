@@ -459,8 +459,7 @@ namespace DAL
 
                     cmd.Parameters.Add(new SqlParameter("@p_ConfigID", configid));
                     cmd.Parameters.Add(new SqlParameter("@p_document_ID", documentId));
-                    cmd.Parameters.Add(new SqlParameter("@p_EffectiveToDate", p_EffectiveToDate));
-                    cmd.Parameters.Add(new SqlParameter("@Config_C", SqlDbType.VarChar)); // Set appropriate type and value
+                    cmd.Parameters.Add(new SqlParameter("@p_EffectiveToDate", p_EffectiveToDate)); 
 
                     try
                     {

@@ -115,7 +115,7 @@ namespace BatchJob
             string DataCollectionSubject = "[Sponge] - Error in Excel template generation for Subject Area:  [" + selectval.SUBJECTAREANAME + "]";
 
             string mailbody = "";
-            string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["ErrorMailTemplate"].ToString());
+            string messageTemplatePath = System.IO.File.ReadAllText(_settings.ErrorMailTemplate.ToString());
 
             mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
 
