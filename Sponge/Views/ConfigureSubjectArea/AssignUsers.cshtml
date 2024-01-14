@@ -28,21 +28,7 @@
 
                             </tbody>
                         </table>
-                        <div class="row">
-                            @foreach (var item in dimensionData)
-                            {
-                                <div class="form-group col-md-3">
-                                    <label>@item.Key</label>
-                                        <select class="form-control" name="@item.Key">
-                                        <option value="">Please select</option>
-                                        @foreach (var name in item.Value)
-                                        {
-                                            <option>@name</option>
-                                        }
-                                    </select>
-                                </div>
-                            }
-                        </div>
+                       
                         
                     </div>
                     <button class="btn btn-light mr-2">Cancel</button>

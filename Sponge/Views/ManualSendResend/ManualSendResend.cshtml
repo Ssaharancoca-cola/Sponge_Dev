@@ -102,16 +102,19 @@
         e.preventDefault();
     });
     var FillReportingStartEndDate = function () {
-        debugger;
+        
+       
         var frequency = $('#hdnFrequency').val();
         var reportingStartDate, reportingEndDate, pattern, date;
         pattern = $('#hdnOnTimeText').val();
         var granularityText = $("#GranularTime option:selected").text();
         $('#hdnGranularTime').val($("#GranularTime option:selected").val());
         if (frequency == 'YEARLY') {
+            debugger;
             var obj = pattern.split('-');
-            reportingStartDate = new Date(obj[0], Common.MonthEnum.JULY, 1);
-            reportingEndDate = new Date(obj[1], Common.MonthEnum.JUNE, 30);
+            reportingStartDate = new Date(obj[0], Common.MonthEnum.JANUARY, 1);
+            reportingEndDate = new Date(obj[0], Common.MonthEnum.DECEMBER, 31);
+            
 
         }
         if (frequency == 'HALF_YEARLY') {
@@ -143,6 +146,7 @@
             reportingStartDate = obj.periodicStartDate;
             reportingEndDate = obj.periodicEndDate;
         }
+        debugger;
         $('#hdnPeriodFrom').val(Common.formatDate(reportingStartDate));
         $('#hdnPeriodTo').val(Common.formatDate(reportingEndDate));
 

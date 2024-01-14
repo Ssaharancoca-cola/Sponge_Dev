@@ -84,35 +84,35 @@ namespace Sponge.Controllers
                 if (!Dimension.IsSelected)
                 {
                     //Code to save Data in SPG_SUBJECT_GENERIC_MASTER table
-                    for (int i = 1; i <= 3; i++)
-                    {
-                        SPG_SUBJECT_GENERIC_MASTER sPG_SGM = new();
-                        {
-                            sPG_SGM.DIMENSION_TABLE = Dimension.Key;
-                            sPG_SGM.MASTER_NAME = null;
-                            switch (i)
-                            {
-                                case 1:
-                                    sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Level";
-                                    sPG_SGM.FIELD_NAME = Dimension.Value + "_Level";
-                                    break;
-                                case 2:
-                                    sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Code";
-                                    sPG_SGM.FIELD_NAME = Dimension.Value + "_Code";
-                                    break;
-                                case 3:
-                                    sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Description";
-                                    sPG_SGM.FIELD_NAME = Dimension.Value + "_Description";
-                                    break;
-                            }
-                            sPG_SGM.SUBJECTAREA_ID = selectedSubjectArea;
-                            sPG_SGM.IS_KEY = "Y";
-                            sPG_SGM.IS_SHOW = "Y";
+                    //for (int i = 1; i <= 3; i++)
+                    //{
+                    //    SPG_SUBJECT_GENERIC_MASTER sPG_SGM = new();
+                    //    {
+                    //        sPG_SGM.DIMENSION_TABLE = Dimension.Key;
+                    //        sPG_SGM.MASTER_NAME = null;
+                    //        switch (i)
+                    //        {
+                    //            case 1:
+                    //                sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Level";
+                    //                sPG_SGM.FIELD_NAME = Dimension.Value + "_Level";
+                    //                break;
+                    //            case 2:
+                    //                sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Code";
+                    //                sPG_SGM.FIELD_NAME = Dimension.Value + "_Code";
+                    //                break;
+                    //            case 3:
+                    //                sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Description";
+                    //                sPG_SGM.FIELD_NAME = Dimension.Value + "_Description";
+                    //                break;
+                    //        }
+                    //        sPG_SGM.SUBJECTAREA_ID = selectedSubjectArea;
+                    //        sPG_SGM.IS_KEY = "Y";
+                    //        sPG_SGM.IS_SHOW = "Y";
 
-                        }
-                        sPONGE_Context.SPG_SUBJECT_GENERIC_MASTER.Add(sPG_SGM);
-                        sPONGE_Context.SaveChanges();
-                    }
+                    //    }
+                    //    sPONGE_Context.SPG_SUBJECT_GENERIC_MASTER.Add(sPG_SGM);
+                    //    sPONGE_Context.SaveChanges();
+                    //}
 
                     SPG_SUBJECT_DIMENSION sPG_1 = new();
                     {
@@ -125,14 +125,7 @@ namespace Sponge.Controllers
                     }
                     sPONGE_Context.SPG_SUBJECT_DIMENSION.Add(sPG_1);
                     sPONGE_Context.SaveChanges();
-                    var spg_Master = sPONGE_Context.SPG_MPP_MASTER
-                        .Where(o => o.MPP_DIMENSION_NAME == Dimension.Value)
-                        .Select(o => new { o.MASTER_NAME, o.MASTER_DISPLAY_NAME })
-                        .Distinct();
-                    ViewBag.SPG_MASTER = new SelectList(spg_Master.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
-                }
-                else
-                {
+              }
 
                     List<SPG_MPP_MASTER> spg_mpp_master = (from user in sPONGE_Context.SPG_MPP_MASTER
                                                            where user.MPP_DIMENSION_NAME == Dimension.Value
@@ -142,8 +135,8 @@ namespace Sponge.Controllers
                                                                MASTER_DISPLAY_NAME = user.MASTER_DISPLAY_NAME
                                                            }).Distinct().ToList();
                     spg_Masters.AddRange(spg_mpp_master);
-                    ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
-                }
+                  
+                
 
             }
             List<SPG_SUBJECT_MASTER> selectedMasters = new();
@@ -156,6 +149,7 @@ namespace Sponge.Controllers
                 selectedMasters.AddRange(selectedMaster);
 
             }
+              ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
             ViewBag.SelectedMaster = selectedMasters.ToList();
 
             ViewBag.SubjectAreaName = subjectAreaName;
@@ -244,8 +238,11 @@ namespace Sponge.Controllers
         public IActionResult GetMasterName()
         {
             SPONGE_Context sPONGE_Context = new();
-            var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.IS_KEY != "Y")
-                .Select(o => new { o.MASTER_NAME }).Distinct().Take(10).ToList();
+            var fieldName = (from s in sPONGE_Context.SPG_MPP_MASTER
+                          join h in sPONGE_Context.SPG_MPP_HIERARCHY on s.ENTITY_TYPE_ID equals h.ID into Details
+                          from m in Details.DefaultIfEmpty()
+                          where m.ID == null && !s.MASTER_DISPLAY_NAME.Contains("Mapping")
+                          select new { s.COLUMN_NAME, s.COLUMN_DISPLAY_NAME }).Distinct().ToList();
             return Json(fieldName);
         }
         public IActionResult GetUOM()
