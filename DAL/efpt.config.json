@@ -146,6 +146,18 @@
       {
          "Name": "[dbo].[SP_GETMASTEREMAIL]",
          "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_GETUPLOADPENDING]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_PENDINGFORAPPROVAL]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_UPLOADEDTEMPLATE]",
+         "ObjectType": 1
       }
    ],
    "UiHint": "zwdmyad0001.SPONGE_DEV.dbo",

@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Sponge.ViewModel.UploadedTemplateReport>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-12 stretch-card grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">
+                    Uploaded Templates
+                        <svg viewBox="0 0 24 24"
+                             width="24" height="24" stroke="currentColor" stroke-width="2"
+                             fill="none" stroke-linecap="round" stroke-linejoin="round"
+                             class="css-i6dzq1">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
+                            </path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
+                            </path>
+                        </svg>
+                    </a>
+                </p>
+                <div class="table-responsive">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Subfunction Name</th>
+                                <th>Upload Date</th>
+                                <th>File Name</th>
+                                <th>Period To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.SUBFUNCTION_NAME</td>
+                                    <td>@item.UPLOADDATE</td>
+                                    <td>@item.FILE_NAME</td>
+                                    <td>@item.PERIOD_TO</td>
+                                </tr>
+                             } 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Plugin js for this page -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    new DataTable('#example', {
+        order: [[3, 'desc']]
+    });
+    //Initialize the Multiselect Dropdown:
+
+</script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<script src="~/assists/js/template.js"></script>
+
+<!-- endinject -->
+<script>
+    const chBoxes = document.querySelectorAll('.dropdown-menu input[type="checkbox"]');
+    const dpBtn = document.getElementById('multiSelectDropdown');
+    let mySelectedListItems = [];
+
+    function handleCB() {
+        mySelectedListItems = [];
+        let mySelectedListItemsText = '';
+
+        chBoxes.forEach((checkbox) => {
+            if (checkbox.checked) {
+                mySelectedListItems.push(checkbox.value);
+                mySelectedListItemsText += checkbox.value + ', ';
+            }
+        });
+
+        dpBtn.innerText =
+            mySelectedListItems.length > 0
+                ? mySelectedListItemsText.slice(0, -2) : 'Select';
+    }
+
+    chBoxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', handleCB);
+    });
+</script>
+<!-- <script src="assists/js/virtual-select.min.js"></script>
+<script>
+    VirtualSelect.init({
+        ele: 'select'
+    });
+</script> -->

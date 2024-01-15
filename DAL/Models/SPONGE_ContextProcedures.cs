@@ -39,6 +39,9 @@ namespace DAL.Models
             modelBuilder.Entity<SP_GET_MPP_DIMENSIONSResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GET_MPP_MASTERSResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GETMASTEREMAILResult>().HasNoKey().ToView(null);
+            modelBuilder.Entity<SP_GETUPLOADPENDINGResult>().HasNoKey().ToView(null);
+            modelBuilder.Entity<SP_PENDINGFORAPPROVALResult>().HasNoKey().ToView(null);
+            modelBuilder.Entity<SP_UPLOADEDTEMPLATEResult>().HasNoKey().ToView(null);
         }
     }
 
@@ -231,6 +234,87 @@ namespace DAL.Models
                 parameterreturnValue,
             };
             var _ = await _context.SqlQueryAsync<SP_GETMASTEREMAILResult>("EXEC @returnValue = [dbo].[SP_GETMASTEREMAIL] @p_ConfigID", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<SP_GETUPLOADPENDINGResult>> SP_GETUPLOADPENDINGAsync(string p_USERID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_USERID",
+                    Size = 200,
+                    Value = p_USERID ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<SP_GETUPLOADPENDINGResult>("EXEC @returnValue = [dbo].[SP_GETUPLOADPENDING] @p_USERID", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<SP_PENDINGFORAPPROVALResult>> SP_PENDINGFORAPPROVALAsync(string p_USERID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_USERID",
+                    Size = 200,
+                    Value = p_USERID ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<SP_PENDINGFORAPPROVALResult>("EXEC @returnValue = [dbo].[SP_PENDINGFORAPPROVAL] @p_USERID", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<SP_UPLOADEDTEMPLATEResult>> SP_UPLOADEDTEMPLATEAsync(string p_USERID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_USERID",
+                    Size = 200,
+                    Value = p_USERID ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<SP_UPLOADEDTEMPLATEResult>("EXEC @returnValue = [dbo].[SP_UPLOADEDTEMPLATE] @p_USERID", sqlParameters, cancellationToken);
 
             returnValue?.SetValue(parameterreturnValue.Value);
 
