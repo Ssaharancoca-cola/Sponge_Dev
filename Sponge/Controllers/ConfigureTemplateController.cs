@@ -243,75 +243,106 @@ namespace Sponge.Controllers
             }
             return Json(dimensionData);
         }
-        public IActionResult SaveDataFilter(IFormCollection formData)
+        //public IActionResult SaveDataFilter(IFormCollection formData)
+        //{
+        //    int count = 0;
+        //    foreach (var key in formData.Keys)
+        //    {
+        //        if (key.StartsWith("dimensions"))
+        //        {
+        //            count++;
+        //        }
+        //    }
+        //    try
+        //    {
+        //        if (count > 0)
+        //        {
+        //            SPONGE_Context sPONGE_Context = new();
+        //            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+        //            foreach (var dmensionName in formData["dimensionSelect"])
+        //            {
+        //                var currentDimensionName = dmensionName;
+
+        //                for (int i = 0; i < count; i++)
+        //                {
+        //                    // Fetch the value associated with each completeText key
+        //                    string completeTextKey = "completeText" + i;
+        //                    string completeTextValue = formData[completeTextKey];
+
+        //                    // Split and store in a new array.
+        //                    string[] array = completeTextValue
+        //                                        .Split(',')
+        //                                        .Select(p => p.Trim())
+        //                                        .Where(p => !string.IsNullOrEmpty(p))
+        //                                        .ToArray();
+
+        //                    foreach (var item in array)
+        //                    {
+        //                        //Get the Master name for current selected sub dimension checkbox item
+        //                        var currentMasterName = (
+        //                                                    from x in sPONGE_Context.SPG_MPP_MASTER
+        //                                                    where x.MASTER_DISPLAY_NAME == item
+        //                                                    select x.MASTER_NAME
+        //                                                ).FirstOrDefault();
+        //                        // Create object to save the data
+        //                        SPG_CONFIG_FILTERS sPG_CONFIG_FILTERS = new()
+        //                        {
+        //                            CONFIG_ID = Int32.Parse(formData["configID"].ToString()),
+        //                            DIMENSION_TABLE = dmensionName,
+        //                            MASTER_COLUMN = currentMasterName,
+        //                            ACTIVE_FLAG = "Y",
+        //                            CREATED_BY = userName[1],
+        //                            CREATED_ON = DateTime.Now,
+        //                            MODIFIED_BY = null,
+        //                            MODIFIED_ON = null,
+        //                            MASTER_COLUMN_LEVEL = null,
+
+        //                        };
+        //                        sPONGE_Context.Add(sPG_CONFIG_FILTERS);
+        //                        sPONGE_Context.SaveChanges();
+        //                    }
+        //                }
+        //            }                 
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ViewBag.ErrorMessage = e.Message;
+        //    }
+        //    return View(SaveDataFilter);
+        //}
+
+        [HttpPost]
+        public IActionResult SaveDataFilter(List<string> dimensions, Dictionary<string, List<string>> masterNames)
         {
-            int count = 0;
-            foreach (var key in formData.Keys)
+           string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+            SPONGE_Context _Context = new();
+
+            foreach (string dimension in dimensions)
             {
-                if (key.StartsWith("completeText"))
+                if (masterNames.ContainsKey(dimension))
                 {
-                    count++;
-                }
-            }
-            try
-            {
-                if (count > 0)
-                {
-                    SPONGE_Context sPONGE_Context = new();
-                    string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-                    foreach (var dmensionName in formData["dimensionSelect"])
+                    foreach (string masterName in masterNames[dimension])
                     {
-                        var currentDimensionName = dmensionName;
-
-                        for (int i = 0; i < count; i++)
+                        // Create a new entity for your table
+                        SPG_CONFIG_FILTERS entity = new SPG_CONFIG_FILTERS
                         {
-                            // Fetch the value associated with each completeText key
-                            string completeTextKey = "completeText" + i;
-                            string completeTextValue = formData[completeTextKey];
-
-                            // Split and store in a new array.
-                            string[] array = completeTextValue
-                                                .Split(',')
-                                                .Select(p => p.Trim())
-                                                .Where(p => !string.IsNullOrEmpty(p))
-                                                .ToArray();
-
-                            foreach (var item in array)
-                            {
-                                //Get the Master name for current selected sub dimension checkbox item
-                                var currentMasterName = (
-                                                            from x in sPONGE_Context.SPG_MPP_MASTER
-                                                            where x.MASTER_DISPLAY_NAME == item
-                                                            select x.MASTER_NAME
-                                                        ).FirstOrDefault();
-                                // Create object to save the data
-                                SPG_CONFIG_FILTERS sPG_CONFIG_FILTERS = new()
-                                {
-                                    CONFIG_ID = Int32.Parse(formData["configID"].ToString()),
-                                    DIMENSION_TABLE = dmensionName,
-                                    MASTER_COLUMN = currentMasterName,
-                                    ACTIVE_FLAG = "Y",
-                                    CREATED_BY = userName[1],
-                                    CREATED_ON = DateTime.Now,
-                                    MODIFIED_BY = null,
-                                    MODIFIED_ON = null,
-                                    MASTER_COLUMN_LEVEL = null,
-
-                                };
-                                sPONGE_Context.Add(sPG_CONFIG_FILTERS);
-                                sPONGE_Context.SaveChanges();
-                            }
-                        }
-                    }                 
+                            DIMENSION_TABLE = dimension,
+                            MASTER_COLUMN = masterName,
+                            CREATED_BY = userName[1],
+                            CREATED_ON = DateTime.Now
+                        };
+                        // Add the entity to your context
+                        _Context.SPG_CONFIG_FILTERS.Add(entity);
+                    }
                 }
             }
-            catch (Exception e)
-            {
-                ViewBag.ErrorMessage = e.Message;
-            }
-            return View(SaveDataFilter);
-        }
 
+            // Save changes to the database
+            _Context.SaveChanges();
+
+            return Ok();
+        }
 
     }
 }

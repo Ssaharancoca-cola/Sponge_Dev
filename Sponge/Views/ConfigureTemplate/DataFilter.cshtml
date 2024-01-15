@@ -3,86 +3,144 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form asp-controller="ConfigureTemplate" asp-action="SaveFilter" type="post">
+<form asp-controller="ConfigureTemplate" asp-action="SaveDataFilter" type="post">
     <div class="row">
-    <div class="col-md-12 stretch-card grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">
-                    Data Filter
-                </p>
-                <div class="forms-sample" id="dataFilterFormID">
-                    <div class="form-group row">
-                        <div class="col ">
-                            <div class="row">
-                                <input hidden name="configID" value="@ViewBag.ConfigID" />
-                                    <label>Select Dimensions:</label>
-                                
-                                    <button class="btn dropdown-toggle bth-custom-multi" name="dimensionSelect" type="button" id="dimensionSelectID"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown">
-
-                                        @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
-                                        {
-                                            <li>
-                                                <label id="@("S"+item.Value)" for=@item.Value>
-                                                    <input type="checkbox" name="dimensionSelect" value=@item.Value>@item.Text
-                                                </label>
-                                            </li>
-                                        }
-                                    </ul>
-                                @* <div class="col-md-3">
-                                    <label sty>Effective from:</label>
+        <div class="col-md-12 stretch-card grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">
+                        Data Filter
+                    </p>
+                    <div class="forms-sample" id="dataFilterFormID">
+                        <div class="form-group row">
+                            <div class="col ">
+                                <div class="row">
+                                    <input hidden name="configID" value="@ViewBag.ConfigID" />
+                                    <label>Selected Dimensions:</label>
                                 </div>
-                                <div class="col-md-3">
-                                    <div>
-                                        <input class="form-control" min="@DateTime.Today.Date" type="date" />
-                                    </div>
-                                </div> *@
+                                <div class="row">
+                                    @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
+                                    {
+                                        <div>
+                                            <input type="checkbox" name="dimensionSelect" value=@item.Value checked readonly>
+                                            <label id="@("S"+item.Value)" for=@item.Value>@item.Text</label>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group-row">
-                        <div class="row">
-                            <button  type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
-                                Get Sub Dimensions
-                            </button>
+                        <div class="form-group-row">
+                            <div class="row">
+                                <button type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
+                                    Get Sub Dimensions
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group-row">
-                        <div class="row">
-                            
+
+                        <div class="form-group-row">
+                            <div class="row" id="dropdownsContainer">
+                            </div>
+                            <div class="row" id="selectionContainerID">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-group-row">
-                        <div class="row" id="dropdownsContainer">
-                            
-                        </div>
-                        <div class="row" id="selectionContainerID">
-                            
-                        </div>
-                    </div>
-                    <br />
-                    <div class="form-group-row">
-                        <div class="">
-                            <button type="submit" asp-action="SaveFilter" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
-                                Next
-                            </button>
+                        <br />
+                        <div class="form-group-row">
+                            <div class="">
+                                <button type="submit" asp-action="SaveDataFilter" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </form>
-<!-- Plugin js for this page -->
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/assists/js/hoverable-collapse.js"></script>
-<link href="~/css/multiselect.css" rel="stylesheet" />
-<script src="~/assists/js/template.js"></script>
-<script src="~/js/configuretemplate/datafilter.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+
+$(document).ready(function(){
+    $('#getSubDimensionsBTN').click(function(){
+        var dimensions = [];
+            $('input[name="dimensionSelect"]:checked').each(function () {
+                var dimensionName = $(this).next('label').text();
+                dimensions.push(dimensionName);
+            });
+
+        $.ajax({
+            url: '@Url.Action("GetSubDimensionsList", "ConfigureTemplate")',
+            type: 'POST',
+            dataType: 'json',
+            data: { dimensions : dimensions },
+                success: function (response) {
+                    $('#dropdownsContainer').empty();
+                    $.each(response, function (dimension, names) {
+                        var dimensionDiv = $('<div class="dropdown"/>');
+                        var dropdownButton = $('<button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-boundary="viewport" data-display="dynamic" data-original-text="' + dimension + '">' + dimension + '</button>');
+                        var dropdownMenu = $('<ul class="dropdown-menu dropdown-menu-bottom" style="height: 200px; overflow-y: auto;">');
+                        $.each(names, function (i, name) {
+                            var id = dimension + '_name_' + i;
+                            dropdownMenu.append('<li><input type="checkbox" id="' + id + '" value="' + name + '"><label for="' + id + '">' + name + '</label></li>');
+                        });
+                        dimensionDiv.append(dropdownButton);
+                        dimensionDiv.append(dropdownMenu);
+                        $('#dropdownsContainer').append(dimensionDiv);
+                    });
+                    $('#submitSelectionsID').css('visibility', 'visible');
+
+                }
+        });
+    });
+
+        $(document).on('click', '.dropdown-menu input[type="checkbox"]', function (event) {
+            event.stopPropagation();
+            var dropdown = $(this).closest('.dropdown');
+            var count = dropdown.find('ul.dropdown-menu').find('input[type="checkbox"]:checked').length;
+            var originalText = dropdown.attr('data-original-text');
+            if (count > 0) {
+                dropdown.find('button').text('Selected count: ' + count);
+            } else {
+                dropdown.find('button').text(originalText);
+            }
+        });
+
+        $('form').on('submit', function (e) {
+            e.preventDefault();
+
+            var selectedDimensions = [];
+            $('input[name="dimensionSelect"]:checked').each(function () {
+                var dimensionName = $(this).next('label').text();
+                selectedDimensions.push(dimensionName);
+            });
+
+            var selectedMasterNames = {};
+            $('.dropdown').each(function () {
+                var dimensionName = $(this).find('button').text();
+                selectedMasterNames[dimensionName] = [];
+                $(this).find('input[type="checkbox"]:checked').each(function () {
+                    var masterName = $(this).next('label').text();
+                    selectedMasterNames[dimensionName].push(masterName);
+                });
+            });
+
+            $.ajax({
+                url: $(this).attr('action'), // using form action url
+                type: 'POST',
+                data: {
+                    dimensions: selectedDimensions,
+                    masterNames: selectedMasterNames // sending object instead of array
+                },
+                success: function (response) {
+                    // handle response
+                },
+                error: function (error) {
+                    // handle error
+                }
+            });
+        });
+});
+</script>
+

@@ -1,0 +1,29 @@
+﻿
+<div>
+    <a href="@Url.Action("Businessorg", "ConfigureTemplate")">Businessorg</a> |
+    <a href="@Url.Action("Product", "ConfigureTemplate")">Product</a> |
+    <a href="@Url.Action("Execution", "ConfigureTemplate")">Execution</a> |
+    <a href="@Url.Action("Primarysales", "ConfigureTemplate")">Primarysales</a>
+</div>
+<select id="leftBox" multiple>
+    <option value="1">Option 1</option>
+    <option value="2">Option 2</option>
+    // more options
+</select>
+<button id="btnRight">></button>
+<button id="btnLeft"><</button>
+<select id="rightBox" multiple>
+</select>
+<script>
+
+
+$('#btnRight').click(function (e) {
+    var selected = $('#leftBox option:selected');
+    $('#rightBox').append(selected);
+});
+
+$('#btnLeft').click(function (e) {
+    var selected = $('#rightBox option:selected');
+    $('#leftBox').append(selected);
+});
+</script>
