@@ -40,14 +40,14 @@
         },
 
         HalfYearlyEnum: {
-            H1: function () { return { START_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.JULY, 1), END_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.DECEMBER, 31) } },
-            H2: function () { return { START_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.JANUARY, 1), END_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.JUNE, 30) } }
+            H1: function () { return { START_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.JANUARY, 1), END_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.JUNE, 30) } },
+            H2: function () { return { START_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.JULY, 1), END_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.DECEMBER, 31) } }
         },
         QuarterlyEnum: {
-            Q1: function () { return { START_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.JULY, 1), END_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.SEPTEMBER, 30) } },
-            Q2: function () { return { START_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.OCTOBER, 1), END_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.DECEMBER, 31) } },
-            Q3: function () { return { START_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.JANUARY, 1), END_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.MARCH, 31) } },
-            Q4: function () { return { START_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.APRIL, 1), END_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.JUNE, 30) } }
+            Q1: function () { return { START_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.JANUARY, 1), END_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.MARCH, 31) } },
+            Q2: function () { return { START_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.APRIL, 1), END_DATE: new Date(Common.selectedStartYear, Common.MonthEnum.JUNE, 30) } },
+            Q3: function () { return { START_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.JULY, 1), END_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.SEPTEMBER, 39) } },
+            Q4: function () { return { START_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.OCTOBER, 1), END_DATE: new Date(Common.selectedEndYear, Common.MonthEnum.DECEMBER, 31) } }
         },
         SearchMonth: function (myValue) {
             for (prop in Common.MonthEnum) {
@@ -63,7 +63,7 @@
             return monthEnumValue + 1;
         },
         formatDate: function (value) {
-            return Common.base10(value.getMonth() + 1) + "/" + Common.base10(value.getDate()) + "/" + value.getFullYear();
+            return Common.base10(value.getMonth()+1 ) + "/" + Common.base10(value.getDate()) + "/" + value.getFullYear();
         },
         formatDateToDateObject: function (fDate) {
             var dateObj = fDate.split('/');

@@ -83,7 +83,7 @@ namespace Sponge.Controllers
                 for (int i = 0; i < range; i++)
                 {
                     dt = dt.AddYears(1);
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}06", dt.Year, dt.Year + 1), string.Format("{0}-{1}", dt.Year, dt.Year + 1)));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}12", dt.Year, dt.Year), string.Format("{0}-{1}", dt.Year, dt.Year+1 )));
                 }
             }
             if (subArea.FREQUENCY.Equals(Helper.Constant.MONTHLY))
@@ -112,8 +112,8 @@ namespace Sponge.Controllers
                 {
                     dt = dt.AddYears(1);
 
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}12", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H1")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}06", dt.Year + 1, dt.Year + 1), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H2")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H1")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}12", dt.Year +1, dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H2")));
                 }
             }
             if (subArea.FREQUENCY.Equals(Helper.Constant.QUARTERLY))
@@ -126,10 +126,10 @@ namespace Sponge.Controllers
                 for (int i = 0; i < range; i++)
                 {
                     dt = dt.AddYears(1);
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}09", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q1")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}10{1}12", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q2")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}03", dt.Year + 1, dt.Year + 1), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q3")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}04{1}06", dt.Year + 1, dt.Year + 1), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q4")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}03", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q1")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}04{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q2")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}09", dt.Year, dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q3")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}10{1}12", dt.Year , dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q4")));
                 }
 
             }
@@ -176,33 +176,33 @@ namespace Sponge.Controllers
             string currentYear = string.Empty;
 
             if (dt.Month >= (int)Helper.Month.July)
-                currentYear = string.Format("{0}07{1}06", dt.Year, dt.Year + 1);//string.Format("{0}-{1}", DateTime.Today.Year, (DateTime.Today.Year + 1));
+                currentYear = string.Format("{0}01{1}12", dt.Year, dt.Year + 1);//string.Format("{0}-{1}", DateTime.Today.Year, (DateTime.Today.Year + 1));
             else
-                currentYear = string.Format("{0}07{1}06", (dt.Year - 1), dt.Year);
+                currentYear = string.Format("{0}01{1}12", (dt.Year - 1), dt.Year);
             return currentYear;
         }
         private string GetCurrentFinancialHalfYear(DateTime dt)
         {
             string currentFinancialHalfYear = string.Empty;
-            if (dt.Month >= (int)Helper.Month.July)
-                currentFinancialHalfYear = string.Format("{0}07{1}12", dt.Year, dt.Year, "H1");
+            if (dt.Month <= (int)Helper.Month.July)
+                currentFinancialHalfYear = string.Format("{0}01{1}06", dt.Year, dt.Year, "H1");
             else
-                currentFinancialHalfYear = string.Format("{0}01{1}06", dt.Year, dt.Year, "H2");
+                currentFinancialHalfYear = string.Format("{0}07{1}12", dt.Year, dt.Year, "H2");
             return currentFinancialHalfYear;
         }
         private string GetCurrentFinancialQuarter(DateTime dt)
         {
             string currentFinancialQuarter = string.Empty;
             if (dt.Month >= (int)Helper.Month.July && dt.Month <= (int)Helper.Month.September)
-                currentFinancialQuarter = string.Format("{0}07{1}09", dt.Year, dt.Year);
-            else
-            if (dt.Month >= (int)Helper.Month.October && dt.Month <= (int)Helper.Month.December)
-                currentFinancialQuarter = string.Format("{0}10{1}12", dt.Year, dt.Year);
-            else
-            if (dt.Month >= (int)Helper.Month.January && dt.Month <= (int)Helper.Month.March)
                 currentFinancialQuarter = string.Format("{0}01{1}03", dt.Year, dt.Year);
             else
+            if (dt.Month >= (int)Helper.Month.October && dt.Month <= (int)Helper.Month.December)
                 currentFinancialQuarter = string.Format("{0}04{1}06", dt.Year, dt.Year);
+            else
+            if (dt.Month >= (int)Helper.Month.January && dt.Month <= (int)Helper.Month.March)
+                currentFinancialQuarter = string.Format("{0}07{1}09", dt.Year, dt.Year);
+            else
+                currentFinancialQuarter = string.Format("{0}10{1}12", dt.Year, dt.Year);
             return currentFinancialQuarter;
         }
         private string GetCurrentFinancialWeekValue(DateTime dt)

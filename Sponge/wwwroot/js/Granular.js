@@ -33,14 +33,14 @@ var FillYearly_GranularDropdown = function (select, granularTimeValue) {
     var obj = pattern.split('-');
     var startYear = obj[0].toString(), endYear = obj[1].toString();
     if (granularTimeValue == 'HALF_YEARLY') {
-        Common.FillDropDownOptions(select, 'H1', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.JULY, Common.MonthEnum.DECEMBER));
-        Common.FillDropDownOptions(select, 'H2', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.JANUARY, Common.MonthEnum.JUNE));
+        Common.FillDropDownOptions(select, 'H1', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.JANUARY, Common.MonthEnum.JUNE));
+        Common.FillDropDownOptions(select, 'H2', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.JULY, Common.MonthEnum.DECEMBER));
     }
     if (granularTimeValue == 'QUARTERLY') {
-        Common.FillDropDownOptions(select, 'Q1', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.JULY, Common.MonthEnum.SEPTEMBER));
-        Common.FillDropDownOptions(select, 'Q2', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.OCTOBER, Common.MonthEnum.DECEMBER));
-        Common.FillDropDownOptions(select, 'Q3', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.JANUARY, Common.MonthEnum.MARCH));
-        Common.FillDropDownOptions(select, 'Q4', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.APRIL, Common.MonthEnum.JUNE));
+        Common.FillDropDownOptions(select, 'Q1', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.JANUARY, Common.MonthEnum.MARCH));
+        Common.FillDropDownOptions(select, 'Q2', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.APRIL, Common.MonthEnum.JUNE));
+        Common.FillDropDownOptions(select, 'Q3', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.JULY, Common.MonthEnum.SEPTEMBER));
+        Common.FillDropDownOptions(select, 'Q4', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.OCTOBER, Common.MonthEnum.DECEMBER));
     }
     if (granularTimeValue == 'MONTHLY') {
         for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
@@ -62,11 +62,11 @@ var FillHalfYearly_GranularDropdown = function (select, granularTimeValue) {
     endYear = arrayVal[0];
     if (arrayVal[1] == 'H1') {
         if (granularTimeValue == 'QUARTERLY') {
-            Common.FillDropDownOptions(select, 'Q1', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.JULY, Common.MonthEnum.SEPTEMBER));
-            Common.FillDropDownOptions(select, 'Q2', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.OCTOBER, Common.MonthEnum.DECEMBER));
+            Common.FillDropDownOptions(select, 'Q1', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.JANUARY, Common.MonthEnum.MARCH));
+            Common.FillDropDownOptions(select, 'Q2', ProcessGranularCodeFor_HalfYearOrQuarter(startYear, Common.MonthEnum.APRIL, Common.MonthEnum.JUNE));
         }
         if (granularTimeValue == 'MONTHLY') {
-            for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
+            for (var i = Common.MonthFromEnum(Common.MonthEnum.JANUARY); i <= Common.MonthFromEnum(Common.MonthEnum.JUNE); i++) {
                 var monthName = Common.SearchMonth(i - 1);
                 Common.FillDropDownOptions(select, monthName, startYear + Common.base10(i));
             }
@@ -74,11 +74,11 @@ var FillHalfYearly_GranularDropdown = function (select, granularTimeValue) {
     }
     if (arrayVal[1] == 'H2') {
         if (granularTimeValue == 'QUARTERLY') {
-            Common.FillDropDownOptions(select, 'Q3', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.JANUARY, Common.MonthEnum.MARCH));
-            Common.FillDropDownOptions(select, 'Q4', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.APRIL, Common.MonthEnum.JUNE));
+            Common.FillDropDownOptions(select, 'Q3', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.JULY, Common.MonthEnum.SEPTEMBER));
+            Common.FillDropDownOptions(select, 'Q4', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.OCTOBER, Common.MonthEnum.DECEMBER));
         }
         if (granularTimeValue == 'MONTHLY') {
-            for (var i = Common.MonthFromEnum(Common.MonthEnum.JANUARY); i <= Common.MonthFromEnum(Common.MonthEnum.JUNE); i++) {
+            for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
                 var monthName = Common.SearchMonth(i - 1);
                 Common.FillDropDownOptions(select, monthName, endYear + Common.base10(i));
             }
@@ -96,7 +96,7 @@ var FillQuarterly_GranularDropdown = function (select, granularTimeValue) {
     endYear = arrayVal[0];
     if (arrayVal[1] == 'Q1') {
         if (granularTimeValue == 'MONTHLY') {
-            for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.SEPTEMBER); i++) {
+            for (var i = Common.MonthFromEnum(Common.MonthEnum.JANUARY); i <= Common.MonthFromEnum(Common.MonthEnum.MARCH); i++) {
                 var monthName = Common.SearchMonth(i - 1);
                 Common.FillDropDownOptions(select, monthName, startYear + Common.base10(i));
             }
@@ -104,7 +104,7 @@ var FillQuarterly_GranularDropdown = function (select, granularTimeValue) {
     }
     if (arrayVal[1] == 'Q2') {
         if (granularTimeValue == 'MONTHLY') {
-            for (var i = Common.MonthFromEnum(Common.MonthEnum.OCTOBER); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
+            for (var i = Common.MonthFromEnum(Common.MonthEnum.APRIL); i <= Common.MonthFromEnum(Common.MonthEnum.JUNE); i++) {
                 var monthName = Common.SearchMonth(i - 1);
                 Common.FillDropDownOptions(select, monthName, startYear + Common.base10(i));
             }
@@ -112,7 +112,7 @@ var FillQuarterly_GranularDropdown = function (select, granularTimeValue) {
     }
     if (arrayVal[1] == 'Q3') {
         if (granularTimeValue == 'MONTHLY') {
-            for (var i = Common.MonthFromEnum(Common.MonthEnum.JANUARY); i <= Common.MonthFromEnum(Common.MonthEnum.MARCH); i++) {
+            for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.SEPTEMBER); i++) {
                 var monthName = Common.SearchMonth(i - 1);
                 Common.FillDropDownOptions(select, monthName, endYear + Common.base10(i));
             }
@@ -120,7 +120,7 @@ var FillQuarterly_GranularDropdown = function (select, granularTimeValue) {
     }
     if (arrayVal[1] == 'Q4') {
         if (granularTimeValue == 'MONTHLY') {
-            for (var i = Common.MonthFromEnum(Common.MonthEnum.APRIL); i <= Common.MonthFromEnum(Common.MonthEnum.JUNE); i++) {
+            for (var i = Common.MonthFromEnum(Common.MonthEnum.OCTOBER); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
                 var monthName = Common.SearchMonth(i - 1);
                 Common.FillDropDownOptions(select, monthName, endYear + Common.base10(i));
             }

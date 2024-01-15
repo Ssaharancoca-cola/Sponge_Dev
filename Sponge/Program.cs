@@ -31,7 +31,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddDbContext<SPONGE_Context>(
-         options => options.UseSqlServer(builder.Configuration.GetConnectionString("Data Source=zwdmyad0001;Initial Catalog=SPONGE_DEV_APP;Persist Security Info=True;User ID=MPP_DEV_APP;Password=SJX)^8nVYfQ#3D;TrustServerCertificate=True")));
+         options => options.UseSqlServer(builder.Configuration.GetConnectionString("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA_APP;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True")));
 
 builder.Services.AddRazorPages();
 
