@@ -68,7 +68,8 @@ namespace Sponge.Controllers
                             configUser.CONFIGURATION.APPROVER_NAME,
                             configUser.CONFIGURATION.APPROVER_ID,
                             configUser.CONFIGURATION.EFFECTIVE_TO,
-                            configUser.CONFIGURATION.Created_On
+                            configUser.CONFIGURATION.Created_On,
+                            configUser.CONFIGURATION.Config_Name
 
                         })
                     .Where(x => x.CONFIG_ID == configID)
@@ -112,6 +113,7 @@ namespace Sponge.Controllers
             {
                 // Update the fields
                 configRecord.ACTIVE_FLAG = data.ACTIVE_FLAG;
+                configRecord.Config_Name = data.CONFIG_NAME;
                 configRecord.SCHEDULED = data.SCHEDULED;
                 configRecord.LOCK_DATE = data.LOCK_DATE;
                 configRecord.PATTERN = data.PATTERN;

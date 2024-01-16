@@ -3,6 +3,7 @@
     public class SetupUser
     {
         public string NAME { get; set; }
+        public string CONFIG_NAME { get; set; }
         public string SUBJECTAREA_NAME { get; set; }
         public string FREQUENCY { get; set; }
         public string TIME_LEVEL { get; set; }

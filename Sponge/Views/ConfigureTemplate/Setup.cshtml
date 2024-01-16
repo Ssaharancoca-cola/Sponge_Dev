@@ -86,7 +86,7 @@
                                 <input required type="number" min="0" max="15" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
                             </div>
                         </div>
-                        <div>
+                        <div class="form-group row">
                             @{
                                 string dateEffective = "";
                                 if (@ViewBag.Result.EFFECTIVE_TO != null)
@@ -99,7 +99,13 @@
                                 <label for="EffectiveToDate">Effective to Date</label>
                                 <input min="@ViewBag.Result.Created_On.ToString("yyyy-MM-dd")" id="effectiveToDateID" name="EFFECTIVE_TO" type="date" value="@dateEffective" class="form-control" />
                             </div>
+                            <div id="Config_Name" class="col-md-3">
+                                <label for="CONFIG_NAME">Configuration Name</label>
+                                <input type="text" value="@ViewBag.Result.Config_Name" class="form-control" id="CONFIG_NAME" name="CONFIG_NAME" pattern="[a-zA-Z0-9]{10}$" title="Only 10 alphanumeric characters are allowed.">
+
+                            </div>
                         </div>
+                        
                         <h6 class="mt-5 mb-3">Add Approver Details</h6>
                         <div class="form-group row">
                             <div class="col">
