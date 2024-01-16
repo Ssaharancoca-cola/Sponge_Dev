@@ -257,7 +257,7 @@ namespace BatchJob
                                           join pf in m.SPG_SUBFUNCTION on pd.SUBFUNCTION_ID equals pf.SUBFUNCTION_ID
                                           join us in m.SPG_USERS on ep.USER_ID equals us.USER_ID
                                           where ep.CONFIG_ID == configId
-                                          select new { SUBJECTAREAID = pd.SUBJECTAREA_ID, COLLECTION_TYPE = pc.DATA_COLLECTION, SubjectArea = pd.SUBJECTAREA_NAME, ReportingPeriod = pd.REPORTING_PERIOD, Function = pf.FUNCTION_NAME, SubFunction = pf.SUBFUNCTION_NAME, UserId = us.ID, UserName = us.Name, UserEmail = us.EMAIL_ID }).FirstOrDefault();
+                                          select new { SUBJECTAREAID = pd.SUBJECTAREA_ID, CONFIG_NAME = pc.Config_Name, COLLECTION_TYPE = pc.DATA_COLLECTION, SubjectArea = pd.SUBJECTAREA_NAME, ReportingPeriod = pd.REPORTING_PERIOD, Function = pf.FUNCTION_NAME, SubFunction = pf.SUBFUNCTION_NAME, UserId = us.ID, UserName = us.Name, UserEmail = us.EMAIL_ID }).FirstOrDefault();
 
                         //Custom
                         StringBuilder custom = new StringBuilder();
@@ -596,7 +596,7 @@ namespace BatchJob
                         var measurecolumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { Text = s.DATA_TYPE, Value = s.DISPLAY_TYPE, ConfigUserId = s.CONFIGUSER_ID }).OrderBy(s => s.ConfigUserId);
                         var MasterShowColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { DATA_TYPE = s.DATA_TYPE, IS_SHOW = s.IS_SHOW });
 
-                        FileName = ot_details.SubjectArea + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
+                        FileName = ot_details.SubjectArea + "_" + ot_details.CONFIG_NAME + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
                         string FormedQuery4 = "SP_GETLOOKUPDATA";
                         DataSet ds4 = new DataSet();
                         try
