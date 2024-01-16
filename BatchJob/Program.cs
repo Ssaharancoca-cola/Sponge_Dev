@@ -64,7 +64,7 @@ namespace BatchJob
             ErrorLog srsEx = new ErrorLog();
             srsEx.LogErrorInTextFile(ex);
         }
-        public void PeriodFromPeriodTo(string fortime, string ontime, string frequency, string TimeLevel, out string PeriodFrom, out string PeriodTo)
+        public void PeriodFromPeriodTo(string fortime, string ontime, out string PeriodFrom, out string PeriodTo)
         {
             PeriodFrom = "";
             PeriodTo = "";
@@ -670,7 +670,7 @@ namespace BatchJob
                                 objWorksheet.Cells["A2"].Value = "Reporting Start Date-" + Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["B2"].Value = "Reporting End Date-" + Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
-                                objWorksheet.Cells["B3"].Value = "Lock Date-" + dtlockdate;
+                                objWorksheet.Cells["B3"].Value = "Lock Date-" + Convert.ToDateTime(dtlockdate).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["A4"].Value = "";// customexcel;
                                 objWorksheet.Row(4).Hidden = true;//Hide 4th row
@@ -947,11 +947,13 @@ namespace BatchJob
                                 string ChangedSubjectArea = ot_details.SubjectArea.Replace("_", " ");
                                 ChangedSubjectArea = new CultureInfo("en-US").TextInfo.ToTitleCase(ChangedSubjectArea.ToLower());
 
+
+                               // PeriodFromPeriodTo(ForTime, OnTime, out PeriodFrom, out PeriodTo);
                                 NameValueCollection mailBodyplaceHolders = new NameValueCollection();
                                 mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
                                 mailBodyplaceHolders.Add("<SubjectArea>", ChangedSubjectArea);
-                                mailBodyplaceHolders.Add("<ForTimeCode>", ForTime);
-                                mailBodyplaceHolders.Add("<OnTimeCode>", OnTime);
+                                mailBodyplaceHolders.Add("<ForTimeCode>", Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy"));
+                                mailBodyplaceHolders.Add("<OnTimeCode>", Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy"));
                                 mailBodyplaceHolders.Add("<LockDate>", dtlockdate.ToString());
                                 mailBodyplaceHolders.Add("<Custom>", custom.ToString());
                                 //Format the header    
