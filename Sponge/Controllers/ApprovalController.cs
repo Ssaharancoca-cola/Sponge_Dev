@@ -163,29 +163,29 @@ namespace Sponge.Controllers
             return RedirectToAction("MyApproval");
         }
 
-        //public virtual ActionResult Download(string documentId, int configId)
-        //{
+        public IActionResult Download(string documentId, int configId)
+        {
+            SPONGE_Context objFunction = new();
+            ApprovalModel model = new ApprovalModel();
 
-        //    SPONGE_Context objFunction = new();
-        //    ApprovalModel model = new ApprovalModel();
+            string fileName = documentId + ".xlsx";
+            var fileURI =
+                (from doc in objFunction.SPG_DOCUMENT
+                 join temp in objFunction.SPG_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
+                 join conf in objFunction.SPG_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
+                 where conf.CONFIG_ID == configId && doc.ID == documentId
+                 select new { doc.FILE_PATH, doc.ID, temp.FILE_NAME }).First();
+            string filepath = Path.Combine(fileURI.FILE_PATH, fileName);
 
-        //    string fileName = documentId + ".xlsx";
-        //    var fileURI =
-        //   (from doc in objFunction.SPG_DOCUMENT
-        //    join temp in objFunction.SPG_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
-        //    join conf in objFunction.SPG_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
-        //    where conf.CONFIG_ID == configId && doc.ID == documentId
-        //    select new { doc.FILE_PATH, doc.ID, temp.FILE_NAME }).First();
-        //    string filepath = fileURI.FILE_PATH + "\\" + fileName;
-        //    Response.Clear();
-        //    Response.ContentType = "text/plain";
-        //    Response.AddHeader("Content-Disposition",
-        //    "attachment; filename=\"" + fileURI.FILE_NAME + "\"");
-        //    Response.Flush();
-        //    Response.WriteFile(filepath);
-        //    Response.End();
-        //    return Content("");
-        //}
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filepath, FileMode.Open))
+            {
+                stream.CopyTo(memory);
+            }
+            memory.Position = 0;
+
+            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileURI.FILE_NAME);
+        }
 
         //public string GetMessageBody(string messageTemplate, NameValueCollection nvc)
         //{
