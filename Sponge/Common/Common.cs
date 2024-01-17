@@ -426,10 +426,10 @@ namespace Sponge.Common
 
         public enum ApprovalStatusEnum
         {
-            Pending = 3,
-            Rejected = 2,
+            Pending = 1,
+            Rejected = 3,
             Abandon = 4,
-            Approved = 1,
+            Approved = 2,
             Draft = 0
         }
         public static String encodeWithKey(String textIn)

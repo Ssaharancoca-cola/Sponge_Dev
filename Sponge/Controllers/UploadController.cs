@@ -469,7 +469,7 @@ namespace Sponge.Controllers
 
 
 
-                    string DocumentId = InsertIntoSPG_Document(objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
+                    string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId,objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
                     string datasetResults = "";
 
                     // Remove Empty Rows
@@ -616,7 +616,7 @@ namespace Sponge.Controllers
             }
             return listErros;
         }
-        public string InsertIntoSPG_Document(decimal TemplateID, string FILE_NAME, string ApproverName, string FILE_PATH, DateTime? LockDate, string approverUserId)
+        public string InsertIntoSPG_Document(string uploadedby,decimal TemplateID, string FILE_NAME, string ApproverName, string FILE_PATH, DateTime? LockDate, string approverUserId)
         {
             // Check lock date.If lock date <= current date value is 1
             decimal? ApprovalStatusID = 1;
@@ -662,7 +662,7 @@ namespace Sponge.Controllers
             SPG_DOCUMENT saveepdocument = new SPG_DOCUMENT()
             {
                 UPLOADDATE = DateTime.Now,
-                UPLOADEDBY = HttpContext.Session.GetString("NAME").ToString(),
+                UPLOADEDBY = uploadedby,
                 APPROVALSTATUSID = (int?)ApprovalStatusID,
                 TEMPLATEID = (int?)TemplateID,
                 FILE_NAME = FILE_NAME,

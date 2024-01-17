@@ -48,8 +48,9 @@ namespace Sponge.Controllers
                      where status.DESCRIPTION == "Pending"
                      select new ApprovalModel { Document = doc, Template = temp, ApprovalStatus = status, Configuration = conf, SubjectArea = area }).ToList();
 
-            if (role.RoleName != "Admin")
-            {
+            if (!(role.RoleName == "Admin") && !(role.RoleName == "Data Configure"))
+           
+               {
                 viewModel = (from vd in viewModel
                              where vd.Document.APPROVERID == userid[1]
                              select vd).ToList();
