@@ -14,16 +14,16 @@
                         <div class="col-12">
                             <div id="drop-area">
                                 <input type="file" id="file-input" accept=".XlSX,"
-                                    multiple>
+                                       multiple>
                                 <label for="file-input" class="label-fileinput">
                                     <span id="upload-icon">
                                         <svg viewBox="0 0 24 24" width="60" height="60" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                                        <polyline points="16 16 12 12 8 16"></polyline>
-                                        <line x1="12" y1="12" x2="12" y2="21"></line>
-                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                                        <polyline points="16 16 12 12 8 16"></polyline>
-                                    </svg>
-                                    </span> 
+                                            <polyline points="16 16 12 12 8 16"></polyline>
+                                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                            <polyline points="16 16 12 12 8 16"></polyline>
+                                        </svg>
+                                    </span>
                                     <span>Drag and drop your Files</span>
                                     <span>or</span>
                                     <span class="txt-red">Browse</span>
@@ -38,9 +38,9 @@
                             </div>
                         </div>
                     </div>
-                            <button class="btn btn-light mr-2" id="cancel-button" style="display:none;">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="upload-button" style="display:none;">Upload</button>
-                    
+                    <button class="btn btn-light mr-2" id="cancel-button" style="display:none;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="upload-button" style="display:none;">Upload</button>
+
                 </div>
             </div>
         </div>
@@ -107,26 +107,26 @@
         }
     });
 
-   uploadButton.addEventListener('click', function () {
-    // Add your upload logic here
-    // You can use the selected files for further processing
-    const selectedFiles = fileInput.files;
+    uploadButton.addEventListener('click', function () {
+        // Add your upload logic here
+        // You can use the selected files for further processing
+        const selectedFiles = fileInput.files;
 
-    if (selectedFiles.length > 0) {
-        // Example: Send the files to a server using AJAX or fetch
-        var formData = new FormData();
-        for (var i = 0; i < selectedFiles.length; i++) {
-            formData.append('file', selectedFiles[i]);
-        }
+        if (selectedFiles.length > 0) {
+            // Example: Send the files to a server using AJAX or fetch
+            var formData = new FormData();
+            for (var i = 0; i < selectedFiles.length; i++) {
+                formData.append('file', selectedFiles[i]);
+            }
 
-        $.ajax({
-            url: '@Url.Action("UploadExcelFiles", "Upload")',
-            data: formData,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            success: function(data){
-                debugger;
+            $.ajax({
+                url: '@Url.Action("UploadExcelFiles", "Upload")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (data) {
+                    debugger;
                     // if there are errors, display them
                     if (data.errorList && data.errorList.length > 0) {
                         var errorListElement = document.createElement('ul');
@@ -134,59 +134,60 @@
                             var listItem = document.createElement('li');
                             listItem.textContent = data.errorList[i].errorMessage;
                             // if errorType is W, add Yes and No buttons
-                            if (data.errorList[i].errorType === 'W') {
-                                var fileName = data.errorList[i].fileName;
-                                var yesButton = document.createElement('button');
-                                yesButton.textContent = 'Yes';
-                                yesButton.addEventListener('click', function () {
-                                    // call LoadWraningMessageFile action
-                                    $.ajax({
-                                        url: '@Url.Action("LoadWarningMessageFile", "Upload")',
-                                        data: { FileName: fileName },
-                                        type: 'POST',
-                                        success: function (response) {
-                                            // handle the response from the LoadWraningMessageFile action
-                                        },
-                                        error: function () {
-                                            alert('Error in calling LoadWraningMessageFile action');
-                                        }
-                                    });
-                                });
-
-                                var noButton = document.createElement('button');
-                                noButton.textContent = 'No';
-                                noButton.addEventListener('click', function () {
-                                    // reload the page
-                                    location.reload();
-                                });
-
-                                listItem.appendChild(yesButton);
-                                listItem.appendChild(noButton);
-                            }
-                            else if (data.errorList[i].errorType === 'S') {
-                                var listItem = document.createElement('li');
-                                listItem.textContent = data.errorList[i].errorMessage;
-                            }
-                            else if (data.errorList[i].errorType === 'F'){
-                                var listItem = document.createElement('li');
-                                listItem.textContent = data.errorList[i].errorMessage;
-                            }
-                            errorListElement.appendChild(listItem);
+                            if (data.errorList[i].errorType === 'WA' || data.errorList[i].errorType === 'W') {
+                var fileName = data.errorList[i].fileName;
+                                var ErrorType = data.errorList[i].errorType;
+                var yesButton = document.createElement('button');
+                yesButton.textContent = 'Yes';
+                yesButton.addEventListener('click', function () {
+                    // call LoadWraningMessageFile action
+                    $.ajax({
+                        url: '@Url.Action("LoadWarningMessageFile", "Upload")',
+                        data: { FileName: fileName, ErrorType: ErrorType },
+                        type: 'POST',
+                        success: function (response) {
+                            // handle the response from the LoadWraningMessageFile action
+                        },
+                        error: function () {
+                            alert('Error in calling LoadWraningMessageFile action');
                         }
-                        document.getElementById('file-list').appendChild(errorListElement);
-                    }
-                    else
-                    {
-                        alert('File Uploaded Successfully. ' + data.uploadedFileCount + ' file(s) uploaded.');
-                    }
-            },
-            error: function(){
-                alert('Error in Uploading File');
+                    });
+                });
+
+                var noButton = document.createElement('button');
+                noButton.textContent = 'No';
+                noButton.addEventListener('click', function () {
+                    // reload the page
+                    location.reload();
+                });
+
+                listItem.appendChild(yesButton);
+                listItem.appendChild(noButton);
             }
-        })
-    } else {
+                                else if (data.errorList[i].errorType === 'S') {
+                var listItem = document.createElement('li');
+                listItem.textContent = data.errorList[i].errorMessage;
+            }
+            else if (data.errorList[i].errorType === 'F') {
+                var listItem = document.createElement('li');
+                listItem.textContent = data.errorList[i].errorMessage;
+            }
+            errorListElement.appendChild(listItem);
+        }
+        document.getElementById('file-list').appendChild(errorListElement);
+    }
+                        else
+        {
+            alert('File Uploaded Successfully. ' + data.uploadedFileCount + ' file(s) uploaded.');
+                        }
+                },
+    error: function() {
+        alert('Error in Uploading File');
+    }
+            })
+        } else {
         console.log('No files selected to upload.');
     }
-});
+    });
 </script>
 

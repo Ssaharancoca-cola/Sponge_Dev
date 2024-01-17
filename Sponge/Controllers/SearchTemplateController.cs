@@ -34,7 +34,7 @@ namespace Sponge.Controllers
             {
                  RoleID = (int)role.ROLE_ID;
             }
-            if(RoleID == 5)
+            if((RoleID == 5 )|| (RoleID == 3))
             {
                  subfunctions = sPONGE_Context.SPG_SUBFUNCTION.ToList();
             }
@@ -58,7 +58,7 @@ namespace Sponge.Controllers
             {
                 RoleID = (int)role.ROLE_ID;
             }
-            if (RoleID == 5)
+            if ((RoleID == 5) ||( RoleID==3))
             {
                 subjectArea = sPONGE_Context.SPG_SUBJECTAREA.Where(x=> x.SUBFUNCTION_ID == subFunctionId).ToList();
             }
@@ -83,9 +83,13 @@ namespace Sponge.Controllers
             {
                 RoleID = (int)role.ROLE_ID;
             }
-            if (RoleID == 5)
+            if ((RoleID == 5) || RoleID==3)
             {
-                userlist = sPONGE_Context.SPG_USERS.Where(x => x.ACTIVE_FLAG == "Y").ToList();
+                userlist = (from SubjectArea in sPONGE_Context.SPG_SUBJECTAREA
+                               join userconfig in sPONGE_Context.SPG_CONFIGURATION on SubjectArea.SUBJECTAREA_ID equals userconfig.SUBJECTAREA_ID
+                            join users in sPONGE_Context.SPG_USERS on userconfig.USER_ID equals users.USER_ID
+                            where SubjectArea.SUBJECTAREA_ID == subjectAreaId
+                               select users).ToList();
             }
             else
             {
@@ -108,14 +112,18 @@ namespace Sponge.Controllers
             {
                 RoleID = (int)role.ROLE_ID;
             }
-            if (RoleID == 5)
+            if ((RoleID == 5) || (RoleID == 3))
             {
                 SearchConfgData = (from conf in sponge_context.SPG_CONFIGURATION
                                    join u in sponge_context.SPG_USERS on conf.USER_ID equals u.USER_ID
                                    join sa in sponge_context.SPG_SUBJECTAREA on conf.SUBJECTAREA_ID equals sa.SUBJECTAREA_ID
                                    join sf in sponge_context.SPG_SUBFUNCTION on sa.SUBFUNCTION_ID equals sf.SUBFUNCTION_ID
-                                   where sf.SUBFUNCTION_ID == subFunctionId && sa.SUBJECTAREA_ID == subjectAreaId
-                                   && conf.ACTIVE_FLAG == active
+                                   where ( sf.SUBFUNCTION_ID == subFunctionId)
+
+                                    && (subjectAreaId == 0 || sa.SUBJECTAREA_ID == subjectAreaId)
+                                     && (assignToUser == "0" || conf.USER_ID == assignToUser)
+                 && (active == null || conf.ACTIVE_FLAG == active)
+
                                    select new SearchDataList
                                    {
                                        ConfigId = conf.CONFIG_ID,
@@ -124,7 +132,7 @@ namespace Sponge.Controllers
                                        AssignedUser = u.Name,
                                        Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
                                        EffectiveDate = conf.Created_On,
-                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
+                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == null) ? "Configuration in Progress" : "Generate Template"
                                    }).Distinct().ToList();
             }
             else
@@ -133,8 +141,11 @@ namespace Sponge.Controllers
                                    join u in sponge_context.SPG_USERS on conf.USER_ID equals u.USER_ID
                                    join sa in sponge_context.SPG_SUBJECTAREA on conf.SUBJECTAREA_ID equals sa.SUBJECTAREA_ID
                                    join sf in sponge_context.SPG_SUBFUNCTION on sa.SUBFUNCTION_ID equals sf.SUBFUNCTION_ID
-                                   where sf.SUBFUNCTION_ID == subFunctionId && sa.SUBJECTAREA_ID == subjectAreaId && u.USER_ID == assignToUser
-                                   && conf.ACTIVE_FLAG == active
+                                   where (subjectAreaId == 0 || sf.SUBFUNCTION_ID == subFunctionId)
+
+                                    && (subjectAreaId == 0 || sa.SUBJECTAREA_ID == subjectAreaId)
+                                     && (assignToUser == "0" || conf.USER_ID == assignToUser)
+                 && (active == null || conf.ACTIVE_FLAG == active)
                                    select new SearchDataList
                                    {
                                        ConfigId = conf.CONFIG_ID,
@@ -143,7 +154,7 @@ namespace Sponge.Controllers
                                        AssignedUser = u.Name,
                                        Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
                                        EffectiveDate = conf.Created_On,
-                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == "null") ? "Configuration in Progress" : "Generate Template"
+                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == "NULL") ? "Configuration in Progress" : "Generate Template"
                                    }).Distinct().ToList();
             }
             return Json(SearchConfgData);

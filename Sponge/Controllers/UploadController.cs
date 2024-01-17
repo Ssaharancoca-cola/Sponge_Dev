@@ -95,7 +95,7 @@ namespace Sponge.Controllers
 
                 FileModel objFileModel = new FileModel();
 
-                if (UserRole.ToUpper() == "ADMIN")
+                if (UserRole.ToUpper() == "ADMIN" || UserRole.ToUpper()== "DATA CONFIGURE")
                 {
                     objFileModel = Checkauthorizeduser(fileName, userId, objFileModel, true);//Check authorized user           
                     if (objFileModel != null && objFileModel.SubFunctionID > 0)
@@ -781,7 +781,7 @@ namespace Sponge.Controllers
             return LookVal;
         }
 
-        public JsonResult LoadWarningMessageFile(string FileName, string ErrorType = null)
+        public JsonResult LoadWarningMessageFile(string FileName, string ErrorType)
         {
             SPONGE_Context dbcontext = new();            
             string UploadedDocumentsFilePath = _configuration["AppSettings:UploadedDocumentsFilePath"];
@@ -972,7 +972,7 @@ namespace Sponge.Controllers
             string WarningdocumentFilePath = _configuration["AppSettings:WarningDocumentFilePath"];
             string UserRole = HttpContext.Session.GetString("ROLE").ToString();
             var FileCode = ValidateHiddenSheet(FilePath + "\\" + Filename, objContext, objFileModel.FileCode);
-            if (UserRole.ToUpper() == "ADMIN")
+            if (UserRole.ToUpper() == "ADMIN" || UserRole.ToUpper() == "DATA CONFIGURE")
             {
                 if (string.IsNullOrEmpty(objFileModel.FileName))//Check valid file name 
                 {
