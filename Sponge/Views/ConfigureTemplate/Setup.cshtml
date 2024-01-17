@@ -101,7 +101,7 @@
                             </div>
                             <div id="Config_Name" class="col-md-3">
                                 <label for="CONFIG_NAME">Configuration Name</label>
-                                <input type="text" value="@ViewBag.Result.Config_Name" class="form-control" id="CONFIG_NAME" name="CONFIG_NAME" pattern="[a-zA-Z0-9]{10}$" title="Only 10 alphanumeric characters are allowed.">
+                                <input type="text" value="@ViewBag.Result.Config_Name" class="form-control" id="CONFIG_NAME" onkeydown="return /[a-z0-9]/i.test(event.key)" name="CONFIG_NAME" maxlength=10 title="Only 10 alphanumeric characters are allowed.">
 
                             </div>
                         </div>

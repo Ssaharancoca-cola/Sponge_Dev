@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table id="example" class="display expandable-table" style="width:90%">
+                        <table id="example" class="display expandable-table" style="width:100%">
                             <thead>
                                 <tr>
 
@@ -40,8 +40,9 @@
                                         <tr>
                                             <td><input type="checkbox" class="selectItem" name="SelectedChkBox" value="@item.Document.ID"></td>
                                             <td>@item.Document.UPLOADEDBY</td>
-                                            <td>@item.Template.LOCK_DATE</td>
-                                            <td>@item.Document.UPLOADDATE</td>
+                                            <td>@(item.Template.LOCK_DATE != null ? item.Template.LOCK_DATE.Value.ToString("dd/MM/yyyy") : "")</td>
+                                            <td>@(item.Document.UPLOADDATE != null ? item.Document.UPLOADDATE.Value.ToString("dd/MM/yyyy") : "")</td>
+
                                             <td>@item.SubjectArea.SUBJECTAREA_NAME</td>
                                             <td>@Html.ActionLink("Download", "Download", new {configId = item.Configuration.CONFIG_ID, documentId = @item.Document.ID }, new { @class = "btn btn-primary" })</td>
                                         </tr>
