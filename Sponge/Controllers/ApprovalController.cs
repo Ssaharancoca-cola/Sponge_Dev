@@ -1,12 +1,11 @@
-﻿using DAL;
+﻿using DAL.Common;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Sponge.Common;
 using Sponge.ViewModel;
 using System.Collections.Specialized;
 using System.Data;
-using System.Drawing;
-using System.Net.Mail;
 
 namespace Sponge.Controllers
 {
@@ -14,12 +13,14 @@ namespace Sponge.Controllers
     [SessionTimeOut]
     public class ApprovalController : Controller
     {
-        private readonly IHttpContextAccessor _httpSession;
+        private readonly IOptions<AppSettings> _settings;
+        private readonly Email _email;
 
-        //public ApprovalController(IHttpContextAccessor httpContextAccessor)
-        //{
-        //    _httpSession = httpContextAccessor;
-        //}
+        public ApprovalController(IOptions<AppSettings> settings, Email email)
+        {
+            _settings = settings;
+            this._email = email;
+        }
         public IActionResult MyApproval()
         {
             string[] userid = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
@@ -68,7 +69,7 @@ namespace Sponge.Controllers
                     foreach (string str in SelectedChkBox)
                     {
                         var document = objModel.SPG_DOCUMENT.Where(m => m.ID == str).FirstOrDefault();
-                        var Usr = objModel.SPG_USERS.Where(s => s.USER_ID.ToUpper() == document.UPLOADEDBY.ToUpper()).FirstOrDefault();
+                        var Usr = objModel.SPG_USERS.Where(s => s.Name.ToUpper() == document.UPLOADEDBY.ToUpper()).FirstOrDefault();
                         var template = objModel.SPG_TEMPLATE.Where(m => m.TEMPLATE_ID == document.TEMPLATEID).FirstOrDefault();
                         if (document != null)
                         {
@@ -87,66 +88,70 @@ namespace Sponge.Controllers
                                 }
                                 dbcontext.SaveChanges();
                             }
-                            #region email
-                            //if (command.ToLower() == "approve")
-                            //{
-                            //    var approvalStatus = objModel.EP_APPROVALSTATUS.Where(a => a.DESCRIPTION.ToLower() == "approved").FirstOrDefault();
-                            //    document.APPROVALSTATUSID = approvalStatus.ID;
-                            //    document.LATEST_FLAG_FOR_DAY = 1;
-                            //    string UserRole = Session["Description"].ToString();
-                            //    try
-                            //    {
-                            //        NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-                            //        mailBodyplaceHolders.Add("<UserName>", Usr.NAME);
-                            //        mailBodyplaceHolders.Add("<FileName>", document.FILE_NAME.Replace("txt", "xlsx"));
-                            //        mailBodyplaceHolders.Add("<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("dd/MMM/y"));
-                            //        mailBodyplaceHolders.Add("<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("dd/MMM/y"));
-                            //        mailBodyplaceHolders.Add("<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("dd/MMM/y"));
-                            //        mailBodyplaceHolders.Add("<ApproverName>", Convert.ToString(Session["Name"]));
+                        #region email
+                        if (command.ToLower() == "approve")
+                        {
+                            var approvalStatus = objModel.SPG_APPROVALSTATUS.Where(a => a.DESCRIPTION.ToLower() == "approved").FirstOrDefault();
+                            document.APPROVALSTATUSID = approvalStatus.ID;
+                            document.LATEST_FLAG_FOR_DAY = 1;
+                            string UserRole = HttpContext.Session.GetString("ROLE");
+                            try
+                            {
+                                NameValueCollection mailBodyplaceHolders = new NameValueCollection
+                                {
+                                    { "<UserName>", Usr.Name },
+                                    { "<FileName>", document.FILE_NAME.Replace("txt", "xlsx") },
+                                    { "<ForTime>", template.PERIOD_FROM.ToString() },
+                                    { "<OnTime>", template.PERIOD_TO.ToString() },
+                                    { "<LockDate>", template.LOCK_DATE.ToString() },
+                                    { "<ApproverName>", HttpContext.Session.GetString("NAME") }
+                                };
 
-                            //        string DataCollectionSubject = "[iQlik Portal] - Template Status";
-                            //        string mailbody = "";
-                            //        string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["TemplateApprovedExcelTemplate"].ToString());
-                            //        mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-                            //        if (UserRole.ToUpper() != "ADMIN" && UserRole.ToUpper() != "DATA APPROVER")
-                            //        {
-                            //            SendMail("", DataCollectionSubject, mailbody, Usr.EMAILID);
-                            //        }
-                            //    }
-                            //    catch (Exception ex)
-                            //    {
-                            //        LogError logerror = new LogError();
-                            //        logerror.LogErrorInTextFile(ex);
-                            //    }
-                            //}
-                            //if (command.ToLower() == "reject")
-                            //{
-                            //    var approvalStatus = objModel.EP_APPROVALSTATUS.Where(a => a.DESCRIPTION.ToLower() == "rejected").FirstOrDefault();
-                            //    document.APPROVALSTATUSID = approvalStatus.ID;
-                            //    try
-                            //    {
-                            //        NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-                            //        mailBodyplaceHolders.Add("<UserName>", Usr.NAME);
-                            //        mailBodyplaceHolders.Add("<FileName>", document.FILE_NAME.Replace("txt", "xlsx"));
-                            //        mailBodyplaceHolders.Add("<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("dd/MMM/y"));
-                            //        mailBodyplaceHolders.Add("<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("dd/MMM/y"));
-                            //        mailBodyplaceHolders.Add("<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("dd/MMM/y"));
-                            //        mailBodyplaceHolders.Add("<ApproverName>", Convert.ToString(Session["Name"]));
+                                string DataCollectionSubject = "[iQlik Portal] - Template Status";
+                                string mailbody = "";
+                                string messageTemplatePath = _settings.Value.TemplateApprovedExcelTemplate;
+                                {
+                                    mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+                                }
+                                if (UserRole.ToUpper() != "ADMIN" && UserRole.ToUpper() != "DATA APPROVER")
+                                {
+                                    _email.SendMail("", DataCollectionSubject, mailbody, Usr.EMAIL_ID);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorLog logerror = new ();
+                                logerror.LogErrorInTextFile(ex);
+                            }
+                        }
+                        if (command.ToLower() == "reject")
+                        {
+                            var approvalStatus = objModel.SPG_APPROVALSTATUS.Where(a => a.DESCRIPTION.ToLower() == "rejected").FirstOrDefault();
+                            document.APPROVALSTATUSID = approvalStatus.ID;
+                            try
+                            {
+                                NameValueCollection mailBodyplaceHolders = new NameValueCollection();
+                                mailBodyplaceHolders.Add("<UserName>", Usr.Name);
+                                mailBodyplaceHolders.Add("<FileName>", document.FILE_NAME.Replace("txt", "xlsx"));
+                                mailBodyplaceHolders.Add("<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("dd/MMM/y"));
+                                mailBodyplaceHolders.Add("<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("dd/MMM/y"));
+                                mailBodyplaceHolders.Add("<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("dd/MMM/y"));
+                                mailBodyplaceHolders.Add("<ApproverName>", HttpContext.Session.GetString("NAME"));
 
-                            //        string DataCollectionSubject = "[iQlik Portal] - Template Status";
-                            //        string mailbody = "";
-                            //        string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["TemplateRejectedExcelTemplate"].ToString());
-                            //        mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-                            //        SendMail("", DataCollectionSubject, mailbody, Usr.EMAILID);
-                            //    }
-                            //    catch (Exception ex)
-                            //    {
-                            //        LogError logerror = new LogError();
-                            //        logerror.LogErrorInTextFile(ex);
-                            //    }
-                            //}
-                            #endregion
-                            if(command == "Approve")
+                                string DataCollectionSubject = "[iQlik Portal] - Template Status";
+                                string mailbody = "";
+                                string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["TemplateRejectedExcelTemplate"].ToString());
+                                mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+                                _email.SendMail("", DataCollectionSubject, mailbody, Usr.EMAIL_ID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorLog logerror = new();
+                                logerror.LogErrorInTextFile(ex);
+                            }
+                        }
+                        #endregion
+                        if (command == "Approve")
                         {
                             document.APPROVALSTATUSID = (int)Helper.ApprovalStatusEnum.Approved;
                         }
@@ -186,49 +191,6 @@ namespace Sponge.Controllers
             memory.Position = 0;
 
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileURI.FILE_NAME);
-        }
-
-        //public string GetMessageBody(string messageTemplate, NameValueCollection nvc)
-        //{
-        //    messageTemplate = ReplacePlaceHolders(messageTemplate, nvc);
-        //    return messageTemplate;
-
-        //}
-        //private string ReplacePlaceHolders(string text, NameValueCollection valueCollection)
-        //{
-        //    if (valueCollection == null || valueCollection.Count <= 0)
-        //    {
-        //        throw new ArgumentException("Invalid NameValueCollection");
-        //    }
-        //    //string text=null;
-        //    string result = text;
-        //    string value;
-        //    foreach (string key in valueCollection.AllKeys)
-        //    {
-        //        value = valueCollection[key];
-        //        result = result.Replace(key, value);
-        //    }
-        //    return result;
-        //}
-        //public void SendMail(string filename, string subject, string mailbody, string MailID)
-        //{
-        //    SmtpClient smtpClient = new SmtpClient();
-        //    smtpClient.Host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
-
-        //    MailMessage mailMessage = new MailMessage();
-        //    mailMessage.Body = mailbody;
-        //    mailMessage.Subject = subject;
-        //    mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["MailFrom"].ToString());
-        //    mailMessage.To.Add(new MailAddress(MailID));
-        //    mailMessage.IsBodyHtml = true;
-        //    if (!string.IsNullOrEmpty(filename))
-        //    {
-        //        mailMessage.Attachments.Add(new Attachment(filename));
-        //    }
-
-        //    smtpClient.Send(mailMessage);
-
-        //}
-        //}
+        }       
     }
 }
