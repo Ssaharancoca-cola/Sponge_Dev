@@ -12,11 +12,14 @@ namespace Sponge.Common
         {
             _settings = settings;
         }
-        public string GetMessageBody(string messageTemplate, NameValueCollection nvc)
+        public string GetMessageBody(string messageTemplatePath, NameValueCollection nvc)
         {
+            // Read the contents of the file
+            string messageTemplate = File.ReadAllText(messageTemplatePath);
+
+            // Call the ReplacePlaceHolders method to replace the placeholders
             messageTemplate = ReplacePlaceHolders(messageTemplate, nvc);
             return messageTemplate;
-
         }
         private string ReplacePlaceHolders(string text, NameValueCollection valueCollection)
         {
@@ -44,7 +47,7 @@ namespace Sponge.Common
             mailMessage.Subject = subject;
             mailMessage.From = new MailAddress(_settings.Value.MailFrom);
             mailMessage.To.Add(new MailAddress(MailID));
-            mailMessage.IsBodyHtml = true;
+
             if (!string.IsNullOrEmpty(filename))
             {
                 mailMessage.Attachments.Add(new Attachment(filename));

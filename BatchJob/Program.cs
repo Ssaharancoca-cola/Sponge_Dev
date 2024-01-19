@@ -1062,14 +1062,16 @@ namespace BatchJob
                                       join us in m.SPG_USERS on ep.USER_ID equals us.USER_ID
                                       where ep.CONFIG_ID == configId
                                       select new { UserName = us.Name, ReportingPeriod = pd.REPORTING_PERIOD, UserEmail = us.EMAIL_ID }).FirstOrDefault();
-                    NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-                    mailBodyplaceHolders.Add("<FileName>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[9]));
-                    mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
-                    mailBodyplaceHolders.Add("<SubjectArea>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]));
-                    mailBodyplaceHolders.Add("<ForTimeCode>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[1]));
-                    mailBodyplaceHolders.Add("<OnTimeCode>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[2]));
-                    mailBodyplaceHolders.Add("<LockDate>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[6]));
-                    mailBodyplaceHolders.Add("<Custom>", custom.ToString());
+                    NameValueCollection mailBodyplaceHolders = new NameValueCollection
+                    {
+                        { "<FileName>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[9]) },
+                        { "<UserName>", ot_details.UserName },
+                        { "<SubjectArea>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) },
+                        { "<ForTimeCode>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[1]) },
+                        { "<OnTimeCode>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[2]) },
+                        { "<LockDate>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[6]) },
+                        { "<Custom>", custom.ToString() }
+                    };
 
                     string DataCollectionSubject = "[Sponge] - Upload Reminder template for  [" + Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]) + "] -[" + ot_details.ReportingPeriod + "]";
                     string mailbody = "";

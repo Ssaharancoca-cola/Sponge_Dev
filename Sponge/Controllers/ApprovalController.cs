@@ -130,17 +130,19 @@ namespace Sponge.Controllers
                             document.APPROVALSTATUSID = approvalStatus.ID;
                             try
                             {
-                                NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-                                mailBodyplaceHolders.Add("<UserName>", Usr.Name);
-                                mailBodyplaceHolders.Add("<FileName>", document.FILE_NAME.Replace("txt", "xlsx"));
-                                mailBodyplaceHolders.Add("<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("dd/MMM/y"));
-                                mailBodyplaceHolders.Add("<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("dd/MMM/y"));
-                                mailBodyplaceHolders.Add("<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("dd/MMM/y"));
-                                mailBodyplaceHolders.Add("<ApproverName>", HttpContext.Session.GetString("NAME"));
+                                NameValueCollection mailBodyplaceHolders = new NameValueCollection
+                                {
+                                    { "<UserName>", Usr.Name },
+                                    { "<FileName>", document.FILE_NAME.Replace("txt", "xlsx") },
+                                    { "<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("dd/MMM/y") },
+                                    { "<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("dd/MMM/y") },
+                                    { "<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("dd/MMM/y") },
+                                    { "<ApproverName>", HttpContext.Session.GetString("NAME") }
+                                };
 
                                 string DataCollectionSubject = "[iQlik Portal] - Template Status";
                                 string mailbody = "";
-                                string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["TemplateRejectedExcelTemplate"].ToString());
+                                string messageTemplatePath = _settings.Value.TemplateRejectedExcelTemplate;
                                 mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                                 _email.SendMail("", DataCollectionSubject, mailbody, Usr.EMAIL_ID);
                             }

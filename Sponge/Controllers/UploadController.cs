@@ -13,6 +13,7 @@ using System.Text;
 using OfficeOpenXml;
 using LinqToExcel;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 
 namespace Sponge.Controllers
 {
@@ -25,13 +26,15 @@ namespace Sponge.Controllers
         public const int HiddenFileCodeColIndex = 500;
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IOptions<AppSettings> _settings;
         private readonly Email _email;
 
-        public UploadController(ILogger<HomeController> logger, IConfiguration configuration, Email email)
+        public UploadController(ILogger<HomeController> logger, IOptions<AppSettings> settings, IConfiguration configuration, Email email)
         {
             _logger = logger;
             _configuration = configuration;
             _email = email;
+            _settings = settings;
         }
 
         public IActionResult Index()
@@ -899,7 +902,7 @@ namespace Sponge.Controllers
             };
             string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
             string mailbody = "";
-            string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["EmailTemplatePathForUploader"].ToString());
+            string messageTemplatePath = _settings.Value.EmailTemplatePathForUploader;
 
             mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
             _email.SendMail("", DataCollectionSubject, mailbody, objFileModel.UploderEmailId);
@@ -915,7 +918,7 @@ namespace Sponge.Controllers
                 };
                 string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
                 string mailbody = "";
-                string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["ApprovalmailToUploader"].ToString());
+                string messageTemplatePath = _settings.Value.ApprovalmailToUploader;
 
                 mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                 _email.SendMail("", DataCollectionSubject, mailbody, objFileModel.UploderEmailId);
@@ -938,11 +941,11 @@ namespace Sponge.Controllers
                 mailBodyplaceHolders.Add("<Custom>", DimensionName.ToString().Replace(",", ""));
                 mailBodyplaceHolders.Add("<ForTime>", objFileModel.ForTime);
                 mailBodyplaceHolders.Add("<OnTime>", objFileModel.OnTime);
-                mailBodyplaceHolders.Add("<LockDate>", Convert.ToString(Convert.ToDateTime(objFileModel.LockDate).ToString("MM/dd/yyyy")));
-                mailBodyplaceHolders.Add("<UploadDate>", Convert.ToString(DateTime.Now.Date.ToString("MM/dd/yyyy")));
+                mailBodyplaceHolders.Add("<LockDate>", objFileModel.LockDate.ToString());
+                mailBodyplaceHolders.Add("<UploadDate>", DateTime.Now.Date.ToString());
                 string DataCollectionSubject = "[iQlik Portal] - Document approval request for " + objFileModel.FileName.Replace(".xlsx", "") + "";
                 string mailbody = "";
-                string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["MailToApprover"].ToString());
+                string messageTemplatePath = _settings.Value.MailToApprover;
                 mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                 _email.SendMail("", DataCollectionSubject, mailbody, objFileModel.ApproverEmailID);
             }
