@@ -343,14 +343,19 @@ namespace Sponge.Controllers
             TempData.Keep();
             SPONGE_Context context = new();
 
-            var usernames = from U in context.SPG_USERS
-                            join UF in context.SPG_USERS_FUNCTION on U.USER_ID equals UF.USER_ID
-                            join SF in context.SPG_SUBFUNCTION on UF.SUB_FUNCTION_ID equals SF.SUBFUNCTION_ID
+            var usernames = from S in context.SPG_SUBJECTAREA
+                            join SF in context.SPG_SUBFUNCTION on S.SUBFUNCTION_ID equals SF.SUBFUNCTION_ID
+                          
+                            join UF in context.SPG_USERS_FUNCTION on SF.SUBFUNCTION_ID equals UF.SUB_FUNCTION_ID
+
+                            join U in context.SPG_USERS on UF.USER_ID equals U.USER_ID
+
                             join R in context.SPG_ROLE on UF.ROLE_ID equals R.ROLE_ID
+                            where S.SUBJECTAREA_ID == selectedSubjectArea
                             group new { U, UF, SF, R } by
                                 new { U.USER_ID, U.EMAIL_ID, U.Name, U.ACTIVE_FLAG }
            into g
-                            select new
+                       select new
                             {
                                 username = g.Key.Name,
                                 userid = g.Key.USER_ID
