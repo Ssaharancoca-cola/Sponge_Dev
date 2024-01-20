@@ -28,7 +28,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             List<SPG_SUBFUNCTION> subfunctions = new();
-            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] || x.ROLE_ID == 5);
+            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1]);
             int RoleID = 0;
             if (role != null)
             {
@@ -52,7 +52,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             List<SPG_SUBJECTAREA> subjectArea = new();
-            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] || x.ROLE_ID == 5);
+            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] );
             int RoleID = 0;
             if (role != null)
             {
@@ -77,7 +77,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             List<SPG_USERS> userlist = new();
-            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] || x.ROLE_ID == 5);
+            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] );
             int RoleID = 0;
             if (role != null)
             {
@@ -104,7 +104,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sponge_context = new();
             List<SearchDataList> SearchConfgData = new();
-            var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] || x.ROLE_ID == 5);
+            var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1]);
             var AdminRoleId = System.Configuration.ConfigurationManager.AppSettings["AdminRoleId"];
 
             int RoleID = 0;
@@ -141,10 +141,10 @@ namespace Sponge.Controllers
                                    join u in sponge_context.SPG_USERS on conf.USER_ID equals u.USER_ID
                                    join sa in sponge_context.SPG_SUBJECTAREA on conf.SUBJECTAREA_ID equals sa.SUBJECTAREA_ID
                                    join sf in sponge_context.SPG_SUBFUNCTION on sa.SUBFUNCTION_ID equals sf.SUBFUNCTION_ID
-                                   where (subjectAreaId == 0 || sf.SUBFUNCTION_ID == subFunctionId)
+                                   where ( sf.SUBFUNCTION_ID == subFunctionId)
 
                                     && (subjectAreaId == 0 || sa.SUBJECTAREA_ID == subjectAreaId)
-                                     && (assignToUser == "0" || conf.USER_ID == assignToUser)
+                                     && ( (conf.APPROVER_ID == userName[1] || (conf.USER_ID== userName[1])))
                  && (active == null || conf.ACTIVE_FLAG == active)
                                    select new SearchDataList
                                    {
