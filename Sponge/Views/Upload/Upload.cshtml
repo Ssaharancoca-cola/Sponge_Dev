@@ -8,186 +8,289 @@
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <p class="card-title">Upload</p>
-                <div class="forms-sample">
-                    <div class="form-group row ">
-                        <div class="col-12">
-                            <div id="drop-area">
-                                <input type="file" id="file-input" accept=".XlSX,"
-                                       multiple>
-                                <label for="file-input" class="label-fileinput">
-                                    <span id="upload-icon">
-                                        <svg viewBox="0 0 24 24" width="60" height="60" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                                            <polyline points="16 16 12 12 8 16"></polyline>
-                                            <line x1="12" y1="12" x2="12" y2="21"></line>
-                                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                                            <polyline points="16 16 12 12 8 16"></polyline>
-                                        </svg>
-                                    </span>
-                                    <span>Drag and drop your Files</span>
-                                    <span>or</span>
-                                    <span class="txt-red">Browse</span>
-                                </label>
-                                <p id="file-info">No file selected</p>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div id="file-list" style="display:none;">
-                                <p>Files to Upload:</p>
-                                <ul></ul>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-light mr-2" id="cancel-button" style="display:none;">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="upload-button" style="display:none;">Upload</button>
+                <p class="card-title">Upload Excel</p>
+                <div class="well">
+                    <form id="upload" enctype="multipart/form-data" action="@Url.Action("UploadExcelFiles", "Upload")" method="POST">
+                        <input type="file" name="fileUpload" id="fileUpload" accept=".XlSX," multiple class="btn btn-default btn-file">
+                        <br /><div id="dvFilesDetails"></div><br /><div id="dvErrorDetails"></div><br /><div id="dvWarningDetails"></div><br />
 
+                        <div class="row" align="center">
+                            <button class="btn btn-light mr-2" id="BtnCancel" >Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="BtnUpload" >Upload</button>
+                        </div>
+                        <div id="dvUploadExcelDetails"></div>
+                        <input id='filesToDelete' name='filesToDelete' type='hidden' />
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
 <!--Start Upload js Function-->
-<script>
-    const fileInput = document.getElementById('file-input');
-    const fileInfo = document.getElementById('file-info');
-    const dropArea = document.getElementById('drop-area');
-    const uploadButton = document.getElementById('upload-button');
-    const fileList = document.querySelector('#file-list ul');
+<script type="text/javascript">
+    var Filelist = new Array;
+    debugger;
+    $(function () {
+        $('#BtnCancel').click(function () {
+            location.reload(true);
+        });
+        $('#fileUpload').change(function () {
+            //alert($(this).val());
+            $("#dvErrorDetails").html('');
+            $("#dvFilesDetails").html('');
 
-    fileInput.addEventListener('change', function () {
-        const selectedFiles = fileInput.files;
+            var NumberofFile1 = $(this).val().split(',');
+            var NumberofFile = NumberofFile1.length;
+            if (NumberofFile > 10) {
+                alert("Only ten files are allowed to upload at time.");
+                if (browser.version <= 9) {
+                    document.getElementById('BtnUpload').style.display = 'none'; //$('#BtnUpload').hide();
+                    document.getElementById('BtnCancel').style.display = 'none';
+                }
+                else {
+                    $('#fileUpload').removeAttr("style");
+                    $('#BtnCancel').removeAttr("style");
+                    $('#BtnUpload').hide();
+                    $('#BtnCancel').hide();
 
-        if (selectedFiles.length > 0) {
-            fileInfo.innerHTML = `${selectedFiles.length} files selected`;
-            fileList.innerHTML = '';
-            for (const file of selectedFiles) {
-                const listItem = document.createElement('li');
-                listItem.textContent = file.name;
-                fileList.appendChild(listItem);
+                }
+
+                return false;
             }
-            // if the UploadExcelFiles function returns success, show the file list and upload button
-            document.getElementById('file-list').style.display = 'block';
-            document.getElementById('cancel-button').style.display = 'inline-block';
-            document.getElementById('upload-button').style.display = 'inline-block';
+            var fileExtension = ['xlsx'];
+            var fi = document.getElementById('fileUpload');
+            var fileupload = $("#dvFilesDetails").empty();
+            //var s = $(this).length;
+            for (var i = 0; i <= fi.files.length - 1; i++) {
+                var extension = fi.files.item(i).name.split('.').pop();      // THE NAME OF THE FILE.
+                if ($.inArray(extension, fileExtension) == -1) {
+                    alert("Error! The file uploaded is not an excel file. Re-upload the valid one(.xlsx)");
+                    document.getElementById('BtnUpload').style.display = 'none'; //$('#BtnUpload').hide();
 
-        } else {
-            fileInfo.innerHTML = 'No file selected';
-            fileList.innerHTML = '';
-        }
-    });
-
-    dropArea.addEventListener('dragover', function (e) {
-        e.preventDefault();
-        dropArea.style.backgroundColor = '#f2f2f2';
-    });
-
-    dropArea.addEventListener('dragleave', function () {
-        dropArea.style.backgroundColor = 'transparent';
-    });
-
-    dropArea.addEventListener('drop', function (e) {
-        e.preventDefault();
-        dropArea.style.backgroundColor = 'transparent';
-        const selectedFiles = e.dataTransfer.files;
-
-        if (selectedFiles.length > 0) {
-            fileInfo.innerHTML = `${selectedFiles.length} files selected`;
-            fileList.innerHTML = '';
-            for (const file of selectedFiles) {
-                const listItem = document.createElement('li');
-                listItem.textContent = file.name;
-                fileList.appendChild(listItem);
-            }
-        } else {
-            fileInfo.innerHTML = 'No file selected';
-            fileList.innerHTML = '';
-        }
-    });
-
-    uploadButton.addEventListener('click', function () {
-        // Add your upload logic here
-        // You can use the selected files for further processing
-        const selectedFiles = fileInput.files;
-
-        if (selectedFiles.length > 0) {
-            // Example: Send the files to a server using AJAX or fetch
-            var formData = new FormData();
-            for (var i = 0; i < selectedFiles.length; i++) {
-                formData.append('file', selectedFiles[i]);
-            }
-
-            $.ajax({
-                url: '@Url.Action("UploadExcelFiles", "Upload")',
-                data: formData,
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                success: function (data) {
-                    debugger;
-                    // if there are errors, display them
-                    if (data.errorList && data.errorList.length > 0) {
-                        var errorListElement = document.createElement('ul');
-                        for (var i = 0; i < data.errorList.length; i++) {
-                            var listItem = document.createElement('li');
-                            listItem.textContent = data.errorList[i].errorMessage;
-                            // if errorType is W, add Yes and No buttons
-                            if (data.errorList[i].errorType === 'WA' || data.errorList[i].errorType === 'W') {
-                var fileName = data.errorList[i].fileName;
-                                var ErrorType = data.errorList[i].errorType;
-                var yesButton = document.createElement('button');
-                yesButton.textContent = 'Yes';
-                yesButton.addEventListener('click', function () {
-                    // call LoadWraningMessageFile action
-                    $.ajax({
-                        url: '@Url.Action("LoadWarningMessageFile", "Upload")',
-                        data: { FileName: fileName, ErrorType: ErrorType },
-                        type: 'POST',
-                        success: function (response) {
-                            // handle the response from the LoadWraningMessageFile action
-                        },
-                        error: function () {
-                            alert('Error in calling LoadWraningMessageFile action');
-                        }
-                    });
-                });
-
-                var noButton = document.createElement('button');
-                noButton.textContent = 'No';
-                noButton.addEventListener('click', function () {
-                    // reload the page
                     location.reload();
-                });
+                }
+                else {
+                    $('#fileUpload').removeAttr("style");
+                    $('#BtnCancel').removeAttr("style");
+                    $('#BtnUpload').show();
+                    $('#BtnCancel').show();
 
-                listItem.appendChild(yesButton);
-                listItem.appendChild(noButton);
+                }
+                
             }
-                                else if (data.errorList[i].errorType === 'S') {
-                var listItem = document.createElement('li');
-                listItem.textContent = data.errorList[i].errorMessage;
+            if (fi.files.length > 0) {
+                $("#dvFilesDetails").empty();
+                var n = 1;
+                var str = '<br/><font color="green">Following files .</font><br/><table border="1" width="100%" id="tblRemoveFilesDetails"><tr style="font-weight:bold;background-color:#D7DBDD;">' +
+                    //'<td>Sno</td>'+
+                    '<td>FileName</td><td>Remove</td></tr>';
+                var TRTD = "";
+                var TR = "";
+                for (var p = 0; p < fi.files.length; ++p) {
+                    TRTD += '<tr>' +
+                        //'<td>' + n + '</td>' +
+                        '<td>' + fi.files.item(p).name + '</td><td><button id="btnRemove' + p + '" name="' + fi.files.item(p).name + '" onclick="return RemoveFile(this);" class="btn btn-primary button button4">Remove</button></td></tr>';
+                    n++;
+                }
+                TR = str + TRTD + "</table>";
+                fileupload.append(TR);
             }
-            else if (data.errorList[i].errorType === 'F') {
-                var listItem = document.createElement('li');
-                listItem.textContent = data.errorList[i].errorMessage;
-            }
-            errorListElement.appendChild(listItem);
-        }
-        document.getElementById('file-list').appendChild(errorListElement);
-    }
-                        else
-        {
-            alert('File Uploaded Successfully. ' + data.uploadedFileCount + ' file(s) uploaded.');
+        });
+        $('#upload').submit(function (e) {
+            e.preventDefault(); // stop the standard form submission
+            if ($("#fileUpload").val() != "") {
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: new FormData(this),
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        $("#dvErrorDetails").empty();
+                        $("#dvWarningDetails").empty();
+                        $("#dvUploadExcelDetails").empty();
+                        var ErrorListValues = new Array();
+                        var WarningListValues = new Array();
+                        var UploadListValues = new Array();
+                        var $Errorcontainer = $("#dvErrorDetails").empty();
+                        var $Warningcontainer = $("#dvWarningDetails").empty();
+                        var $Uploadcontainer = $("#dvUploadExcelDetails").empty();
+                        if (data.errorList.length > 0) {
+                            for (var i = 0; i < data.errorList.length; ++i) {
+                                if (data.errorList[i].errorType == 'E') {
+                                    var ErrorList = {};
+                                    ErrorList.FileName = data.errorList[i].fileName
+                                    ErrorList.ErrorMessage = data.errorList[i].errorMessage
+                                    ErrorListValues.push(ErrorList);
+                                }
+                                if (data.errorList[i].errorType == 'W' || data.errorList[i].errorType == 'WA') {
+                                    var WarningList = {};
+                                    WarningList.FileName = data.errorList[i].fileName
+                                    WarningList.ErrorMessage = data.errorList[i].errorMessage
+                                    WarningList.ErrorType = data.errorList[i].errorType
+                                    WarningListValues.push(WarningList);
+                                }
+                                if (data.errorList[i].errorType == 'S') {
+                                    var UploadList = {};
+                                    UploadList.FileName = data.errorList[i].fileName
+                                    UploadList.ErrorMessage = data.errorList[i].errorMessage
+                                    UploadListValues.push(UploadList);
+                                }
+                            }
+                            if (ErrorListValues.length > 0) {
+                                var j = 1;
+                                var str = '<br/><font color="green">Following files will not be  loaded. Check error message</font><br/><table border="1" width="100%"><tr style="font-weight:bold;background-color:#D7DBDD;"><td>Sno</td><td>FileName</td><td>Error Message</td></tr>';
+                                var TRTD = "";
+                                var TR = "";
+                                for (var i = 0; i < ErrorListValues.length; ++i) {
+                                    TRTD += '<tr><td>' + j + '</td><td>' + ErrorListValues[i].FileName + '</td><td><font color="green">' + ErrorListValues[i].ErrorMessage + '</font></td><tr>';
+                                    j++;
+                                }
+                                TR = str + TRTD + "</table>";
+                                $Errorcontainer.append(TR);
+                            }
+                            if (WarningListValues.length > 0) {
+                                var k = 1;
+                                var str = '<br/><font color="maroon"><span id="spnwarning">Following files are not loaded. Check The Warning message & click Yes/No for further actions.</span></font><br/><table border="1" width="100%" id="tblwarning"><tr style="font-weight:bold;background-color:#D7DBDD;"><td>Sno</td><td>FileName</td><td>Warning Message</td><td>Yes To Load</td><td>No To Cancel</td></tr>';
+                                var TRTD = "";
+                                var TR = "";
+                                for (var m = 0; m < WarningListValues.length; ++m) {
+                                    TRTD += '<tr><td>' + k + '</td><td>' + WarningListValues[m].FileName + '</td><td><font color="black">' + WarningListValues[m].ErrorMessage + '</font></td><td><button id="btnYes' + k + '" name="' + WarningListValues[m].FileName + '" message="' + WarningListValues[m].ErrorMessage + '" ErrorType="' + WarningListValues[m].ErrorType + '" onclick="return YesWarningFun(this);" class="btn btn-primary button button4">YES</button></td><td><button id="btnNo" onclick="NoWarningFun(this);" class="btn btn-primary button button4">No</button></td></tr>';
+                                    k++;
+                                }
+                                TR = str + TRTD + "</table>";
+                                $Warningcontainer.append(TR);
+                            }
+                            if (UploadListValues.length > 0) {
+                                debugger;
+                                var n = 1;
+                                var str = '<br/><font color="green">Following files are successfully uploaded.</font><br/><table border="1" width="100%"><tr style="font-weight:bold;background-color:#D7DBDD;"><td>Sno</td><td>FileName</td><td>Message</td><tr>';
+                                var TRTD = "";
+                                var TR = "";
+                                for (var p = 0; p < UploadListValues.length; ++p) {
+                                    TRTD += '<tr><td>' + n + '</td><td>' + UploadListValues[p].FileName + '</td><td><font color="black">' + UploadListValues[p].ErrorMessage + '</font></td><tr>';
+                                    n++;
+                                }
+                                TR = str + TRTD + "</table>";
+                                $Uploadcontainer.append(TR);
+                            }
+                            $('#BtnUpload').hide();
+                            $("#dvFilesDetails").empty();
                         }
-                },
-    error: function() {
-        alert('Error in Uploading File');
-    }
-            })
-        } else {
-        console.log('No files selected to upload.');
-    }
+                    },
+                    error: function (xhr, error, status) {
+                        console.log(error, status);
+                        alert(error.responseText);
+                    }
+                });
+            }
+            else {
+                alert("Error! Choose a file");
+                return false;
+            }
+        });
     });
-</script>
 
+    function LoadWraningMessageFile(FileName, ErrorType) {
+
+        $.ajax({
+            url: '@Url.Action("LoadWarningMessageFile", "Upload")',
+            type: 'POST',
+            datatype: 'json',
+            data: { FileName: FileName, ErrorType: ErrorType },
+            success: function (result) {
+
+                if (result != undefined && result != null) {
+                    alert(result.msgerror[0].errorMessage);
+
+                }
+                else {
+                    Alert("Invalid User!");
+                    location.reload();
+                }
+            },
+            failure: function (x, y, z) {
+                alert("Failure!");
+            },
+            error: function (a, b, c) {
+                alert("Error!");
+            }
+        });
+    }
+        function RemoveFile(obj) {
+
+            if (confirm("Are you confirm to remove this file!")) {
+                $(obj).closest('tr').remove();
+                var FileName = $(obj).attr('name');
+                var id = $(obj).attr('id');
+                var index = id.replace("btnremove", "");
+
+                document.getElementById('filesToDelete').value += (FileName + ",");
+                $.getJSON("../Upload/DeleteFileFromFolder", { FileName: FileName },
+                    function (result) {
+                        if (result.msgerror == "Success") {
+
+                            Filelist.push(result.SelectedFileName);
+                            $(obj).closest('tr').remove();
+                            $("#filesToDelete").val(Filelist);
+
+                            var rowCount = $('#tblRemoveFilesDetails >tbody >tr').length;
+                         
+                            if (rowCount == 1) {
+                                $("#BtnUpload").hide();
+                                $("#dvFilesDetails").empty();
+                            }
+                            else {
+                                $("#BtnUpload").show();
+                            }
+                        }
+                        else {
+                            alert(result.msgerror);
+                            return false;
+                        }
+
+                    })
+                    .error(function (error) {
+
+                        alert(error.responseText);
+                        console.log(error.statusCode);
+                    });
+            } else {
+                return false;
+            }
+        }
+
+        function YesWarningFun(obj) {
+            debugger;
+            var id = obj.id;
+            var FileName = $(obj).attr('name');
+            var Message = $(obj).attr('message');
+            var ErrorType = $(obj).attr('ErrorType');
+            if (confirm("Are you confirm to load this file!")) {
+
+                LoadWraningMessageFile(FileName, ErrorType);
+                $(obj).closest('tr').remove();
+                var rowCount = $('#tblwarning >tbody >tr').length;
+                console.log("Count Warning Rows after upload sucessfully :" + rowCount);
+                if (rowCount == 1) {
+                    $("#dvWarningDetails").empty();
+                }
+
+            } else {
+
+                return false;
+            }
+        }
+        function NoWarningFun(obj) {
+            debugger;
+            $(obj).closest('tr').remove();
+            var rowCount = $('#tblwarning >tbody >tr').length;
+            console.log("Count Warning Rows for function NoWarningFun() val :" + rowCount);
+            if (rowCount == 1) {
+                $("#dvWarningDetails").empty();
+            }
+        }
+</script>

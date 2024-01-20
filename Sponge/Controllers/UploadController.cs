@@ -13,6 +13,7 @@ using System.Text;
 using OfficeOpenXml;
 using LinqToExcel;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 
 namespace Sponge.Controllers
 {
@@ -25,11 +26,15 @@ namespace Sponge.Controllers
         public const int HiddenFileCodeColIndex = 500;
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IOptions<AppSettings> _settings;
+        private readonly Email _email;
 
-        public UploadController(ILogger<HomeController> logger, IConfiguration configuration)
+        public UploadController(ILogger<HomeController> logger, IOptions<AppSettings> settings, IConfiguration configuration, Email email)
         {
             _logger = logger;
             _configuration = configuration;
+            _email = email;
+            _settings = settings;
         }
 
         public IActionResult Index()
@@ -816,7 +821,7 @@ namespace Sponge.Controllers
                                 approverUserId = userId[1];
                                 listErros = SaveUploadedExcelFile(listErros, WarningDocumentFilePath + "\\" + FileName, WarningDocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);                               
                                 if (listErros[0].ErrorType == "S")
-                                    //SentMailToUploader(objFileModel);
+                                    SentMailToUploader(objFileModel);
                                 return Json(new { msgerror = listErros });
                             }
 
@@ -839,10 +844,10 @@ namespace Sponge.Controllers
                             try
                             {
                                 listErros = SaveUploadedExcelFile(listErros, WarningDocumentFilePath + "\\" + FileName, WarningDocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);
-                                if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S") { }
-                                    //SentMailToUploaderAndApprover(objFileModel, "Approver");
+                                if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S")
+                                    SentMailToUploaderAndApprover(objFileModel, "Approver");
                                 else if (ErrorType.Equals("W") && listErros[0].ErrorType == "S")
-                                    //SentMailToUploader(objFileModel);
+                                    SentMailToUploader(objFileModel);
                                 return Json(new { msgerror = listErros });
                             }
                             catch (Exception ex)
@@ -864,9 +869,9 @@ namespace Sponge.Controllers
                                 approverUserId = objFileModel.ApproverID;
                                 listErros = SaveUploadedExcelFile(listErros, WarningDocumentFilePath + "\\" + FileName, WarningDocumentFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);
                                 if (ErrorType.Equals("WA") && listErros[0].ErrorType == "S")
-                                    //SentMailToUploaderAndApprover(objFileModel, "Approver");
+                                    SentMailToUploaderAndApprover(objFileModel, "Approver");
                                 if (ErrorType.Equals("W") && listErros[0].ErrorType == "S")
-                                    //SentMailToUploader(objFileModel);
+                                    SentMailToUploader(objFileModel);
                                 return Json(new { msgerror = listErros });
                             }
 
@@ -888,57 +893,63 @@ namespace Sponge.Controllers
             }
             return Json(new { msgerror = listErros });
         }
-        //public void SentMailToUploader(FileModel objFileModel)
-        //{
-        //    NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-        //    mailBodyplaceHolders.Add("<UserName>", objFileModel.UserName);
-        //    mailBodyplaceHolders.Add("<FileName>", objFileModel.FileName.Replace(".xlsx", ""));
-        //    string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
-        //    string mailbody = "";
-        //    string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["EmailTemplatePathForUploader"].ToString());
+        public void SentMailToUploader(FileModel objFileModel)
+        {
+            NameValueCollection mailBodyplaceHolders = new NameValueCollection
+            {
+                { "<UserName>", objFileModel.UserName },
+                { "<FileName>", objFileModel.FileName.Replace(".xlsx", "") }
+            };
+            string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
+            string mailbody = "";
+            string messageTemplatePath = _settings.Value.EmailTemplatePathForUploader;
 
-        //    mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-        //    SendMail("", DataCollectionSubject, mailbody, objFileModel.UploderEmailId);
-        //}
-        //public void SentMailToUploaderAndApprover(FileModel objFileModel, String Approver)
-        //{
-        //    if (!string.IsNullOrEmpty(objFileModel.UploderUserId))
-        //    {
-        //        NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-        //        mailBodyplaceHolders.Add("<UserName>", objFileModel.UserName);
-        //        mailBodyplaceHolders.Add("<FileName>", objFileModel.FileName.Replace(".xlsx", ""));
-        //        string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
-        //        string mailbody = "";
-        //        string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["ApprovalmailToUploader"].ToString());
+            mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+            _email.SendMail("", DataCollectionSubject, mailbody, objFileModel.UploderEmailId);
+        }
+        public void SentMailToUploaderAndApprover(FileModel objFileModel, String Approver)
+        {
+            if (!string.IsNullOrEmpty(objFileModel.UploderUserId))
+            {
+                NameValueCollection mailBodyplaceHolders = new NameValueCollection
+                {
+                    { "<UserName>", objFileModel.UserName },
+                    { "<FileName>", objFileModel.FileName.Replace(".xlsx", "") }
+                };
+                string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
+                string mailbody = "";
+                string messageTemplatePath = _settings.Value.ApprovalmailToUploader;
 
-        //        mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-        //        SendMail("", DataCollectionSubject, mailbody, objFileModel.UploderEmailId);
-        //    }
+                mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+                _email.SendMail("", DataCollectionSubject, mailbody, objFileModel.UploderEmailId);
+            }
 
-        //    if (!string.IsNullOrEmpty(objFileModel.ApproverEmailID))
-        //    {
-        //        NameValueCollection mailBodyplaceHolders = new NameValueCollection();
-        //        mailBodyplaceHolders.Add("<UploderName>", objFileModel.UserName);
-        //        mailBodyplaceHolders.Add("<UserName>", objFileModel.ApproverName);
-        //        var DWName = GetDimensionNameForEmailTemplate(objFileModel.ConFigId).ToList();
-        //        string DimensionName = "";
-        //        foreach (var items in DWName)
-        //        {
-        //            DimensionName += items.ToString().Replace(",", "") + "\n";
+            if (!string.IsNullOrEmpty(objFileModel.ApproverEmailID))
+            {
+                NameValueCollection mailBodyplaceHolders = new NameValueCollection
+                {
+                    { "<UploderName>", objFileModel.UserName },
+                    { "<UserName>", objFileModel.ApproverName }
+                };
+                var DWName = GetDimensionNameForEmailTemplate(objFileModel.ConFigId).ToList();
+                string DimensionName = "";
+                foreach (var items in DWName)
+                {
+                    DimensionName += items.ToString().Replace(",", "") + "\n";
 
-        //        }
-        //        mailBodyplaceHolders.Add("<Custom>", DimensionName.ToString().Replace(",", ""));
-        //        mailBodyplaceHolders.Add("<ForTime>", objFileModel.ForTime);
-        //        mailBodyplaceHolders.Add("<OnTime>", objFileModel.OnTime);
-        //        mailBodyplaceHolders.Add("<LockDate>", Convert.ToString(Convert.ToDateTime(objFileModel.LockDate).ToString("MM/dd/yyyy")));
-        //        mailBodyplaceHolders.Add("<UploadDate>", Convert.ToString(DateTime.Now.Date.ToString("MM/dd/yyyy")));
-        //        string DataCollectionSubject = "[iQlik Portal] - Document approval request for " + objFileModel.FileName.Replace(".xlsx", "") + "";
-        //        string mailbody = "";
-        //        string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["MailToApprover"].ToString());
-        //        mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
-        //        SendMail("", DataCollectionSubject, mailbody, objFileModel.ApproverEmailID);
-        //    }
-        //}
+                }
+                mailBodyplaceHolders.Add("<Custom>", DimensionName.ToString().Replace(",", ""));
+                mailBodyplaceHolders.Add("<ForTime>", objFileModel.ForTime);
+                mailBodyplaceHolders.Add("<OnTime>", objFileModel.OnTime);
+                mailBodyplaceHolders.Add("<LockDate>", objFileModel.LockDate.ToString());
+                mailBodyplaceHolders.Add("<UploadDate>", DateTime.Now.Date.ToString());
+                string DataCollectionSubject = "[iQlik Portal] - Document approval request for " + objFileModel.FileName.Replace(".xlsx", "") + "";
+                string mailbody = "";
+                string messageTemplatePath = _settings.Value.MailToApprover;
+                mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+                _email.SendMail("", DataCollectionSubject, mailbody, objFileModel.ApproverEmailID);
+            }
+        }
 
         public string ValidateHiddenSheet(string fileName, SPONGE_Context objContext, string FileCode)
         {
@@ -1318,6 +1329,25 @@ namespace Sponge.Controllers
             }
         }
 
+        public List<string> GetDimensionNameForEmailTemplate(decimal ConfigId)
+        {
+            SPONGE_Context _Context = new();
+            List<string> _Displayname = new();
+            var displayName = (from DM in _Context.SPG_SUBJECT_DIMENSION
+                               join PC in _Context.SPG_CONFIG_STRUCTURE on DM.DIMENSION_TABLE equals PC.DIMENSION_TABLE
+                               where PC.CONFIG_ID == ConfigId && PC.COLLECTION_TYPE.Equals("Master")
+                               select new
+                               {
+                                   DIMENSION_NAME = DM.DIMENSION_TABLE,
+                                   DISPLAY_NAME = DM.MPP_DIMENSION_NAME
+                               }).ToList();
+            foreach(var items in displayName)
+            {
+                _Displayname.Add(items.DIMENSION_NAME.ToString() + ":" + items.DISPLAY_NAME.ToString());
+            }
+            return _Displayname;
+        }
+
         //public ApproverModel GetApproverDetails(decimal DataApproverRoleId, ApproverModel objApproverModel, string userid)
         //{
         //    PortalModelDev objContext = new PortalModelDev();
@@ -1352,7 +1382,7 @@ namespace Sponge.Controllers
         //        else
         //        {
         //            fileCode = Convert.ToString(hiddenSheet.Cells[HiddenFileCodeRowIndex, HiddenFileCodeColIndex].Value);
-                    
+
         //        }
         //    }
         //    file.Close();
