@@ -56,7 +56,7 @@
                                         <select class="form-control fieldName" id="fieldName" name="data[0].FieldName"></select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control lastDisplayName" id="displayName" name="data[0].DisplayName" placeholder="Display Name">
+                                        <input type="text" class="form-control lastDisplayName" id="displayName" name="data[0].DisplayName" placeholder="Display Name" onkeydown="return /[a-z0-9 ]/i.test(event.key)">
                                     </td>
                                 </tr>
                             </tbody>
@@ -158,6 +158,7 @@
             }
 
             else { 
+                debugger;
                 if ($(this).val() !== "") {
                     if (lastMasterValue == "") {
                         alert('Please select Masters first');
