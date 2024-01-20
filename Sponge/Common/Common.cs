@@ -487,13 +487,13 @@ namespace Sponge.Common
                     encryptString = Convert.ToBase64String(ms.ToArray());
                 }
             }
-            return encryptString.Replace("/", "portaldev");
+            return encryptString.Replace("/", "spongedev");
         }
 
         public static string Decrypt(string cipherText)
         {
             string EncryptionKey = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            cipherText = cipherText.Replace(" ", "+").Replace("portaldev", "/");
+            cipherText = cipherText.Replace(" ", "+").Replace("spongedev", "/");
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
             using (Aes encryptor = Aes.Create())
             {

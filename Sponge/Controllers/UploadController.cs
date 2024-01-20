@@ -900,7 +900,7 @@ namespace Sponge.Controllers
                 { "<UserName>", objFileModel.UserName },
                 { "<FileName>", objFileModel.FileName.Replace(".xlsx", "") }
             };
-            string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
+            string DataCollectionSubject = "[Sponge] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
             string mailbody = "";
             string messageTemplatePath = _settings.Value.EmailTemplatePathForUploader;
 
@@ -916,7 +916,7 @@ namespace Sponge.Controllers
                     { "<UserName>", objFileModel.UserName },
                     { "<FileName>", objFileModel.FileName.Replace(".xlsx", "") }
                 };
-                string DataCollectionSubject = "[iQlik Portal] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
+                string DataCollectionSubject = "[Sponge] - Excel template " + objFileModel.FileName.Replace(".xlsx", "") + " Uploaded";
                 string mailbody = "";
                 string messageTemplatePath = _settings.Value.ApprovalmailToUploader;
 
@@ -943,7 +943,7 @@ namespace Sponge.Controllers
                 mailBodyplaceHolders.Add("<OnTime>", objFileModel.OnTime);
                 mailBodyplaceHolders.Add("<LockDate>", objFileModel.LockDate.ToString());
                 mailBodyplaceHolders.Add("<UploadDate>", DateTime.Now.Date.ToString());
-                string DataCollectionSubject = "[iQlik Portal] - Document approval request for " + objFileModel.FileName.Replace(".xlsx", "") + "";
+                string DataCollectionSubject = "[Sponge] - Document approval request for " + objFileModel.FileName.Replace(".xlsx", "") + "";
                 string mailbody = "";
                 string messageTemplatePath = _settings.Value.MailToApprover;
                 mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);

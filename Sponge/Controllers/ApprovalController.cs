@@ -107,7 +107,7 @@ namespace Sponge.Controllers
                                     { "<ApproverName>", HttpContext.Session.GetString("NAME") }
                                 };
 
-                                string DataCollectionSubject = "[iQlik Portal] - Template Status";
+                                string DataCollectionSubject = "[Sponge] - Template Status";
                                 string mailbody = "";
                                 string messageTemplatePath = _settings.Value.TemplateApprovedExcelTemplate;
                                 {
@@ -140,7 +140,7 @@ namespace Sponge.Controllers
                                     { "<ApproverName>", HttpContext.Session.GetString("NAME") }
                                 };
 
-                                string DataCollectionSubject = "[iQlik Portal] - Template Status";
+                                string DataCollectionSubject = "[Sponge] - Template Status";
                                 string mailbody = "";
                                 string messageTemplatePath = _settings.Value.TemplateRejectedExcelTemplate;
                                 mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
