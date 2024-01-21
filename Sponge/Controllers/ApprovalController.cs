@@ -39,7 +39,7 @@ namespace Sponge.Controllers
                      join usr in objFunction.SPG_USERS on doc.UPLOADEDBY equals usr.USER_ID
 
                      where status.DESCRIPTION == "Pending"
-                     select new ApprovalModel { Document = doc, Template = temp, ApprovalStatus = status, Configuration = conf, SubjectArea = area }).ToList();
+                     select new ApprovalModel {Users=usr, Document = doc, Template = temp, ApprovalStatus = status, Configuration = conf, SubjectArea = area }).ToList();
 
             if (!(role.RoleName == "Admin") && !(role.RoleName == "Data Configure"))
            
