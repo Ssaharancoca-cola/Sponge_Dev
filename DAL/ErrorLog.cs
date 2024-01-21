@@ -7,7 +7,7 @@ namespace DAL.Common
     {
         private static readonly string SMTPHost = "smtp.coca-cola.com";
         private static readonly string MailFrom = "noreplySponge@coca-cola.com";
-        private static readonly string MailIds = "noreplySponge@coca-cola.com";
+        private static readonly string MailIds = "ssaharan@coca-cola.com";
 
         public static void SentEmailtoError(string message)
         {

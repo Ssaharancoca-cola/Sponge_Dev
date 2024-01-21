@@ -573,7 +573,7 @@ namespace BatchJob
                         //    mailBodyplaceHolders.Add("<OnlineTemplateURL>", onlineTemplateURL);
                         //    //Format the header    
 
-                        //    string DataCollectionSubject = "[iQlik Portal] - Data collection template link for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
+                        //    string DataCollectionSubject = "[Sponge] - Data collection template link for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
                         //    string mailbody = "";
                         //    string messageTemplatePath = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["OnlineTemplateDataUpload"].ToString());
 

@@ -29,22 +29,14 @@ namespace Sponge.Controllers
                             from b in objFunction.SPG_ROLE
                             where a.ROLE_ID == b.ROLE_ID && a.USER_ID == userid[1] && a.ACTIVE_FLAG == "Y"
                             select new { RoleName = b.ROLE_NAME }).FirstOrDefault();
-                if (role == null)
-                {
-
-                    if (role == null)
-                    {
-                        role = (from a in objFunction.SPG_CONFIGURATION.AsEnumerable()
-                                where a.APPROVER_ID == userid[1]
-                                select new { RoleName = a.APPROVER_ID }).FirstOrDefault();
-                    }
-                }
+                
                 var viewModel =
                     (from doc in objFunction.SPG_DOCUMENT
                      join temp in objFunction.SPG_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
                      join status in objFunction.SPG_APPROVALSTATUS on doc.APPROVALSTATUSID equals status.ID
                      join conf in objFunction.SPG_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
                      join area in objFunction.SPG_SUBJECTAREA on conf.SUBJECTAREA_ID equals area.SUBJECTAREA_ID
+                     join usr in objFunction.SPG_USERS on doc.UPLOADEDBY equals usr.USER_ID
 
                      where status.DESCRIPTION == "Pending"
                      select new ApprovalModel { Document = doc, Template = temp, ApprovalStatus = status, Configuration = conf, SubjectArea = area }).ToList();
@@ -69,7 +61,7 @@ namespace Sponge.Controllers
                     foreach (string str in SelectedChkBox)
                     {
                         var document = objModel.SPG_DOCUMENT.Where(m => m.ID == str).FirstOrDefault();
-                        var Usr = objModel.SPG_USERS.Where(s => s.Name.ToUpper() == document.UPLOADEDBY.ToUpper()).FirstOrDefault();
+                        var Usr = objModel.SPG_USERS.Where(s => s.USER_ID.ToUpper() == document.UPLOADEDBY.ToUpper()).FirstOrDefault();
                         var template = objModel.SPG_TEMPLATE.Where(m => m.TEMPLATE_ID == document.TEMPLATEID).FirstOrDefault();
                         if (document != null)
                         {
@@ -113,10 +105,8 @@ namespace Sponge.Controllers
                                 {
                                     mailbody = _email.GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
                                 }
-                                if (UserRole.ToUpper() != "ADMIN" && UserRole.ToUpper() != "DATA APPROVER")
-                                {
                                     _email.SendMail("", DataCollectionSubject, mailbody, Usr.EMAIL_ID);
-                                }
+                                
                             }
                             catch (Exception ex)
                             {
