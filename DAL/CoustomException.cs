@@ -34,7 +34,8 @@ namespace DAL
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             var response = new { error = exception.Message };
-            var payload = JsonConvert.SerializeObject(response);
+            //var payload = JsonConvert.SerializeObject(response);
+            var payload = "error occurred please connect with Sponge Admin team";
             return context.Response.WriteAsync(payload);
         }
     }
