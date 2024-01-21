@@ -66,7 +66,7 @@ namespace Sponge.Controllers
             {
                 subjectArea = (from SubjectArea in sPONGE_Context.SPG_SUBJECTAREA
                                join userconfig in sPONGE_Context.SPG_CONFIGURATION on SubjectArea.SUBJECTAREA_ID equals userconfig.SUBJECTAREA_ID
-                               where SubjectArea.SUBFUNCTION_ID == subFunctionId && userconfig.USER_ID == userName[1]
+                               where SubjectArea.SUBFUNCTION_ID == subFunctionId && (userconfig.USER_ID == userName[1] || userconfig.APPROVER_ID == userName[1])
                                select SubjectArea).ToList();
             }
             return Json(subjectArea);
