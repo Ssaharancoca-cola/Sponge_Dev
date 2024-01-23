@@ -54,7 +54,7 @@ namespace Sponge.Controllers
             model.DataCollection = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.DATA_COLLECTION).FirstOrDefault();
             ViewBag.ForTimeOnTime = forTimeOnTimeList.Items;
             ViewBag.OnTimeLevel = sPONGE_Context.SPG_SUBJECTAREA.Where(s => s.SUBJECTAREA_ID == subjectAreaId).Select(s => s.ONTIMELEVEL).FirstOrDefault();
-
+            ViewBag.SelectedForTime =currentOnTimeForTime;
             return View("Views\\ManualSendResend\\ManualSendResend.cshtml", model);
         }
 
@@ -176,9 +176,9 @@ namespace Sponge.Controllers
             string currentYear = string.Empty;
 
             if (dt.Month >= (int)Helper.Month.July)
-                currentYear = string.Format("{0}01{1}12", dt.Year, dt.Year + 1);//string.Format("{0}-{1}", DateTime.Today.Year, (DateTime.Today.Year + 1));
+                currentYear = string.Format("{0}01{1}12", dt.Year, dt.Year);//string.Format("{0}-{1}", DateTime.Today.Year, (DateTime.Today.Year + 1));
             else
-                currentYear = string.Format("{0}01{1}12", (dt.Year - 1), dt.Year);
+                currentYear = string.Format("{0}01{1}12", (dt.Year), dt.Year);
             return currentYear;
         }
         private string GetCurrentFinancialHalfYear(DateTime dt)
