@@ -359,12 +359,12 @@ namespace Sponge.Controllers
                                             && o.ROLE_ID==4 &&  o.SUB_FUNCTION_ID==s.SUBFUNCTION_ID
                                             select new
                                             {
-                                                Email = u.EMAIL_ID,
+                                                EMAIL_ID = u.EMAIL_ID,
                                               
                                             }).ToListAsync();
                 if (!matchingEmails.Any()) return NotFound();
 
-                return Ok(matchingEmails);
+            return Ok(matchingEmails);
             }
         }
     }

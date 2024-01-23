@@ -64,7 +64,7 @@
                             <div class="col">
                                 <label for="scheduled">Month</label>
                                 <select required class="form-control" id="PatternMonth" name="PATTERN_MONTH">
-                                    <option selected value="0">Select</option>
+                                    <option selected value="">Select</option>
                                     @foreach (var f in ViewBag.Months)
                                     {
                                         <option value="@f.Value">@f.Text</option>
@@ -79,11 +79,11 @@
                             </div>
                             <div class="col">
                                 <label for="uploadReminder">Upload Reminder Date</label>
-                                <input required type="number" min="1" max="15" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days after template generation date
+                                <input required type="number" min="1" max="15" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days before template generation date
                             </div>
                             <div class="col">
                                 <label for="EscalationDate">Escalation  Date</label>
-                                <input required type="number" min="1" max="20" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
+                                <input required type="number" min="1" max="20" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days before template generation date
                             </div>
                         </div>
                         <div class="form-group row">
@@ -203,7 +203,7 @@
         $("#Scheduled").change(function () {
             var Scheduled = $(this).val();
             if (Scheduled == "Y") {
-
+                debugger;
                 $("#IsScheduled").show();
                 document.getElementById('PatternMonth').required = true;
                 document.getElementById('datewhich').required = true;
@@ -261,10 +261,10 @@
                     // clear old suggestions
                     $('#emailSuggestions').empty();
                     $('#emailSuggestions').show();
-
+                    debugger;
                     // loop through result and append to suggestions div
                     $.each(result, function (key, value) {
-                        $('#emailSuggestions').append('<div class="suggestion">' + value + '</div>');
+                        $('#emailSuggestions').append('<div class="suggestion">' + value.emaiL_ID + '</div>');
                     });
                 },
                 error: function (xhr, status, error) {
@@ -302,6 +302,8 @@
             e.preventDefault();
             alert('Please fill the approver details');
         }
+      
+       
         // if ($('#effectiveToDateID').val() == null || $('#effectiveToDateID').val() == '')
         // {
         //     e.preventDefault();
@@ -343,7 +345,7 @@
     });
     // TO check the value of uplaod reminder with respect to escaltion and lock date
     $('#uploadreminder').on('blur', function () {
-
+      
         if (parseInt($('#uploadreminder').val(), 10) > parseInt($('#lockDate').val(), 10) || parseInt($('#Escalation').val(), 10) < parseInt($('#uploadreminder').val(), 10)) {
             alert('Upload reminder date value cannot be greater than lock date or escaltion date value');
             $('#uploadreminder').val('');
