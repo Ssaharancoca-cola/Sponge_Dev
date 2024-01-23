@@ -55,7 +55,7 @@
 
                             <div class="col">
                                 <label for="lockDate">Lock Date</label>
-                                <input required type="number" min="0" max="30" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">days after template generation date
+                                <input required type="number" min="1" max="30" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">days after template generation date
                             </div>
                         </div>
 
@@ -79,11 +79,11 @@
                             </div>
                             <div class="col">
                                 <label for="uploadReminder">Upload Reminder Date</label>
-                                <input required type="number" min="0" max="15" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days after template generation date
+                                <input required type="number" min="1" max="15" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days after template generation date
                             </div>
                             <div class="col">
                                 <label for="EscalationDate">Escalation  Date</label>
-                                <input required type="number" min="0" max="20" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
+                                <input required type="number" min="1" max="20" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days after template generation date
                             </div>
                         </div>
                         <div class="form-group row">
@@ -145,7 +145,7 @@
         </div>
 
     </div>
-    <input type="hidden" value="@ViewBag.Result.CONFIG_ID" name="configID" />
+    <input type="hidden" value="@ViewBag.Result.CONFIG_ID" name="configID" id="configID" />
 }
 
 <script type="text/javascript">
@@ -248,13 +248,15 @@
         if (email == "") {
             $('#emailSuggestions').empty();
         }
+         var configid = $("#configID").val();
+
 
         // Only make the AJAX call if at least 3 characters have been entered
         if (email.length >= 3) {
             $.ajax({
                 url: '/ConfigureTemplate/GetEmailSuggestions',
                 type: 'GET',
-                data: { 'email': email },
+                data: { 'email': email ,'configid':configid},
                 success: function (result) {
                     // clear old suggestions
                     $('#emailSuggestions').empty();
