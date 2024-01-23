@@ -345,6 +345,20 @@ namespace Sponge.Controllers
 
             return Ok();
         }
+        //To fetch the list of matching emails from SPG_USERS
+        public async Task<IActionResult> GetEmailSuggestions(string email)
+        {
+            using (var sPONGE_Context = new SPONGE_Context())
+            {
+                var matchingEmails = await sPONGE_Context.SPG_USERS
+                        .Where(u => u.EMAIL_ID.Contains(email))
+                        .Select(u => u.EMAIL_ID)
+                        .ToListAsync();
 
+                if (!matchingEmails.Any()) return NotFound();
+
+                return Ok(matchingEmails);
+            }
+        }
     }
 }

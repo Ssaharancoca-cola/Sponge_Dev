@@ -94,7 +94,7 @@
                                     dateEffective = @ViewBag.Result.EFFECTIVE_TO.ToString("yyyy-MM-dd");
                                 }
                             }
-                            
+
                             <div id="EffectiveToDivID" class="col-md-3" style="display:none">
                                 <label for="EffectiveToDate">Effective to Date</label>
                                 <input min="@ViewBag.Result.Created_On.ToString("yyyy-MM-dd")" id="effectiveToDateID" name="EFFECTIVE_TO" type="date" value="@dateEffective" class="form-control" />
@@ -105,7 +105,7 @@
 
                             </div>
                         </div>
-                        
+
                         <h6 class="mt-5 mb-3">Add Approver Details</h6>
                         <div class="form-group row">
                             <div class="col">
@@ -136,7 +136,7 @@
                             <button class="btn btn-light mr-2">Cancel</button>
                             <button @* style="visibility:hidden" *@ type="submit" id="Savebutton" class="btn btn-primary">Save</button>
                         </div>
-                        
+
 
                     </div>
                 </div>
@@ -151,14 +151,14 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        
+
 
         $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');
-        if ($("#Active").val() == 'N') {  
+        if ($("#Active").val() == 'N') {
             $('#EffectiveToDivID').show();
         }
         $("#Scheduled").val('@ViewBag.Result.SCHEDULED');
-        
+
         $("#PatternMonth").val('@ViewBag.Result.PATTERN_MONTH');
         if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "YEARLY") {
             $("#PatternMonth").show();
@@ -168,7 +168,7 @@
         }
         // The code to show effective to Date field on the form if value of Active is No
         $('#Active').on('change', function () {
-            if($("#Active").val() == 'N'){ 
+            if ($("#Active").val() == 'N') {
                 $('#effectiveToDateID').val('');
                 document.getElementById('effectiveToDateID').required = true;
                 $('#EffectiveToDivID').show();
@@ -202,8 +202,8 @@
 
         $("#Scheduled").change(function () {
             var Scheduled = $(this).val();
-            if (Scheduled == "Y") {     
-                
+            if (Scheduled == "Y") {
+
                 $("#IsScheduled").show();
                 document.getElementById('PatternMonth').required = true;
                 document.getElementById('datewhich').required = true;
@@ -233,8 +233,7 @@
                 if (data.userName == null || data.userId == null) {
                     alert('Unable to get details, please enter correct email');
                 }
-                else 
-                { 
+                else {
                     // Fill the approver name and ID fields with the returned data
                     $("#approverName").val(data.userName);
                     $("#approverID").val(data.userId);
@@ -243,7 +242,7 @@
             });
         });
     });
-//Email Autocomplete
+    //Email Autocomplete
     $('#approverEmailID').on('keyup', function () {
         var email = $(this).val();
         if (email == "") {
@@ -253,7 +252,7 @@
         // Only make the AJAX call if at least 3 characters have been entered
         if (email.length >= 3) {
             $.ajax({
-                url: '/User/GetEmailSuggestions',
+                url: '/ConfigureTemplate/GetEmailSuggestions',
                 type: 'GET',
                 data: { 'email': email },
                 success: function (result) {
@@ -282,8 +281,7 @@
     // hide suggestions div when input loses focus, after a short delay
     var timeoutId;
     $('#approverEmailID').on('blur', function () {
-        if ($('#approverEmailID').text() == '') 
-        { 
+        if ($('#approverEmailID').text() == '') {
             $("#approverName").val('');
             $("#approverID").val('');
         }
@@ -298,17 +296,55 @@
 
     // To prevent form from submitting if the approver details are blank
     $('#Savebutton').on('click', function (e) {
-        if ($("#approverName").val() == '' || $("#approverID").val() == '') 
-        { 
+        if ($("#approverName").val() == '' || $("#approverID").val() == '') {
             e.preventDefault();
             alert('Please fill the approver details');
         }
-        // if ($('#effectiveToDateID').val() == null || $('#effectiveToDateID').val() == '') 
+        // if ($('#effectiveToDateID').val() == null || $('#effectiveToDateID').val() == '')
         // {
         //     e.preventDefault();
         //     alert('Please select effective to date');
         // }
 
 
+    });
+
+    // To check the value of lock date with respect to Escalation and upload Reminder
+    $('#lockDate').on('blur', function () {
+        if ($('#lockDate').val() > 30) {
+            alert('Lock date value cannot be greater than 30 days');
+            $('#lockDate').val('');
+        }
+        else {
+            if (parseInt($('#Escalation').val(), 10) > parseInt($('#lockDate').val(), 10)) {
+                alert('Escalation date value cannot be greater than lock date');
+                $('#Escalation').val('');
+            }
+            if (parseInt($('#uploadreminder').val(), 10) > parseInt($('#lockDate').val(), 10)) {
+                alert('Upload reminder date value cannot be greater than lock date');
+                $('#uploadreminder').val('');
+            }
+        }
+    });
+    // To check the value of Escalation based on lockDate and upload reminder
+    $('#Escalation').on('blur', function () {
+
+        if (parseInt($('#Escalation').val(), 10) > parseInt($('#lockDate').val(), 10)) {
+            alert('Escalation date value cannot be greater than lock date');
+            $('#Escalation').val('');
+        }
+        if (parseInt($('#Escalation').val(), 10) < parseInt($('#uploadreminder').val(), 10)) {
+            alert('Escalation date value should be greater than upload reminder');
+            $('#Escalation').val('');
+        }
+
+    });
+    // TO check the value of uplaod reminder with respect to escaltion and lock date
+    $('#uploadreminder').on('blur', function () {
+
+        if (parseInt($('#uploadreminder').val(), 10) > parseInt($('#lockDate').val(), 10) || parseInt($('#Escalation').val(), 10) < parseInt($('#uploadreminder').val(), 10)) {
+            alert('Upload reminder date value cannot be greater than lock date or escaltion date value');
+            $('#uploadreminder').val('');
+        }
     });
 </script>
