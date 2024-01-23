@@ -31,11 +31,11 @@ namespace Sponge.Controllers
             if(srt == null)
             {
                 SPG_CONFIGURATION scg = sPONGE_Context.SPG_CONFIGURATION.Where(x => x.CONFIG_ID == configId).FirstOrDefault();
-                if(scg.SCHEDULED =="Y" && scg.IS_POPULATED != null)
+                if(scg.SCHEDULED =="Y" /*&& scg.IS_POPULATED != null*/)
                 {
                     model.LockDate = DateTime.Now.AddDays(Convert.ToDouble(scg.LOCK_DATE));
-                    //model.UploadReminderDate = model.LockDate.AddDays(Convert.ToDouble(-scg.REMMINDER_DATE));
-                    //model.EscalationAlertDate = model.LockDate.AddDays(Convert.ToDouble(-scg.ESCALATION_DATE));
+                    model.UploadReminderDate = DateTime.Now.AddDays(Convert.ToDouble(scg.REMMINDER_DATE));
+                    model.EscalationAlertDate = DateTime.Now.AddDays(Convert.ToDouble(scg.ESCALATION_DATE));
                     model.IsPopulated = scg.IS_POPULATED;
                 }
                 if(scg.SCHEDULED == "N" && scg.IS_POPULATED != null)
