@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Sponge/Properties/launchSettings.json
+/DAL/Models/SPONGE_Context.cs
+/Sponge/appsettings.json
