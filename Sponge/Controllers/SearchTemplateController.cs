@@ -43,7 +43,7 @@ namespace Sponge.Controllers
                  subfunctions = (from subFunc in sPONGE_Context.SPG_SUBFUNCTION
                                    join userFunc in sPONGE_Context.SPG_USERS_FUNCTION on subFunc.SUBFUNCTION_ID equals userFunc.SUB_FUNCTION_ID
                                    where userFunc.USER_ID == userName[1] && userFunc.ACTIVE_FLAG == "Y"
-                                   select subFunc).ToList();
+                                   select subFunc).Distinct().ToList();
             }
             return View(subfunctions);           
         }
