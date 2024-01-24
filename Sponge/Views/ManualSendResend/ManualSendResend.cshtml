@@ -1,7 +1,9 @@
 ﻿@model Sponge.ViewModel.ManualSendResendExcelModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var minDate = DateTime.Now.ToString("yyyy-MM-dd");
 }
+
 <script src="~/js/Common.js"></script>
 <script src="~/js/Granular.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -28,13 +30,14 @@
                             <label for="frequency">Frequency</label>
                             <input type="text" class="form-control" id="frequency"
                                    value="@Model.Frequency" readonly>
+                            
                         </div>
                     </div>
                         <div class="form-group row">
                             <div class="col">
                                 <label for="onTime">On Time</label>
                                 @Html.DropDownList("onTime",
-                            ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>,
+                            ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>, 
                             new { @class = "form-control", onchange = "OnChangeOnTime();" })
                             </div>
                             <div class="col">
@@ -49,17 +52,17 @@
                     <div class="form-group row">
                         <div class="col">
                                 <label for="UploadReminderDate">Upload Reminder Date</label>
-                                <input type="date" class="form-control" asp-for="@Model.UploadReminderDate" id="UploadReminderDate" name="UploadReminderDate"
+                                <input min="@minDate"  type="date" class="form-control" asp-for="@Model.UploadReminderDate" id="UploadReminderDate" name="UploadReminderDate"
                                    placeholder="DD/MM/YYYY">
                         </div>
                         <div class="col">
                                 <label for="EscalationAlertDate">Escalation Alert Date</label>
-                                <input type="date" class="form-control" asp-for="@Model.EscalationAlertDate" id="EscalationAlertDate" name="EscalationAlertDate"
+                                <input min="@minDate" type="date" class="form-control" asp-for="@Model.EscalationAlertDate" id="EscalationAlertDate" name="EscalationAlertDate"
                                    placeholder="DD/MM/YYYY">
                         </div>
                         <div class="col">
                             <label for="lockDate">Lock Date</label>
-                                <input type="date" class="form-control" asp-for="@Model.LockDate" id="lockDate" name="lockDate"
+                                <input min="@minDate" type="date" class="form-control" asp-for="@Model.LockDate" id="lockDate" name="lockDate"
                                    placeholder="DD/MM/YYYY">
                         </div>
                     </div>
