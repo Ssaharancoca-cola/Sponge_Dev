@@ -12,7 +12,10 @@
                 <div class="card-body">
                     <p class="card-title">Assign Users - @ViewBag.SubjectAreaName</p>
                     <div class="table-responsive">
-                        <table id="example" class="display expandable-table" style="width:100%">
+                        <input class="form-control" onkeyup="searchUser()" type="text" id="searchUserID" placeholder="Search for names.." title="Type in a name" />
+                        <br />
+                        <table id="usersTableID" class="display expandable-table" style="width:100%">
+
                             <thead>
                                 <tr>
                                     <th>
@@ -62,7 +65,7 @@
         });
         $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
             debugger;
-            var tableBody = $("#example tbody");
+            var tableBody = $("#usersTableID tbody");
             usernames.forEach(function (username) {
                 var isChecked = selectedUser.some(function (selected) {
                     return selected.UserName === username.username;
@@ -149,5 +152,26 @@
             // Submit the form
             $(this).closest('form').submit();
         });
+
+        
     });
+    function searchUser() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchUserID");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("usersTableID");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>

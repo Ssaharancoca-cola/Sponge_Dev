@@ -28,7 +28,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             List<SPG_SUBFUNCTION> subfunctions = new();
-            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1]);
+            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] && (x.ROLE_ID == 5 || x.ROLE_ID == 3));
             int RoleID = 0;
             if (role != null)
             {
@@ -43,7 +43,7 @@ namespace Sponge.Controllers
                  subfunctions = (from subFunc in sPONGE_Context.SPG_SUBFUNCTION
                                    join userFunc in sPONGE_Context.SPG_USERS_FUNCTION on subFunc.SUBFUNCTION_ID equals userFunc.SUB_FUNCTION_ID
                                    where userFunc.USER_ID == userName[1] && userFunc.ACTIVE_FLAG == "Y"
-                                   select subFunc).ToList();
+                                   select  subFunc).Distinct().ToList();
             }
             return View(subfunctions);           
         }
@@ -52,7 +52,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             List<SPG_SUBJECTAREA> subjectArea = new();
-            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] );
+            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] && (x.ROLE_ID == 5 || x.ROLE_ID == 3));
             int RoleID = 0;
             if (role != null)
             {
@@ -66,7 +66,7 @@ namespace Sponge.Controllers
             {
                 subjectArea = (from SubjectArea in sPONGE_Context.SPG_SUBJECTAREA
                                join userconfig in sPONGE_Context.SPG_CONFIGURATION on SubjectArea.SUBJECTAREA_ID equals userconfig.SUBJECTAREA_ID
-                               where SubjectArea.SUBFUNCTION_ID == subFunctionId && userconfig.USER_ID == userName[1]
+                               where SubjectArea.SUBFUNCTION_ID == subFunctionId && (userconfig.USER_ID == userName[1] || userconfig.APPROVER_ID == userName[1])
                                select SubjectArea).ToList();
             }
             return Json(subjectArea);
@@ -77,7 +77,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             List<SPG_USERS> userlist = new();
-            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] );
+            var role = sPONGE_Context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] && (x.ROLE_ID == 5 || x.ROLE_ID == 3));
             int RoleID = 0;
             if (role != null)
             {
@@ -104,7 +104,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context sponge_context = new();
             List<SearchDataList> SearchConfgData = new();
-            var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1]);
+            var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] && (x.ROLE_ID ==5 || x.ROLE_ID==3));
             var AdminRoleId = System.Configuration.ConfigurationManager.AppSettings["AdminRoleId"];
 
             int RoleID = 0;
@@ -132,8 +132,8 @@ namespace Sponge.Controllers
                                        AssignedUser = u.Name,
                                        Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
                                        EffectiveDate = conf.Created_On,
-                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == null) ? "Configuration in Progress" : "Generate Template"
-                                   }).Distinct().ToList();
+                                       ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
+            }).Distinct().ToList();
             }
             else
             {
@@ -154,7 +154,7 @@ namespace Sponge.Controllers
                                        AssignedUser = u.Name,
                                        Active = conf.ACTIVE_FLAG == null ? "" : conf.ACTIVE_FLAG,
                                        EffectiveDate = conf.Created_On,
-                                       ManualSendResendUrl = (conf.ACTIVE_FLAG == "NULL") ? "Configuration in Progress" : "Generate Template"
+                                       ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
                                    }).Distinct().ToList();
             }
             return Json(SearchConfgData);

@@ -20,6 +20,7 @@ namespace Sponge.ViewModel
         public DateTime? EscalationAlertDate { get; set; }
         public DateTime? LockDate { get; set; }
 
+
     }
     public class SendResendExcel
     {
