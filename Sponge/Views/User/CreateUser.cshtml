@@ -29,7 +29,8 @@
                             <div class="col">
                                 <label asp-for="UserName" for="UserName">User Name</label>
                                
-                                    <input  asp-for="UserName" type="text" class="form-control" id="UserName" name="userName" readonly placeholder="User Name">
+                                    <input  asp-for="UserName" type="text" class="form-control" id="UserName" name="userName" placeholder="User Name">
+                                <div id="UserNameSuggestions" style="border:1px solid;display:none"></div>
                                 <span asp-validation-for="@Model.UserName"></span>
                             </div>
                             <div class="col">

@@ -148,8 +148,8 @@
                 var assignToUser = $('#assignToUser').val();
                 var dateFrom = $('#dateFrom').val();
                 var dateTo = $('#dateTo').val();
+                //var active = ($('#active').val() == 'Y' ? 'Yes' :'No')
                 var active = $('#active').val();
-
                 // AJAX request
                 $.ajax({
                     url: '@Url.Action("GetSearchData", "SearchTemplate")',

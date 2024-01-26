@@ -356,7 +356,7 @@ namespace Sponge.Controllers
                                             join c in sPONGE_Context.SPG_CONFIGURATION on configid equals  c.CONFIG_ID
                                              join s in sPONGE_Context.SPG_SUBJECTAREA on c.SUBJECTAREA_ID equals s.SUBJECTAREA_ID
                                             where u.EMAIL_ID.Contains(email)
-                                            && o.ROLE_ID==4 &&  o.SUB_FUNCTION_ID==s.SUBFUNCTION_ID
+                                            && (o.ROLE_ID==4 || o.ROLE_ID == 5) &&  (o.SUB_FUNCTION_ID==s.SUBFUNCTION_ID) && u.ACTIVE_FLAG == "Y"
                                             select new
                                             {
                                                 EMAIL_ID = u.EMAIL_ID,
