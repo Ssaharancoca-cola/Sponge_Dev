@@ -46,7 +46,6 @@ namespace DAL.Models
         public virtual DbSet<v_tversion> v_tversion { get; set; }
         public virtual DbSet<v_version> v_version { get; set; }
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
