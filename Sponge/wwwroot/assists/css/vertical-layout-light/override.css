@@ -213,3 +213,13 @@ table.dataTable thead tr th {
 .form-check .form-check-label {
     margin-bottom:0px;
 }
+
+@media (max-width: 1280px) {
+    .navbar .navbar-brand-wrapper, .sidebar {
+        width: 280px;
+    }
+    .navbar .navbar-menu-wrapper, .main-panel {
+        width: calc(100% - 280px);
+    }
+    
+}

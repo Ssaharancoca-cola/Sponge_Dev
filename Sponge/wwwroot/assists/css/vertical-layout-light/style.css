@@ -20699,7 +20699,7 @@ div.tagsinput {
 
 .main-panel {
     transition: width 0.25s ease, margin 0.25s ease;
-    width: calc(100% - 280px);
+    width: calc(100% - 380px);
     min-height: calc(100vh - 60px);
     display: -webkit-flex;
     display: flex;
@@ -20735,7 +20735,7 @@ div.tagsinput {
     font-family: var(--font-family);
     font-weight: 500;
     padding: 0;
-    width: 280px;
+    width: 380px;
     z-index: 11;
     transition: width 0.25s ease, background 0.25s ease;
     -webkit-transition: width 0.25s ease, background 0.25s ease;
@@ -20916,7 +20916,7 @@ div.tagsinput {
     margin-bottom: 0;
     margin-top: 0;
     list-style: none;
-    padding: 0.25rem 0 0 3.07rem;
+    padding: 0.25rem 0 0 3.5rem;
     background: var(--white);
     padding-bottom: 12px;
 }
@@ -20939,7 +20939,7 @@ div.tagsinput {
             color: var(--primary);
             padding: 0.7rem 1rem;
             position: relative;
-            font-size: 0.875rem;
+            font-size: 0.775rem;
             line-height: 1;
             height: auto;
             border-top: 0;
@@ -21067,7 +21067,7 @@ div.tagsinput {
     -webkit-transition: width 0.25s ease, background 0.25s ease;
     -moz-transition: width 0.25s ease, background 0.25s ease;
     -ms-transition: width 0.25s ease, background 0.25s ease;
-    width: 280px;
+    width: 380px;
     height: 60px;
 }
 
@@ -21117,7 +21117,7 @@ div.tagsinput {
     color: #6C7383;
     padding-right: 1.375rem;
     padding-left: 1.375rem;
-    width: calc(100% - 280px);
+    width: calc(100% - 380px);
     height: 60px;
 }
 
@@ -22347,7 +22347,7 @@ div.tagsinput {
             text-align: left;
             top: 0;
             bottom: 0;
-            width: 190px;
+            width: 300px;
             z-index: 1;
             line-height: 1.8;
             -webkit-box-shadow: 4px 0px 7px 0px rgba(182, 185, 189, 0.25);
@@ -22389,7 +22389,7 @@ div.tagsinput {
         border-radius: 0 0 5px 0;
         position: absolute;
         left: 70px;
-        width: 190px;
+        width: 300px;
         -webkit-box-shadow: 4px 4px 7px 0px rgba(182, 185, 189, 0.25);
         box-shadow: 4px 4px 7px 0px rgba(182, 185, 189, 0.25);
     }
@@ -22424,11 +22424,11 @@ div.tagsinput {
 
     .sidebar-icon-only .sidebar .nav.sub-menu .nav-item .nav-link {
         text-align: left;
-        padding-left: 20px;
+        padding-left: 37px;
     }
 
     .sidebar-icon-only .sidebar .nav.sub-menu .nav-item::before {
-        margin-left: 0.5rem;
+        margin-left: 1.3rem;
         background-color: var(--white);
     }
 
