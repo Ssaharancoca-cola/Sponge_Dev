@@ -62,9 +62,9 @@
 
                         <div class="form-group row" id="IsScheduled" style="display:none">
 
-                            <div class="col">
+                            <div class="col" id="monthDivID">
                                 <label for="scheduled">Month</label>
-                                <select required class="form-control" id="PatternMonth" name="PATTERN_MONTH">
+                                <select  class="form-control" id="PatternMonth" name="PATTERN_MONTH">
                                     <option selected value="">Select</option>
                                     @foreach (var f in ViewBag.Months)
                                     {
@@ -161,11 +161,14 @@
         $("#Scheduled").val('@ViewBag.Result.SCHEDULED');
 
         $("#PatternMonth").val('@ViewBag.Result.PATTERN_MONTH');
-        if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "YEARLY") {
+        if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "YEARLY" || '@ViewBag.Result.FREQUENCY'.toUpperCase() == "HALF_YEARLY" || '@ViewBag.Result.FREQUENCY'.toUpperCase() == "QUARTERLY") {
+            $("#PatternMonth").prop('required', true);
             $("#PatternMonth").show();
+            $("#monthDivID").show();
         }
-        if ('@ViewBag.Result.FREQUENCY'.toUpperCase() == "HALF_YEARLY") {
-            $("#PatternMonth").show();
+        else {
+            $("#PatternMonth").prop('required', false);
+            $("#monthDivID").hide();
         }
         // The code to show effective to Date field on the form if value of Active is No
         $('#Active').on('change', function () {
@@ -209,7 +212,13 @@
                 document.getElementById('datewhich').value = '';
                 document.getElementById('uploadreminder').value = '';
                 document.getElementById('Escalation').value = '';
-                document.getElementById('PatternMonth').required = true;
+                if ($('#FREQUENCY').val() == "YEARLY" || $('#FREQUENCY').val() == "HALF_YEARLY" || $('#FREQUENCY').val() == "QUARTERLY") {
+                    document.getElementById('PatternMonth').required = true;
+                }
+                else{
+                    document.getElementById('PatternMonth').required = false;
+                }
+                //
                 document.getElementById('datewhich').required = true;
                 document.getElementById('uploadreminder').required = true;
                 document.getElementById('Escalation').required = true;
