@@ -38,14 +38,14 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col">
+                            <div class="col-sm-3 col-md-3">
                                 <label for="Active">Active</label>
                                 <select class="form-control" id="Active" name="ACTIVE_FLAG">
                                     <option selected value="Y">Yes</option>
                                     <option value="N">No</option>
                                 </select>
                             </div>
-                            <div class="col">
+                            <div class="col-sm-3 col-md-3">
                                 <label for="scheduled">Scheduled</label>
                                 <select class="form-control" id="Scheduled" name="SCHEDULED">
                                     <option value="Y">Yes</option>
@@ -53,9 +53,10 @@
                                 </select>
                             </div>
 
-                            <div class="col">
-                                <label for="lockDate">Lock Date</label>
-                                <input required type="number" min="1" max="30" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">days after template generation date
+                            <div class="col-sm-3 col-md-3">
+                                <label for="lockDate">Lock</label>
+                                <input required type="number" min="1" max="30" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">
+                                <span>days after template generation date</span>
                             </div>
                         </div>
 

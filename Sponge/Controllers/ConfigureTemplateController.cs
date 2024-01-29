@@ -359,26 +359,29 @@ namespace Sponge.Controllers
 
             return Json(Url.Action("SaveDataFilter", "ConfigureTemplate"));
         }
-        
+
         public async Task<IActionResult> SaveDataFilter()
         {
             var serializedData = TempData["Masters"];
             var masterNames = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>((string)serializedData);
             SPONGE_Context _Context = new();
-            var masterValuesDictionary = new Dictionary<string, List<Dictionary<string, string>>>();
+            var masterValuesDictionary = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
 
             foreach (var dimension in masterNames)
             {
+                var dimensionDict = new Dictionary<string, List<Dictionary<string, string>>>();
+
                 foreach (var mastervalue in dimension.Value)
-                {
-                    var master = _Context.SPG_MPP_MASTER
-                                    .Where(x => x.MASTER_DISPLAY_NAME == mastervalue && x.MPP_DIMENSION_NAME == dimension.Key)
-                                    .Select(x => x.MASTER_NAME).FirstOrDefault();
+                {                   
 
                     using (var command = _Context.Database.GetDbConnection().CreateCommand())
                     {
                         command.CommandText = "SP_GETFILTERATION_DATA";
-                        command.Parameters.Add(new SqlParameter("@p_MasterName", master));
+                        var dimensionParam = new SqlParameter("@p_DimensionName", dimension.Key);
+                        var masterParam = new SqlParameter("@p_MasterName", mastervalue);
+
+                        command.Parameters.Add(dimensionParam);
+                        command.Parameters.Add(masterParam);
                         command.CommandType = CommandType.StoredProcedure;
 
                         _Context.Database.OpenConnection();
@@ -400,15 +403,25 @@ namespace Sponge.Controllers
                                 dataList.Add(dict);
                             }
 
-                            masterValuesDictionary.Add(master, dataList);
+                            dimensionDict.Add(mastervalue, dataList);
                         }
                     }
                 }
+
+                masterValuesDictionary.Add(dimension.Key, dimensionDict);
             }
 
             return View(masterValuesDictionary);
         }
 
+        [HttpPost]
+        public IActionResult SaveSelectedValues(string data)
+        {
+            // parse the JSON string back to a dictionary
+            var selectedValues = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>(data);
+         
+    return Json(new { Success = true });
+        }
         //#region Filtration
         //public ActionResult GetAllDimensions(int id, int subjectAreaId, string UserName)
         //{

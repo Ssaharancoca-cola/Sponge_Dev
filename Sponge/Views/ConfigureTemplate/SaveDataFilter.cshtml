@@ -1,57 +1,79 @@
-﻿@model Dictionary<string, List<Dictionary<string, string>>>
+﻿@model Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
-    @{
-        var i = 0;  //added counter outside of foreach to provide unique id for each group of components
-    }
-    @foreach (var pair in Model)
-    {
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h6 class="mt-5 mb-3">@pair.Key</h6>
-                <div class="forms-sample">
-                    <div class="form-group row multiSelect_LR" id="multiSelect_LR_@i">
-                        <div class="col-5">
-                            <label for="selectedDimension">@pair.Key values</label>
-                            <select class="form-control select-lr select-lr-left" id="leftSelect_@i" multiple>
-                               
-                                @foreach (var item in pair.Value)
-                                {
-                                    var secondColumnCode = item.ElementAt(0).Value;
-                                    var secondColumnValue = item.ElementAt(1).Value;
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    @{
+                        var i = 0;  // Counter outside of foreach for unique id for each group of components
+                    }
+                    @foreach (var dimension in Model)
+                    {
+                        var tabId =dimension.Key;
+                        var active = i == 0 ? "active" : ""; // reset active for next panel
 
-                                    <option value="@secondColumnCode">@secondColumnValue</option>
-                                }
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link @active" id="@tabId-tab" href="#@tabId" data-toggle="tab"
+                               role="tab" aria-controls="@tabId">
+                                @dimension.Key
+                            </a>
+                        </li>
 
-                            </select>
+                        i++; // increment counter after each iteration
+                    }
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    @{
+                        i = 0; // reset counter for correct div and its content link
+                    }
+                    @foreach (var dimension in Model)
+                    {
+                        var panelId =dimension.Key;
+                        var show = i == 0 ? "show active" : ""; // reset show for next panel
+
+                        <div class="tab-pane fade @show " id="@panelId" role="tabpanel" aria-labelledby="@panelId-tab">
+
+                            @foreach (var master in dimension.Value)
+                            {
+                                <div class="forms-sample">
+                                    <div class="form-group row">
+                                        <div class="col-5">
+                                            <label for="selectedDimension">@master.Key values</label>
+                                            <select class="form-control select-lr leftSelect_@i" multiple>
+                                                @foreach (var item in master.Value)
+                                                {
+                                                    var secondColumnCode = item.ElementAt(0).Value;
+                                                    var secondColumnValue = item.ElementAt(1).Value;
+                                                    <option value="@secondColumnCode">@secondColumnValue</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-2 wrapper-btn-lr">
+                                            <button class="moveRight btn btn-primary mb-4"> > </button>
+                                            <button class="moveLeft btn btn-primary"> &lt; </button>
+                                        </div>
+                                        <div class="col-5">
+                                            <label for="Effected From">Selected @master.Key values</label>
+                                            <select class="form-control select-lr rightSelect_@i" multiple>
+                                                <!-- Selected options will be moved here -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                i++; // increment counter after each iteration
+                            }
                         </div>
-                            <div class="col-2 wrapper-btn-lr">
-                                <button class="moveRight btn btn-primary mb-4" id="moveRight_@i"> > </button>
-                                <button class="moveLeft btn btn-primary" id="moveLeft_@i"> &lt; </button>
-                            </div>
-                        <div class="col-5">
-                            <label for="Effected From">Selected @pair.Key</label>
-                            <select class="form-control select-lr select-lr-right" id="rightSelect_@i" multiple>
-                                <!-- Selected options will be moved here -->
-                            </select>
-                        </div>
-                    </div>
-                    
+                        show = ""; // reset for next panel
+                    }
                 </div>
-            </div>
-        </div>
-    </div>
-    i++; //increment counter after each iteration
-    }
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">   
-                <button class="btn btn-light mr-2">Cancel</button>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <div class="cta-wrapper">
+                    <button class="btn btn-light mr-2">Cancel</button>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                </div>
             </div>
         </div>
     </div>
@@ -59,35 +81,98 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script>
-    window.leftToRightMultiSelect = function (index, options) {
+    var initialData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+
+    window.leftToRightMultiSelect = function (counter, options) {
         var settings = $.extend({
-            moveRightButton: '#moveRight_' + index,
-            moveLeftButton: '#moveLeft_' + index
+            moveRightButton: '.moveRight',
+            moveLeftButton: '.moveLeft'
         }, options);
 
-        var selector = '#multiSelect_LR_' + index;
-        var container = $(selector);
+        var currentFormGroup = $('.leftSelect_' + counter).closest('.form-group');
+        var leftSelect = currentFormGroup.find('.leftSelect_' + counter);
+        var rightSelect = currentFormGroup.find('.rightSelect_' + counter);
 
-        var leftSelect = container.find('.select-lr-left');
-        var rightSelect = container.find('.select-lr-right');
-        var moveRightButton = container.find(settings.moveRightButton);
-        var moveLeftButton = container.find(settings.moveLeftButton);
-
-        moveRightButton.on('click', function () {
-            leftSelect.find('option:selected').appendTo(rightSelect);
+        $(document).on('click', settings.moveRightButton, function () {
+            if ($(this).closest('.form-group').is(currentFormGroup)) { 
+                leftSelect.find('option:selected').appendTo(rightSelect);
+            }
         });
 
-        moveLeftButton.on('click', function () {
-            rightSelect.find('option:selected').appendTo(leftSelect);
+        $(document).on('click', settings.moveLeftButton, function () {
+            if ($(this).closest('.form-group').is(currentFormGroup)) { 
+                rightSelect.find('option:selected').appendTo(leftSelect);
+            }
         });
     };
 
     $(document).ready(function () {
-        @for (int j = 0; j < i; j++)
-        {
-            <text>
-            window.leftToRightMultiSelect(@j);
-            </text>
-        }
+        $('#myTab a').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr('href');
+            var dimensionName = target.substring(1);
+
+            if (initialData.hasOwnProperty(dimensionName)) {
+                var dimensionData = initialData[dimensionName];
+
+                for (let masterKey in dimensionData) {
+                    if (dimensionData.hasOwnProperty(masterKey)) {
+                        let masterData = dimensionData[masterKey];
+
+                        for (var i = 0; i < masterData.length; i++) {
+                            var item = masterData[i];
+
+                            $(target + ' .rightSelect_' + masterKey).append('<option value="' + item["value"] + '">' + item["text"] + '</option>');
+                        }
+
+                        $(target + ' .leftSelect_' + masterKey).empty();
+                    }
+                }
+            }
+        });
     });
+    @for (int j = 0; j < i; j++)
+    {
+        <text>window.leftToRightMultiSelect(@j); </text>
+    }
+        $("#submit").click(function () {
+            var selectedValues = {};
+            debugger;
+            // iterate over tab contents
+            $('.tab-content > .tab-pane').each(function () {
+                var $tab = $(this);
+                var tabId = $tab.attr('id');
+
+                // iterate over selected options in current tab content
+                $tab.find("select[class='rightSelect_']").each(function () {
+                    var classes = $(this).attr('class').split(/\s+/);
+                    var masterKey = $.grep(classes, function (item, i) {
+                        return item.match(/rightSelect_/);
+                    })[0].substring(12);
+
+                    var options = $(this).children("option");
+                    var values = options.map(function () {
+                        return this.value;
+                    }).toArray();
+
+                    // logging values to the console for debugging
+                    console.log({ masterKey, values });
+
+                    if (!(tabId in selectedValues)) {
+                        selectedValues[tabId] = {};
+                    }
+                    if (!(masterKey in selectedValues[tabId])) {
+                        selectedValues[tabId][masterKey] = [];
+                    }
+
+                    selectedValues[tabId][masterKey] = values;
+                });
+            });
+
+            // check the value of `selectedValues`
+            console.log(selectedValues);
+
+            $.post("/ConfigureTemplate/SaveSelectedValues", { data: JSON.stringify(selectedValues) }, function (response) {
+                // Handle the response here
+            });
+        });
 </script>
