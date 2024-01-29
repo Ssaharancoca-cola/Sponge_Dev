@@ -38,7 +38,9 @@ builder.Services.AddDbContext<SPONGE_Context>(
 
 builder.Services.AddRazorPages();
 
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -59,6 +61,13 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+    // other endpoint configurations
+});
+
 
 app.MapControllerRoute(
     name: "default",

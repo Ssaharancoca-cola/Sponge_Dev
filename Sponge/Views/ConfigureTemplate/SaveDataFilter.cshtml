@@ -1,29 +1,93 @@
-﻿
-<div>
-    <a href="@Url.Action("Businessorg", "ConfigureTemplate")">Businessorg</a> |
-    <a href="@Url.Action("Product", "ConfigureTemplate")">Product</a> |
-    <a href="@Url.Action("Execution", "ConfigureTemplate")">Execution</a> |
-    <a href="@Url.Action("Primarysales", "ConfigureTemplate")">Primarysales</a>
+﻿@model Dictionary<string, List<Dictionary<string, string>>>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    @{
+        var i = 0;  //added counter outside of foreach to provide unique id for each group of components
+    }
+    @foreach (var pair in Model)
+    {
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="mt-5 mb-3">@pair.Key</h6>
+                <div class="forms-sample">
+                    <div class="form-group row multiSelect_LR" id="multiSelect_LR_@i">
+                        <div class="col-5">
+                            <label for="selectedDimension">@pair.Key values</label>
+                            <select class="form-control select-lr select-lr-left" id="leftSelect_@i" multiple>
+                               
+                                @foreach (var item in pair.Value)
+                                {
+                                    var secondColumnCode = item.ElementAt(0).Value;
+                                    var secondColumnValue = item.ElementAt(1).Value;
+
+                                    <option value="@secondColumnCode">@secondColumnValue</option>
+                                }
+
+                            </select>
+                        </div>
+                            <div class="col-2 wrapper-btn-lr">
+                                <button class="moveRight btn btn-primary mb-4" id="moveRight_@i"> > </button>
+                                <button class="moveLeft btn btn-primary" id="moveLeft_@i"> &lt; </button>
+                            </div>
+                        <div class="col-5">
+                            <label for="Effected From">Selected @pair.Key</label>
+                            <select class="form-control select-lr select-lr-right" id="rightSelect_@i" multiple>
+                                <!-- Selected options will be moved here -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    i++; //increment counter after each iteration
+    }
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">   
+                <button class="btn btn-light mr-2">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
 </div>
-<select id="leftBox" multiple>
-    <option value="1">Option 1</option>
-    <option value="2">Option 2</option>
-    // more options
-</select>
-<button id="btnRight">></button>
-<button id="btnLeft"><</button>
-<select id="rightBox" multiple>
-</select>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script>
+    window.leftToRightMultiSelect = function (index, options) {
+        var settings = $.extend({
+            moveRightButton: '#moveRight_' + index,
+            moveLeftButton: '#moveLeft_' + index
+        }, options);
 
+        var selector = '#multiSelect_LR_' + index;
+        var container = $(selector);
 
-$('#btnRight').click(function (e) {
-    var selected = $('#leftBox option:selected');
-    $('#rightBox').append(selected);
-});
+        var leftSelect = container.find('.select-lr-left');
+        var rightSelect = container.find('.select-lr-right');
+        var moveRightButton = container.find(settings.moveRightButton);
+        var moveLeftButton = container.find(settings.moveLeftButton);
 
-$('#btnLeft').click(function (e) {
-    var selected = $('#rightBox option:selected');
-    $('#leftBox').append(selected);
-});
+        moveRightButton.on('click', function () {
+            leftSelect.find('option:selected').appendTo(rightSelect);
+        });
+
+        moveLeftButton.on('click', function () {
+            rightSelect.find('option:selected').appendTo(leftSelect);
+        });
+    };
+
+    $(document).ready(function () {
+        @for (int j = 0; j < i; j++)
+        {
+            <text>
+            window.leftToRightMultiSelect(@j);
+            </text>
+        }
+    });
 </script>

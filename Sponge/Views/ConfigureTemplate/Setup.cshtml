@@ -75,15 +75,15 @@
                             </div>
                             <div class="col">
                                 <label for="scheduled">Day</label>
-                                <input required maxlength="2" type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich">day when template generated
+                                <input required type="text" value="@ViewBag.Result.PATTERN" class="form-control" name="PATTERN" id="datewhich">day when template generated
                             </div>
                             <div class="col">
                                 <label for="uploadReminder">Upload Reminder Date</label>
-                                <input required type="number" min="1" max="15" value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days before template generation date
+                                <input required value="@ViewBag.Result.REMMINDER_DATE" class="form-control" name="REMMINDER_DATE" id="uploadreminder">days before template generation date
                             </div>
                             <div class="col">
                                 <label for="EscalationDate">Escalation  Date</label>
-                                <input required type="number" min="1" max="20" value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days before template generation date
+                                <input required value="@ViewBag.Result.ESCALATION_DATE" class="form-control" name="ESCALATION_DATE" id="Escalation">days before template generation date
                             </div>
                         </div>
                         <div class="form-group row">
@@ -205,6 +205,9 @@
             if (Scheduled == "Y") {
                 debugger;
                 $("#IsScheduled").show();
+                document.getElementById('datewhich').value = '';
+                document.getElementById('uploadreminder').value = '';
+                document.getElementById('Escalation').value = '';
                 document.getElementById('PatternMonth').required = true;
                 document.getElementById('datewhich').required = true;
                 document.getElementById('uploadreminder').required = true;
@@ -248,7 +251,7 @@
         if (email == "") {
             $('#emailSuggestions').empty();
         }
-         var configid = $("#configID").val();
+        var configid = $("#configID").val();
 
 
         // Only make the AJAX call if at least 3 characters have been entered
@@ -256,7 +259,7 @@
             $.ajax({
                 url: '/ConfigureTemplate/GetEmailSuggestions',
                 type: 'GET',
-                data: { 'email': email ,'configid':configid},
+                data: { 'email': email, 'configid': configid },
                 success: function (result) {
                     // clear old suggestions
                     $('#emailSuggestions').empty();
@@ -298,12 +301,19 @@
 
     // To prevent form from submitting if the approver details are blank
     $('#Savebutton').on('click', function (e) {
-        if ($("#approverName").val() == '' || $("#approverID").val() == '') {
-            e.preventDefault();
-            alert('Please fill the approver details');
+        if ($('#Active').val() == 'N') {
+            document.getElementById('approverEmailID').required = false;
+            document.getElementById('effectiveToDateID').required = true;
         }
-      
-       
+        
+        else {
+            if ($("#approverName").val() == '' || $("#approverID").val() == '') {
+                e.preventDefault();
+                alert('Please fill the approver details');
+            }
+        }
+
+
         // if ($('#effectiveToDateID').val() == null || $('#effectiveToDateID').val() == '')
         // {
         //     e.preventDefault();
@@ -312,43 +322,76 @@
 
 
     });
+    // Attach event listeners to blur event
+    document.getElementById('uploadreminder').addEventListener('blur', validateInputs);
+    document.getElementById('Escalation').addEventListener('blur', validateInputs);
+    document.getElementById('lockDate').addEventListener('blur', validateInputs);
+    document.getElementById('datewhich').addEventListener('blur', validateInputs);
 
-    // To check the value of lock date with respect to Escalation and upload Reminder
-    $('#lockDate').on('blur', function () {
-        if ($('#lockDate').val() > 30) {
-            alert('Lock date value cannot be greater than 30 days');
-            $('#lockDate').val('');
-        }
-        else {
-            if (parseInt($('#Escalation').val(), 10) > parseInt($('#lockDate').val(), 10)) {
-                alert('Escalation date value cannot be greater than lock date');
-                $('#Escalation').val('');
+    function validateInputs(e) {
+        // Get the input fields
+        var uploadReminderEl = document.getElementById('uploadreminder');
+        var escalationEl = document.getElementById('Escalation');
+        var lockDateEl = document.getElementById('lockDate');
+        var dateWhichEl = document.getElementById('datewhich');
+
+        // Parse the values to integers
+        var uploadReminder = parseInt(uploadReminderEl.value, 10);
+        var escalation = parseInt(escalationEl.value, 10);
+        var lockDate = parseInt(lockDateEl.value, 10);
+        var dateWhich = parseInt(dateWhichEl.value, 10);
+
+        // Get Id of the input field that just blurred
+        var blurred = e.target.id;
+
+        if (blurred === 'datewhich') {
+            if (dateWhich < 1 || dateWhich > 30) {
+                alert("Day value must be between 1-30");
+                $('#datewhich').val('');
             }
-            if (parseInt($('#uploadreminder').val(), 10) > parseInt($('#lockDate').val(), 10)) {
-                alert('Upload reminder date value cannot be greater than lock date');
+            
+        }
+
+        if (blurred === 'lockDate') {
+            if (lockDate < 1 || lockDate > 30) {
+                alert("Lock date value must be between 1-30");
+                $('#lockDate').val('');
+            }
+            else { 
+                if (lockDate <= escalation || lockDate <= uploadReminder) {
+                    alert("Lock date value should be greater than upload reminder date and escalation date");
+                    $('#lockDate').val('');
+                }
+            }
+            
+        }
+        if (blurred === 'uploadreminder') {
+            if (uploadReminder < 1 || uploadReminder > 15) {
+                alert("Upload reminder value must be between 1-15");
                 $('#uploadreminder').val('');
             }
-        }
-    });
-    // To check the value of Escalation based on lockDate and upload reminder
-    $('#Escalation').on('blur', function () {
-
-        if (parseInt($('#Escalation').val(), 10) > parseInt($('#lockDate').val(), 10)) {
-            alert('Escalation date value cannot be greater than lock date');
-            $('#Escalation').val('');
-        }
-        if (parseInt($('#Escalation').val(), 10) < parseInt($('#uploadreminder').val(), 10)) {
-            alert('Escalation date value should be greater than upload reminder');
-            $('#Escalation').val('');
+            else { 
+                if (uploadReminder >= escalation || uploadReminder >= lockDate) {
+                    alert("Upload reminder should be less than lock date and escalation date");
+                    $('#uploadreminder').val('');
+                }
+            }
+            
         }
 
-    });
-    // TO check the value of uplaod reminder with respect to escaltion and lock date
-    $('#uploadreminder').on('blur', function () {
-      
-        if (parseInt($('#uploadreminder').val(), 10) > parseInt($('#lockDate').val(), 10) || parseInt($('#Escalation').val(), 10) < parseInt($('#uploadreminder').val(), 10)) {
-            alert('Upload reminder date value cannot be greater than lock date or escaltion date value');
-            $('#uploadreminder').val('');
+        if (blurred === 'Escalation') {
+            if (escalation < 1 || escalation > 20) {
+                alert("Escalation value must be between 1-20 ");
+                $('#Escalation').val('');
+            }
+            else{
+                if (escalation <= uploadReminder || escalation >= lockDate) {
+                    alert("Escalation must be greater than upload reminder and less than lock date");
+                    $('#Escalation').val('');
+                }
+            }
+            
         }
-    });
+    }
+     
 </script>

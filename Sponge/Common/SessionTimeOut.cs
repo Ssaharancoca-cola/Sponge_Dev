@@ -12,7 +12,7 @@ namespace Sponge.Common
 
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(role))
             {
-                context.Result = new RedirectResult("~/Home/SessionTimeOut");
+                context.Result = new RedirectResult("/SessionTimeout");
                 return;
             }
             base.OnActionExecuting(context);
@@ -24,7 +24,7 @@ namespace Sponge.Common
 
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(role))
             {
-                context.Result = new RedirectResult("~/Home/SessionTimeOut");
+                context.Result = new RedirectResult("/SessionTimeout");
                 return;
             }
             base.OnActionExecuted(context);

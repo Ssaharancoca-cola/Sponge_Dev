@@ -144,6 +144,10 @@
          "ObjectType": 1
       },
       {
+         "Name": "[dbo].[SP_GETFILTERATION_DATA]",
+         "ObjectType": 1
+      },
+      {
          "Name": "[dbo].[SP_GETMASTEREMAIL]",
          "ObjectType": 1
       },

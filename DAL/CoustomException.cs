@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 
 namespace DAL
@@ -30,13 +31,19 @@ namespace DAL
             // Log the exception here
             System.Diagnostics.Debug.WriteLine(exception);
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            //context.Response.ContentType = "application/json";
+            //context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var response = new { error = exception.Message };
-            //var payload = JsonConvert.SerializeObject(response);
-            var payload = "error occurred please connect with Sponge Admin team";
-            return context.Response.WriteAsync(payload);
+            //var response = new { error = exception.Message };
+            ////var payload = JsonConvert.SerializeObject(response);
+            //var payload = "error occurred please connect with Sponge Admin team";
+            //return context.Response.WriteAsync(payload);
+            // Log the exception here
+            System.Diagnostics.Debug.WriteLine(exception);
+
+            context.Response.Redirect("/Error");
+
+            return Task.CompletedTask;
         }
     }
 }

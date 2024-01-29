@@ -88,7 +88,7 @@ namespace Sponge.Controllers
         //}
         public ActionResult GetEmailSuggestions(string email)
         {
-           List<string> matchingEmails = new List<string>();
+            List<string> matchingEmails = new List<string>();
 
             using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
             {
@@ -110,6 +110,31 @@ namespace Sponge.Controllers
 
             return Json(matchingEmails);
 
+        }
+        // To get the user name suggestions
+        public ActionResult GetUserNameSuggestions(string UserName)
+        {
+            List<string> matchingNames = new List<string>();
+
+            using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
+            {
+                UserPrincipal user = new UserPrincipal(context);
+                user.DisplayName = UserName + "*"; //change this based on your AD schema
+
+                using (var searcher = new PrincipalSearcher(user))
+                {
+                    foreach (var result in searcher.FindAll())
+                    {
+                        UserPrincipal foundUser = result as UserPrincipal;
+                        if (foundUser != null)
+                        {
+                            matchingNames.Add(foundUser.DisplayName);
+                        }
+                    }
+                }
+            }
+
+            return Json(matchingNames);
         }
 
         [ActionName("GetUserInfo")]
@@ -169,6 +194,51 @@ namespace Sponge.Controllers
                 }
                 return userInfo;
             }
+
+        }
+        public UserInfo GetUserInfoByName(string userName)
+        {
+            UserInfo userInfo = new UserInfo();
+
+            SPONGE_Context spONGE_Context = new SPONGE_Context();
+            int userid = spONGE_Context.SPG_USERS.Where(o => o.Name == userName).Count();
+            if (userid > 0)
+            {
+                userInfo.UserEmail = "";
+                userInfo.UserName = userName.ToString();
+                userInfo.UserId = "";
+                userInfo.ErrorMsg = "User already exists";
+
+            }
+            else
+            {
+                try
+                {
+
+                    using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
+                    {
+                        UserPrincipal userPrincipal = new UserPrincipal(context);
+                        userPrincipal.DisplayName = userName;
+
+                        PrincipalSearcher search = new PrincipalSearcher(userPrincipal);
+
+                        var user = (UserPrincipal)search.FindOne();
+
+                        if (user != null)
+                        {
+
+                            userInfo.UserId = user.SamAccountName.ToString();
+                            userInfo.UserName = user.DisplayName.ToString();
+                            userInfo.UserEmail = user.EmailAddress.ToString();
+                            userInfo.ErrorMsg = "";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            return userInfo;
 
         }
         [HttpPost]
@@ -236,7 +306,7 @@ namespace Sponge.Controllers
         public IActionResult UpdateUser(IFormCollection data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            try 
+            try
             {
                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
                 var matchingRows = sPONGE_Context.SPG_USERS_FUNCTION.Where(u => u.USER_ID == data["userId"].ToString()).ToList();
@@ -282,13 +352,13 @@ namespace Sponge.Controllers
 
                 return Json("User updated successfully");
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 return Json("Error Occured: " + ex.Message);
             }
-            
+
         }
-        
+
         //public IActionResult UpdateUser(IFormCollection data)
         //{
         //    string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);

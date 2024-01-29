@@ -87,73 +87,143 @@ function validateEmailField() {
 }
 // EMail autocomplete
 $('#email').on('keyup', function () {
-    var email = $(this).val();
-    if (email == "") {
-        $('#emailSuggestions').empty();
-    }
-
-    // Only make the AJAX call if at least 3 characters have been entered
-    if (email.length >= 3) {
-        $.ajax({
-            url: '/User/GetEmailSuggestions',
-            type: 'GET',
-            data: { 'email': email },
-            success: function (result) {
-                // clear old suggestions
-                $('#emailSuggestions').empty();
-                $('#emailSuggestions').show();
-
-                // loop through result and append to suggestions div
-                $.each(result, function (key, value) {
-                    $('#emailSuggestions').append('<div class="suggestion">' + value + '</div>');
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error('An error occurred: ', error);
-            }
-        });
-    }
+    getSuggestions('email');
 });
 
-// add click event to all suggestion divs
-$(document).on('click', '.suggestion', function () {
-    var selectedEmail = $(this).text();
-    $('#email').val(selectedEmail);
-    $('#emailSuggestions').empty();
+$('#UserName').on('keyup', function () {
+    getSuggestions('UserName');
 });
-// hide suggestions div when input loses focus, after a short delay
-var timeoutId;
 $('#email').on('blur', function () {
-    timeoutId = setTimeout(function () {
-        $('#emailSuggestions').hide();
-    }, 500); // 500 ms delay
+    let email = $(this).val();
+    if (email == '') {
+        $('#email').val('');
+        $('#UserName').val('');
+        $('#txtUserIdForNewUser').val('');
+        $('#userOtherDetailsDiv').hide();
+    }
+});
+$('#UserName').on('blur', function () {
+    let userName = $(this).val();
+    if (userName == '') {
+        $('#email').val('');
+        $('#UserName').val('');
+        $('#txtUserIdForNewUser').val('');
+        $('#userOtherDetailsDiv').hide();
+    }
 });
 
-$(document).on('mousedown', '.suggestion', function () {
-    clearTimeout(timeoutId);
+
+function getSuggestions(id) {
+    var enteredValue = $('#' + id).val();
+    var queryurl = '';
+    var timerId = null;
+
+    // Determine API endpoint based on input id
+    if (id == "email") {
+        queryurl = '/User/GetEmailSuggestions';
+    } else if (id == "UserName") {
+        queryurl = '/User/GetUserNameSuggestions';
+    } else {
+        console.error('Invalid ID');
+        return;
+    }
+
+    if (enteredValue == "") {
+        $('#' + id + 'Suggestions').empty();
+    }
+    clearTimeout(timerId);
+    timerId = setTimeout(function () {
+        // AJAX call
+        if (enteredValue.length >= 3) {
+            $.ajax({
+                url: queryurl,
+                type: 'GET',
+                data: { [id]: enteredValue },
+                success: function (result) {
+                    $('#' + id + 'Suggestions').empty();
+                    $('#' + id + 'Suggestions').show();
+                    $.each(result, function (key, value) {
+                        $('#' + id + 'Suggestions').append('<div class="suggestion">' + value + '</div>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('An error occurred: ', error);
+                }
+            });
+        }
+    }, 2000);
+}
+$(document).on('click', '.suggestion', function () {
+    var selectedValue = $(this).text();
+    // find the parent container id
+    var parentContainerId = $(this).parent().attr('id');
+    // remove 'Suggestions' from the id to get the input field id
+    var inputFieldId = parentContainerId.replace('Suggestions', '');
+    $('#' + inputFieldId).val(selectedValue);
+    $('#' + parentContainerId).empty();
 });
 $(document).ready(function () {
     handleCB();
     handleRoleCB();
-    $("#btnSearch").click(function (event) {
-        event.preventDefault();
-        var userEmailId = document.getElementById('email').value;
-
-        if (!validateEmailField()) {
-            // If validation fails, prevent form from submitting
-            event.preventDefault();
+    $("#btnSearch").on("click", function (e) {
+        e.preventDefault();
+        // get inputs
+        var email = $("#email").val();
+        var username = $("#UserName").val();
+        if (email == "" && username == "") {
+            alert('Please enter at least one field to search.');
         }
-        else {
+        //check if both fields not empty
+        else if (email != "" && username != "") {
+            alert('Please enter only one field to search');
+            $("#email").val('');
+            $("#UserName").val('');
+        }
+        else if (email != "") {
+            if (!validateEmailField())
+            {
+                // If validation fails, prevent form from submitting
+                event.preventDefault();
+            }
+            else
+            {
+                var form = $('#Userform');
+                $('#loader').show();
+                $.ajax({
+                    url: '/User/GetUserInfo',
+                    data: { userEmailId: email },
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#txtUserIdForNewUser').val(data.userId);
+                        $('#UserName').val(data.userName);
+                        if (data.errorMsg != "" && data.errorMsg != null) {
+                            $('#loader').hide();
+                            alert(data.errorMsg);
+                            return false;
+                        }
+                        $('#loader').hide();
+                        $('#userOtherDetailsDiv').show();
+
+                    },
+                    error: function (error) {
+                        console.log('Error: ', error);
+                    }
+                });
+
+            }
+        }
+        else if (username != "") {
             var form = $('#Userform');
             $('#loader').show();
             $.ajax({
-                url: '/User/GetUserInfo',
-                data: { userEmailId: userEmailId },
+                url: '/User/GetUserInfoByName',
+                data: { userName: username },
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
                     $('#txtUserIdForNewUser').val(data.userId);
-                    $('#UserName').val(data.userName);
+                    $('#email').val(data.userEmail);
                     if (data.errorMsg != "" && data.errorMsg != null) {
                         $('#loader').hide();
                         alert(data.errorMsg);
@@ -167,52 +237,62 @@ $(document).ready(function () {
                     console.log('Error: ', error);
                 }
             });
-
         }
-
-
     });
+    
     $("#btnSave").click(function (event) {
         event.preventDefault();
         var isValid = true;
         let temp = $('#Userform');
         var form = $('#Userform').serialize();
-        if ($('input[name="Role"]:checked').length === 0) {
-            isValid = false;
-            $('#roleSpan').text('Please select at least one role.');
+        if ($('#email').val() == '' || $('#UserName').val() == '') {
+            alert('Please enter both email and user name.');
+            event.preventDefault();
         }
         else {
-            $('#roleSpan').text('');
-        }
-        if ($('input[name="subFunction"]:checked').length === 0) {
-            isValid = false;
-            $('#subFunctionSpan').text('Please select at least one sub function.');
-        }
-        else {
-            $('#subFunctionSpan').text('');
-        }
-        if ($('#activeFlagID').val() === '') {
-            isValid = false;
-            $('#activeSpan').text('Please select status.');
-        }
-        else {
-            $('#activeSpan').text('');
-        }
-        if (isValid) {
 
-            $.ajax({
-                url: '/User/SaveUser',
-                data: form,
-                type: 'POST',
-                success: function (data) {
-                    alert(data);
-                    window.location.href = '/User/ManageUser'
-                },
-                error: function (error) {
-                    console.log('Error: ', error);
-                }
-            });
+            if ($('#UserName').val() == '') {
+                event.preventDefault();
+            }
+            if ($('input[name="Role"]:checked').length === 0) {
+                isValid = false;
+                $('#roleSpan').text('Please select at least one role.');
+            }
+            else {
+                $('#roleSpan').text('');
+            }
+            if ($('input[name="subFunction"]:checked').length === 0) {
+                isValid = false;
+                $('#subFunctionSpan').text('Please select at least one sub function.');
+            }
+            else {
+                $('#subFunctionSpan').text('');
+            }
+            if ($('#activeFlagID').val() === '') {
+                isValid = false;
+                $('#activeSpan').text('Please select status.');
+            }
+            else {
+                $('#activeSpan').text('');
+            }
+            if (isValid) {
+
+                $.ajax({
+                    url: '/User/SaveUser',
+                    data: form,
+                    type: 'POST',
+                    success: function (data) {
+                        alert(data);
+                        window.location.href = '/User/ManageUser'
+                    },
+                    error: function (error) {
+                        console.log('Error: ', error);
+                    }
+                });
+            }
+
         }
+
 
     });
 });

@@ -1,9 +1,9 @@
 ﻿@{
-    ViewData["Title"] = "DataFilter";
+    ViewData["Title"] = "Data Filter";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form asp-controller="ConfigureTemplate" asp-action="SaveDataFilter" type="post">
+<form asp-controller="ConfigureTemplate" asp-action="SaveDataFilterNext" type="post">
     <div class="row">
         <div class="col-md-12 stretch-card grid-margin">
             <div class="card">
@@ -46,7 +46,7 @@
                         <br />
                         <div class="form-group-row">
                             <div class="">
-                                <button type="submit" asp-action="SaveDataFilter" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
+                                <button type="submit" asp-action="SaveDataFilterNext" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
                                     Next
                                 </button>
                             </div>
@@ -62,49 +62,40 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script>
 
-$(document).ready(function(){
-    $('#getSubDimensionsBTN').click(function(){
-        var dimensions = [];
+    $(document).ready(function () {
+        $('#getSubDimensionsBTN').click(function () {
+            var dimensions = [];
             $('input[name="dimensionSelect"]:checked').each(function () {
-                var dimensionName = $(this).next('label').text();
-                dimensions.push(dimensionName);
+                dimensions.push($(this).next('label').text());
             });
 
-        $.ajax({
-            url: '@Url.Action("GetSubDimensionsList", "ConfigureTemplate")',
-            type: 'POST',
-            dataType: 'json',
-            data: { dimensions : dimensions },
+            $.ajax({
+                url: '@Url.Action("GetSubDimensionsList", "ConfigureTemplate")',
+                type: 'POST',
+                dataType: 'json',
+                data: { dimensions: dimensions },
                 success: function (response) {
                     $('#dropdownsContainer').empty();
                     $.each(response, function (dimension, names) {
-                        var dimensionDiv = $('<div class="dropdown"/>');
-                        var dropdownButton = $('<button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-boundary="viewport" data-display="dynamic" data-original-text="' + dimension + '">' + dimension + '</button>');
-                        var dropdownMenu = $('<ul class="dropdown-menu dropdown-menu-bottom" style="height: 200px; overflow-y: auto;">');
+                        var templateArray = ['<div class="dropdown"><button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-boundary="viewport" data-display="dynamic" data-original-text="', dimension, '">', dimension, '</button><ul class="dropdown-menu dropdown-menu-bottom" style="height: 200px; overflow-y: auto;">'];
                         $.each(names, function (i, name) {
                             var id = dimension + '_name_' + i;
-                            dropdownMenu.append('<li><input type="checkbox" id="' + id + '" value="' + name + '"><label for="' + id + '">' + name + '</label></li>');
+                            templateArray.push('<li><input type="checkbox" id="', id, '" value="', name, '"><label for="', id, '">', name, '</label></li>');
                         });
-                        dimensionDiv.append(dropdownButton);
-                        dimensionDiv.append(dropdownMenu);
-                        $('#dropdownsContainer').append(dimensionDiv);
+                        templateArray.push('</ul></div>');
+                        $('#dropdownsContainer').append($(templateArray.join('')));
+                        $('#submitSelectionsID').css('visibility', 'visible');
                     });
-                    $('#submitSelectionsID').css('visibility', 'visible');
-
                 }
+            });
         });
-    });
 
         $(document).on('click', '.dropdown-menu input[type="checkbox"]', function (event) {
             event.stopPropagation();
             var dropdown = $(this).closest('.dropdown');
-            var count = dropdown.find('ul.dropdown-menu').find('input[type="checkbox"]:checked').length;
-            var originalText = dropdown.attr('data-original-text');
-            if (count > 0) {
-                dropdown.find('button').text('Selected count: ' + count);
-            } else {
-                dropdown.find('button').text(originalText);
-            }
+            var count = dropdown.find('input[type="checkbox"]:checked').length;
+            var originalText = $(this).prevAll('button').data('original-text');
+            dropdown.find('button').text(count ? 'Selected count: ' + count : originalText);
         });
 
         $('form').on('submit', function (e) {
@@ -112,35 +103,39 @@ $(document).ready(function(){
 
             var selectedDimensions = [];
             $('input[name="dimensionSelect"]:checked').each(function () {
-                var dimensionName = $(this).next('label').text();
-                selectedDimensions.push(dimensionName);
+                selectedDimensions.push($(this).val());
             });
 
             var selectedMasterNames = {};
-            $('.dropdown').each(function () {
-                var dimensionName = $(this).find('button').text();
+            $('.dropdown > button').each(function () {
+                var dimensionName = $(this).data('original-text');;
                 selectedMasterNames[dimensionName] = [];
-                $(this).find('input[type="checkbox"]:checked').each(function () {
-                    var masterName = $(this).next('label').text();
-                    selectedMasterNames[dimensionName].push(masterName);
+
+                // This is the corrected way to obtain the checked items of each dimension
+                $(this).siblings('.dropdown-menu').find('input[type="checkbox"]:checked').each(function () {
+                    selectedMasterNames[dimensionName].push($(this).attr('value'));
                 });
+                debugger;
             });
 
             $.ajax({
-                url: $(this).attr('action'), // using form action url
+                url: $(this).attr('action'),
                 type: 'POST',
-                data: {
+                data: JSON.stringify({
+                    configId: $('input[name="configID"]').val(),
                     dimensions: selectedDimensions,
-                    masterNames: selectedMasterNames // sending object instead of array
-                },
+                    masterNames: selectedMasterNames
+                }),
+                contentType: 'application/json',
+                dataType: 'json',
                 success: function (response) {
-                    // handle response
+                    window.location.href = response;
                 },
                 error: function (error) {
                     // handle error
                 }
             });
         });
-});
+    });
 </script>
 

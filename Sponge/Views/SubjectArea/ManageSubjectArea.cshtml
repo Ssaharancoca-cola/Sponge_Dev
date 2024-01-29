@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<Sponge.ViewModel.SubjectArea>
 @{
+     var textInfo = new System.Globalization.CultureInfo("en-US", false).TextInfo;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="row">
@@ -38,9 +39,9 @@
                                 <tr>
                                     <td>@item.SpgSubfunction.SUBFUNCTION_NAME</td>
                                     <td>@item.SpgSubjectArea.SUBJECTAREA_NAME</td>
-                                    <td>@item.SpgSubjectArea.REPORTING_PERIOD</td>
-                                    <td>@item.SpgSubjectArea.FREQUENCY</td>
-                                    <td>@item.SpgSubjectArea.TIME_LEVEL</td>
+                                    <td>@textInfo.ToTitleCase(item.SpgSubjectArea.REPORTING_PERIOD.ToLower())</td>
+                                    <td>@textInfo.ToTitleCase(item.SpgSubjectArea.FREQUENCY.ToLower())</td>
+                                    <td>@textInfo.ToTitleCase(item.SpgSubjectArea.TIME_LEVEL.ToLower())</td>
                                     <td>@item.SpgSubjectArea.ACTIVE_FLAG</td>
                                     <td>
                                         <a href="@Url.Action("EditSubjectArea", "SubjectArea", new {id = item.SpgSubjectArea.SUBJECTAREA_ID})" class="btn btn-outline-primary btn-icon-text">
