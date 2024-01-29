@@ -120,7 +120,7 @@
                         var $Uploadcontainer = $("#dvUploadExcelDetails").empty();
                         if (data.errorList.length > 0) {
                             for (var i = 0; i < data.errorList.length; ++i) {
-                                if (data.errorList[i].errorType == 'E') {
+                                if (data.errorList[i].errorType == 'E' || data.errorList[i].errorType == 'F') {
                                     var ErrorList = {};
                                     ErrorList.FileName = data.errorList[i].fileName
                                     ErrorList.ErrorMessage = data.errorList[i].errorMessage

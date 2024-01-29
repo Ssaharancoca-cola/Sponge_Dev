@@ -40,8 +40,8 @@
                                         <tr>
                                             <td><input type="checkbox" class="selectItem" name="SelectedChkBox" value="@item.Document.ID"></td>
                                             <td>@item.Users.Name</td>
-                                            <td>@(item.Template.LOCK_DATE != null ? item.Template.LOCK_DATE.Value.ToString("dd/MM/yyyy") : "")</td>
-                                            <td>@(item.Document.UPLOADDATE != null ? item.Document.UPLOADDATE.Value.ToString("dd/MM/yyyy") : "")</td>
+                                            <td>@(item.Template.LOCK_DATE != null ? item.Template.LOCK_DATE.Value.ToString("MMM/dd/yyyy") : "")</td>
+                                            <td>@(item.Document.UPLOADDATE != null ? item.Document.UPLOADDATE.Value.ToString("MMM/dd/yyyy") : "")</td>
 
                                             <td>@item.SubjectArea.SUBJECTAREA_NAME</td>
                                             <td>@Html.ActionLink("Download", "Download", new {configId = item.Configuration.CONFIG_ID, documentId = @item.Document.ID }, new { @class = "btn btn-primary" })</td>
