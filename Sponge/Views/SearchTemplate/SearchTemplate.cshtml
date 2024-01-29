@@ -175,7 +175,10 @@
                                     render: function (data, type, row) {
                                         if (data) {
                                             var date = new Date(data);
-                                            var formattedDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+                                            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                                            ];
+                                            var formattedDate = monthNames[date.getMonth()] + '/' + date.getDate() + '/' + date.getFullYear();
                                             return formattedDate;
                                         } else {
                                             return '';

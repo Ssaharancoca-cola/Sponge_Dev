@@ -100,6 +100,7 @@ $('#email').on('blur', function () {
         $('#UserName').val('');
         $('#txtUserIdForNewUser').val('');
         $('#userOtherDetailsDiv').hide();
+        $('#emailSuggestions').hide();
     }
 });
 $('#UserName').on('blur', function () {
@@ -109,6 +110,7 @@ $('#UserName').on('blur', function () {
         $('#UserName').val('');
         $('#txtUserIdForNewUser').val('');
         $('#userOtherDetailsDiv').hide();
+        $('#UserNameSuggestions').hide();
     }
 });
 
@@ -129,29 +131,39 @@ function getSuggestions(id) {
     }
 
     if (enteredValue == "") {
-        $('#' + id + 'Suggestions').empty();
+        $('#' + id + 'Suggestions').hide();
     }
-    clearTimeout(timerId);
-    timerId = setTimeout(function () {
-        // AJAX call
-        if (enteredValue.length >= 3) {
-            $.ajax({
-                url: queryurl,
-                type: 'GET',
-                data: { [id]: enteredValue },
-                success: function (result) {
+    
+
+    if (enteredValue.length >= 3) {
+        $('#' + id + 'Suggestions').empty();
+        $('#' + id + 'Suggestions').show();
+        $('#' + id + 'Suggestions').append('<div class="suggestion">Searching...</div>');
+        $.ajax({
+            url: queryurl,
+            type: 'GET',
+            data: { [id]: enteredValue },
+            success: function (result) {
+                if ($('#' + id).val() != '') { // check if the input field is not empty 
                     $('#' + id + 'Suggestions').empty();
                     $('#' + id + 'Suggestions').show();
-                    $.each(result, function (key, value) {
-                        $('#' + id + 'Suggestions').append('<div class="suggestion">' + value + '</div>');
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error('An error occurred: ', error);
+                    if (result.length !== 0) { // check if we have suggestions
+                        $.each(result, function (key, value) {
+                            $('#' + id + 'Suggestions').append('<div class="suggestion">' + value + '</div>');
+                        });
+                    }
+                    else { // in case there are no suggestions
+                        $('#' + id + 'Suggestions').append('<div class="suggestion">No results</div>');
+                    }
+                } else {
+                    $('#' + id + 'Suggestions').hide();
                 }
-            });
-        }
-    }, 2000);
+            },
+            error: function (xhr, status, error) {
+                console.error('An error occurred: ', error);
+            }
+        });
+    }
 }
 $(document).on('click', '.suggestion', function () {
     var selectedValue = $(this).text();
@@ -161,6 +173,7 @@ $(document).on('click', '.suggestion', function () {
     var inputFieldId = parentContainerId.replace('Suggestions', '');
     $('#' + inputFieldId).val(selectedValue);
     $('#' + parentContainerId).empty();
+    $('#' + parentContainerId).hide();
 });
 $(document).ready(function () {
     handleCB();
@@ -180,13 +193,11 @@ $(document).ready(function () {
             $("#UserName").val('');
         }
         else if (email != "") {
-            if (!validateEmailField())
-            {
+            if (!validateEmailField()) {
                 // If validation fails, prevent form from submitting
                 event.preventDefault();
             }
-            else
-            {
+            else {
                 var form = $('#Userform');
                 $('#loader').show();
                 $.ajax({
@@ -239,7 +250,7 @@ $(document).ready(function () {
             });
         }
     });
-    
+
     $("#btnSave").click(function (event) {
         event.preventDefault();
         var isValid = true;
