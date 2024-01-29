@@ -15,7 +15,7 @@
                         <div class="col-sm-4 col-md-4">
                             <label for="subjectAreaName">Subject Area Name</label>
                             <select class="form-control" id="subjectArea" name="SubjectArea">
-                                <option selected>Select</option>
+                                <option selected disabled value = "Select">Select</option>
                                 @foreach (var f in ViewBag.SubjectArea)
                                 {
                                     <option value="@f.Text">@f.Value</option>
@@ -78,7 +78,10 @@
 
 <!-- endinject -->
 <script>
-
+    window.onbeforeunload = function() {
+    const dropdown = document.getElementById('subjectArea'); // Replace with your dropdown id
+    dropdown.value = "Select"; 
+};
     $(document).ready(function () {
         $('#subjectArea').change(function () {
             var subjectArea = $(this).val();
@@ -91,8 +94,8 @@
                         var content = '';
                         if (data || data.length) {
                             var table = document.getElementById('example');
-                            while (table.rows.length > 0) {
-                                table.deleteRow(0);
+                            while (table.rows.length > 1) {
+                                table.deleteRow(1);
                             }
                             var tableBody = $("#example tbody");
                             $.each(data, function (i, username) {

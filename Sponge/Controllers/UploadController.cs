@@ -939,10 +939,11 @@ namespace Sponge.Controllers
 
                 }
                 mailBodyplaceHolders.Add("<Custom>", DimensionName.ToString().Replace(",", ""));
-                mailBodyplaceHolders.Add("<ForTime>", objFileModel.ForTime);
-                mailBodyplaceHolders.Add("<OnTime>", objFileModel.OnTime);
-                mailBodyplaceHolders.Add("<LockDate>", objFileModel.LockDate.ToString());
-                mailBodyplaceHolders.Add("<UploadDate>", DateTime.Now.Date.ToString());
+
+                mailBodyplaceHolders.Add("<ForTimeCode>", Convert.ToDateTime(objFileModel.PERIOD_FROM).ToString("MMM/dd/yyyy"));
+                mailBodyplaceHolders.Add("<OnTimeCode>", Convert.ToDateTime(objFileModel.PERIOD_TO).ToString("MMM/dd/yyyy"));
+                mailBodyplaceHolders.Add("<LockDate>", Convert.ToDateTime(objFileModel.LockDate).ToString("MMM/dd/yyyy"));
+                mailBodyplaceHolders.Add("<UploadDate>", DateTime.Now.Date.ToString("MMM/dd/yyyy")); 
                 string DataCollectionSubject = "[Sponge] - Document approval request for " + objFileModel.FileName.Replace(".xlsx", "") + "";
                 string mailbody = "";
                 string messageTemplatePath = _settings.Value.MailToApprover;

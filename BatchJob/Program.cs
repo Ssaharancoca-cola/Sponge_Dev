@@ -952,9 +952,9 @@ namespace BatchJob
                                 NameValueCollection mailBodyplaceHolders = new NameValueCollection();
                                 mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
                                 mailBodyplaceHolders.Add("<SubjectArea>", ChangedSubjectArea);
-                                mailBodyplaceHolders.Add("<ForTimeCode>", Convert.ToDateTime(PeriodFrom).ToString("dd/MMM/yyyy"));
-                                mailBodyplaceHolders.Add("<OnTimeCode>", Convert.ToDateTime(PeriodTo).ToString("dd/MMM/yyyy"));
-                                mailBodyplaceHolders.Add("<LockDate>", dtlockdate.ToString());
+                                mailBodyplaceHolders.Add("<ForTimeCode>", Convert.ToDateTime(PeriodFrom).ToString("MMM/dd/yyyy"));
+                                mailBodyplaceHolders.Add("<OnTimeCode>", Convert.ToDateTime(PeriodTo).ToString("MMM/dd/yyyy"));
+                                mailBodyplaceHolders.Add("<LockDate>", Convert.ToDateTime(dtlockdate.ToString()).ToString("MMM/dd/yyyy"));
                                 mailBodyplaceHolders.Add("<Custom>", custom.ToString());
                                 //Format the header    
                                 string DataCollectionSubject = "[Sponge] - Data collection template for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
