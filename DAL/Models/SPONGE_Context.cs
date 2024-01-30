@@ -35,7 +35,6 @@ namespace DAL.Models
         public virtual DbSet<SPG_SUBJECTAREA> SPG_SUBJECTAREA { get; set; }
         public virtual DbSet<SPG_SUBJECT_DATACOLLECTION> SPG_SUBJECT_DATACOLLECTION { get; set; }
         public virtual DbSet<SPG_SUBJECT_DIMENSION> SPG_SUBJECT_DIMENSION { get; set; }
-        public virtual DbSet<SPG_SUBJECT_GENERIC_MASTER> SPG_SUBJECT_GENERIC_MASTER { get; set; }
         public virtual DbSet<SPG_SUBJECT_MASTER> SPG_SUBJECT_MASTER { get; set; }
         public virtual DbSet<SPG_TEMPLATE> SPG_TEMPLATE { get; set; }
         public virtual DbSet<SPG_TIMECODE> SPG_TIMECODE { get; set; }
@@ -54,7 +53,6 @@ namespace DAL.Models
                 //optionsBuilder.UseSqlServer("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True");
             }
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SPG_APPROVALSTATUS>(entity =>
@@ -423,6 +421,10 @@ namespace DAL.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.CREATED_ON).HasColumnType("date");
+
+                entity.Property(e => e.DIMENSION_TABLE)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.FILTER_TEXT)
                     .HasMaxLength(1000)
@@ -939,38 +941,6 @@ namespace DAL.Models
                 entity.Property(e => e.MODIFIED_DATE).HasColumnType("datetime");
 
                 entity.Property(e => e.MPP_DIMENSION_NAME)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-            });
-
-            modelBuilder.Entity<SPG_SUBJECT_GENERIC_MASTER>(entity =>
-            {
-                entity.HasKey(e => e.SUBJECT_GENERIC_ID)
-                    .HasName("PK__SPG_SUBJ__A86B436D15109988");
-
-                entity.Property(e => e.DIMENSION_TABLE)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.DISPLAY_NAME)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.FIELD_NAME)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.IS_KEY)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.IS_SHOW)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.MASTER_NAME)
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });

@@ -17,10 +17,11 @@ namespace DAL.Models
         Task<List<SP_GET_MPP_DIMENSIONSResult>> SP_GET_MPP_DIMENSIONSAsync(OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GET_MPP_MASTERSResult>> SP_GET_MPP_MASTERSAsync(string Dimension_Name, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<int> SP_GETDATATYPECOUNTERAsync(int? p_subjectAreaID, string p_DATA_TYPE, OutputParameter<string> outputParameter, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
-        Task<int> SP_GETFILTERATION_DATAAsync(string p_MasterName, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<int> SP_GETFILTERATION_DATAAsync(string p_DimensionName, string p_MasterName, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GETMASTEREMAILResult>> SP_GETMASTEREMAILAsync(int? p_ConfigID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_GETUPLOADPENDINGResult>> SP_GETUPLOADPENDINGAsync(string p_USERID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_PENDINGFORAPPROVALResult>> SP_PENDINGFORAPPROVALAsync(string p_USERID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>> SP_UPDATEWHERECLAUSE_WITHCONFIGIDAsync(int? p_configid, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<SP_UPLOADEDTEMPLATEResult>> SP_UPLOADEDTEMPLATEAsync(string p_USERID, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
     }
 }

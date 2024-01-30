@@ -41,6 +41,7 @@ namespace DAL.Models
             modelBuilder.Entity<SP_GETMASTEREMAILResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GETUPLOADPENDINGResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_PENDINGFORAPPROVALResult>().HasNoKey().ToView(null);
+            modelBuilder.Entity<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_UPLOADEDTEMPLATEResult>().HasNoKey().ToView(null);
         }
     }
@@ -214,7 +215,7 @@ namespace DAL.Models
             return _;
         }
 
-        public virtual async Task<int> SP_GETFILTERATION_DATAAsync(string p_MasterName, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        public virtual async Task<int> SP_GETFILTERATION_DATAAsync(string p_DimensionName, string p_MasterName, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
         {
             var parameterreturnValue = new SqlParameter
             {
@@ -227,6 +228,13 @@ namespace DAL.Models
             {
                 new SqlParameter
                 {
+                    ParameterName = "p_DimensionName",
+                    Size = -1,
+                    Value = p_DimensionName ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
                     ParameterName = "p_MasterName",
                     Size = -1,
                     Value = p_MasterName ?? Convert.DBNull,
@@ -234,7 +242,7 @@ namespace DAL.Models
                 },
                 parameterreturnValue,
             };
-            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[SP_GETFILTERATION_DATA] @p_MasterName", sqlParameters, cancellationToken);
+            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[SP_GETFILTERATION_DATA] @p_DimensionName, @p_MasterName", sqlParameters, cancellationToken);
 
             returnValue?.SetValue(parameterreturnValue.Value);
 
@@ -315,6 +323,32 @@ namespace DAL.Models
                 parameterreturnValue,
             };
             var _ = await _context.SqlQueryAsync<SP_PENDINGFORAPPROVALResult>("EXEC @returnValue = [dbo].[SP_PENDINGFORAPPROVAL] @p_USERID", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>> SP_UPDATEWHERECLAUSE_WITHCONFIGIDAsync(int? p_configid, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_configid",
+                    Value = p_configid ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>("EXEC @returnValue = [dbo].[SP_UPDATEWHERECLAUSE_WITHCONFIGID] @p_configid", sqlParameters, cancellationToken);
 
             returnValue?.SetValue(parameterreturnValue.Value);
 

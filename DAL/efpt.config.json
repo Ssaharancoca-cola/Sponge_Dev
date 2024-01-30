@@ -80,10 +80,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[SPG_SUBJECT_GENERIC_MASTER]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[SPG_SUBJECT_MASTER]",
          "ObjectType": 0
       },
@@ -157,6 +153,10 @@
       },
       {
          "Name": "[dbo].[SP_PENDINGFORAPPROVAL]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[SP_UPDATEWHERECLAUSE_WITHCONFIGID]",
          "ObjectType": 1
       },
       {
