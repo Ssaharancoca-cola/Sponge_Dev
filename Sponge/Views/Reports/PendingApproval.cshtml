@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<Sponge.ViewModel.PendingApprovalReport>
 @{
+    ViewData["Title"] = "Reports";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="row">
@@ -43,11 +44,8 @@
     new DataTable('#example', {
         order: [[3, 'desc']]
     });
-</script>
-<script src="~/assists/js/hoverable-collapse.js"></script>
-<script src="~/assists/js/template.js"></script>
 
-<script>
+    //Initialize the Multiselect Dropdown:
     const chBoxes = document.querySelectorAll('.dropdown-menu input[type="checkbox"]');
     const dpBtn = document.getElementById('multiSelectDropdown');
     let mySelectedListItems = [];
@@ -73,3 +71,4 @@
     });
 </script>
 
+<!-- End plugin js for this page -->

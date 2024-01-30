@@ -62,7 +62,6 @@ namespace DAL.Models
                 //optionsBuilder.UseSqlServer("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True");
             }
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DIM_BUSINESSORG>(entity =>

@@ -1,6 +1,8 @@
 ﻿@model Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var configId = TempData["ConfigId"];
+    TempData.Keep();
     var userName = Context.Session.GetString("thisUserName");
     var subjectAreaName = Context.Session.GetString("thisSubjectAreaName");
 }
@@ -47,8 +49,8 @@
                                 <div class="forms-sample">
                                     <div class="form-group row">
                                         <div class="col-5">
-                                            <label for="selectedDimension">@master.Key values</label>
-                                            <select class="form-control select-lr leftSelect_@i" multiple>
+                                            <label for="selectedMaster">@master.Key values</label>
+                                            <select class="form-control select-lr leftSelect_@i"  multiple>
                                                 @foreach (var item in master.Value)
                                                 {
                                                     var secondColumnCode = item.ElementAt(0).Value;
@@ -62,8 +64,8 @@
                                             <button class="moveLeft btn btn-primary"> &lt; </button>
                                         </div>
                                         <div class="col-5">
-                                            <label for="Effected From">Selected @master.Key values</label>
-                                            <select class="form-control select-lr rightSelect_@i" multiple>
+                                            <label for="selectedMaster">Selected @master.Key values</label>
+                                            <select class="form-control select-lr rightSelect_@i" data-idx="@master.Key" multiple>
                                                 <!-- Selected options will be moved here -->
                                             </select>
                                         </div>
@@ -87,7 +89,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script>
     var initialData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
-
+    var configId = '@configId';
     window.leftToRightMultiSelect = function (counter, options) {
         var settings = $.extend({
             moveRightButton: '.moveRight',
@@ -139,44 +141,33 @@
     {
         <text>window.leftToRightMultiSelect(@j); </text>
     }
+
         $("#submit").click(function () {
             var selectedValues = {};
-            debugger;
-            // iterate over tab contents
-            $('.tab-content > .tab-pane').each(function () {
-                var $tab = $(this);
-                var tabId = $tab.attr('id');
+            $('select[class*="rightSelect_"]').each(function () {
+                var $select = $(this);
+                var dimensionName = $select.closest('.tab-pane').attr('id'); // Get dimension name from parent's id
+                var masterKey = $select.data("idx"); // Get master key from data attribute
 
-                // iterate over selected options in current tab content
-                $tab.find("select[class='rightSelect_']").each(function () {
-                    var classes = $(this).attr('class').split(/\s+/);
-                    var masterKey = $.grep(classes, function (item, i) {
-                        return item.match(/rightSelect_/);
-                    })[0].substring(12);
+                var options = $select.children("option");
+                var values = options.map(function () {
+                    return this.value;
+                }).toArray();
 
-                    var options = $(this).children("option");
-                    var values = options.map(function () {
-                        return this.value;
-                    }).toArray();
+                if (!(dimensionName in selectedValues)) {
+                    selectedValues[dimensionName] = {};
+                }
+                if (!(masterKey in selectedValues[dimensionName])) {
+                    selectedValues[dimensionName][masterKey] = [];
+                }
 
-                    // logging values to the console for debugging
-                    console.log({ masterKey, values });
-
-                    if (!(tabId in selectedValues)) {
-                        selectedValues[tabId] = {};
-                    }
-                    if (!(masterKey in selectedValues[tabId])) {
-                        selectedValues[tabId][masterKey] = [];
-                    }
-
-                    selectedValues[tabId][masterKey] = values;
-                });
+                selectedValues[dimensionName][masterKey] = values;
             });
 
-            // check the value of `selectedValues`
-            console.log(selectedValues);
-
-            $.post("/ConfigureTemplate/SaveSelectedValues", { data: JSON.stringify(selectedValues) }, function (response) {
+            $.post("/ConfigureTemplate/SaveSelectedValues", {
+                data: JSON.stringify(selectedValues),
+                configId: configId
+            }, function (response) {
                 // Handle the response here
             });
         });

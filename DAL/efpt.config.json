@@ -192,6 +192,10 @@
          "ObjectType": 1
       },
       {
+         "Name": "[dbo].[SP_UPDATEWHERECLAUSE_WITHCONFIGID]",
+         "ObjectType": 1
+      },
+      {
          "Name": "[dbo].[SP_UPLOADEDTEMPLATE]",
          "ObjectType": 1
       }

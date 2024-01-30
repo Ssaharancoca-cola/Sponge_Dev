@@ -7,6 +7,9 @@
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
             <div class="card-body">
+                <p class="card-title">
+                    Edit Subject Area
+                </p>
                 <form action="@Url.Action("UpdateSubjectArea", "SubjectArea", new {id = Model.SpgSubjectArea.SUBJECTAREA_ID, activeFlag = Model.SpgSubjectArea.ACTIVE_FLAG})" method="post">
                     <div class="form-group row">
                         <div class="col-sm-4">
@@ -43,7 +46,7 @@
                     </div>
                     @if (@Model.SpgSubjectArea.VERSION == "Y")
                     {
-                        <div class="form-group">
+                        <div class="form-group row">
                             <div class="col-sm-4">
                             <label>OnTime</label>
                             <input type="text" class="form-control" value="@Model.SpgSubjectArea.ONTIMELEVEL" readonly />
@@ -51,7 +54,7 @@
                         </div>
                     }                    
 
-                    <div class="form-group">
+                    <div class="form-group row">
                         <div class="col-sm-4">
                             <label for="Active">Active</label>
                             <select asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">

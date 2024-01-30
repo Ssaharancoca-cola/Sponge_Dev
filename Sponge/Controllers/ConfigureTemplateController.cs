@@ -287,6 +287,27 @@ namespace Sponge.Controllers
             }
             return Json(dimensionData);
         }
+        public async Task<IActionResult> GetEmailSuggestions(string email, int configid)
+        {
+            using (var sPONGE_Context = new SPONGE_Context())
+            {
+                var matchingEmails = await (from u in sPONGE_Context.SPG_USERS
+                                            join o in sPONGE_Context.SPG_USERS_FUNCTION on u.USER_ID equals o.USER_ID
+
+                                            join c in sPONGE_Context.SPG_CONFIGURATION on configid equals c.CONFIG_ID
+                                            join s in sPONGE_Context.SPG_SUBJECTAREA on c.SUBJECTAREA_ID equals s.SUBJECTAREA_ID
+                                            where u.EMAIL_ID.Contains(email) 
+                                           && (o.ROLE_ID == 4 || o.ROLE_ID == 5) && o.SUB_FUNCTION_ID == s.SUBFUNCTION_ID
+                                            select new
+                                            {
+                                                EMAIL_ID = u.EMAIL_ID,
+
+                                            }).Distinct().ToListAsync();
+                if (!matchingEmails.Any()) return NotFound();
+
+                return Ok(matchingEmails);
+            }
+        }
         //public IActionResult SaveDataFilter(IFormCollection formData)
         //{
         //    int count = 0;
@@ -367,31 +388,33 @@ namespace Sponge.Controllers
            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context _Context = new();
             var configId = data.ConfigId;
-            var dimensions = data.Dimensions;
+            //var dimensions = data.Dimensions;
             var masterNames = data.MasterNames;
-            foreach (string dimension in dimensions)
+            foreach (var dimension in masterNames)
             {
-                if (masterNames.ContainsKey(dimension))
+
+                foreach (string masterName in dimension.Value)
                 {
-                    foreach (string masterName in masterNames[dimension])
+                    var dimensioncode = _Context.SPG_MPP_MASTER.Where(x => x.MPP_DIMENSION_NAME == dimension.Key)
+    .Select(x => x.DIMENSION_TABLE).FirstOrDefault();
+                    var mastercode = _Context.SPG_MPP_MASTER.Where(x => x.MASTER_DISPLAY_NAME == masterName && x.MPP_DIMENSION_NAME == dimension.Key)
+    .Select(x => x.MASTER_NAME).FirstOrDefault();
+                    // Create a new entity for your table
+                    SPG_CONFIG_FILTERS entity = new SPG_CONFIG_FILTERS
                     {
-                        // Create a new entity for your table
-                        SPG_CONFIG_FILTERS entity = new SPG_CONFIG_FILTERS
-                        {
-                            CONFIG_ID = configId,
-                            DIMENSION_TABLE = dimension,
-                            MASTER_COLUMN = masterName,
-                            CREATED_BY = userName[1],
-                            CREATED_ON = DateTime.Now
-                        };
-                        // Add the entity to your context
-                        _Context.SPG_CONFIG_FILTERS.Add(entity);
-                    }
+                        CONFIG_ID = configId,
+                        DIMENSION_TABLE = dimensioncode,
+                        MASTER_COLUMN = mastercode,
+                        CREATED_BY = userName[1],
+                        CREATED_ON = DateTime.Now
+                    };
+                    // Add the entity to your context
+                    _Context.SPG_CONFIG_FILTERS.Add(entity);
                 }
             }
             TempData["Masters"] = JsonConvert.SerializeObject(masterNames);
-            
-            // Save changes to the database
+            TempData["ConfigId"] = configId;
+                // Save changes to the database
             _Context.SaveChanges();
 
             ViewBag.ThisUserName = HttpContext.Session.GetString("thisUserName");
@@ -403,6 +426,7 @@ namespace Sponge.Controllers
         public async Task<IActionResult> SaveDataFilter()
         {
             var serializedData = TempData["Masters"];
+            var configID = TempData["ConfigId"];
             var masterNames = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>((string)serializedData);
             SPONGE_Context _Context = new();
             var masterValuesDictionary = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
@@ -455,12 +479,53 @@ namespace Sponge.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveSelectedValues(string data)
+        public IActionResult SaveSelectedValues(string data, int configId)
         {
-            // parse the JSON string back to a dictionary
-            var selectedValues = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>(data);
-         
-    return Json(new { Success = true });
+            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+            Dictionary<string, Dictionary<string, List<string>>> selectedValues =
+                  JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>(data);
+            SPONGE_Context _context = new();
+            var newEntities = new List<SPG_CONFIG_FILTERS_VALUE>();
+
+            foreach (var dimension in selectedValues)
+            {
+                var dimensionCode = _context.SPG_MPP_MASTER.Where(x => x.MPP_DIMENSION_NAME == dimension.Key)
+                                      .Select(x => x.DIMENSION_TABLE).FirstOrDefault();
+                foreach (var master in dimension.Value)
+                {
+                    var mastercode = _context.SPG_MPP_MASTER.Where(x => x.MASTER_DISPLAY_NAME == master.Key && x.MPP_DIMENSION_NAME == dimension.Key)
+                                      .Select(x => x.MASTER_NAME).FirstOrDefault();
+                    foreach (var values in master.Value)
+                    {
+                        var entity = new SPG_CONFIG_FILTERS_VALUE
+                        {
+                            DIMENSION_TABLE = dimensionCode,
+                            MASTER_NAME = mastercode,
+                            FILTER_VALUE = values,
+                            CONFIG_ID = configId,
+                            CREATED_ON = DateTime.Now,
+                            CREATED_BY = userName[1]
+                        };
+                        newEntities.Add(entity);
+                    }
+                }
+            }
+
+            try
+            {
+                _context.SPG_CONFIG_FILTERS_VALUE.AddRange(newEntities);
+                _context.SaveChanges();
+
+                var test = _context.Procedures.SP_UPDATEWHERECLAUSE_WITHCONFIGIDAsync(configId);
+            }
+            catch (Exception e)
+            {
+                // Log the error message and throw the exception
+                // LogError(e.Message);
+                throw;
+            }
+
+            return Json(new { Success = true });
         }
         //#region Filtration
         //public ActionResult GetAllDimensions(int id, int subjectAreaId, string UserName)

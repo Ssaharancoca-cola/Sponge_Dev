@@ -41,6 +41,7 @@ namespace DAL.Models
             modelBuilder.Entity<SP_GETMASTEREMAILResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_GETUPLOADPENDINGResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_PENDINGFORAPPROVALResult>().HasNoKey().ToView(null);
+            modelBuilder.Entity<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>().HasNoKey().ToView(null);
             modelBuilder.Entity<SP_UPLOADEDTEMPLATEResult>().HasNoKey().ToView(null);
         }
     }
@@ -322,6 +323,32 @@ namespace DAL.Models
                 parameterreturnValue,
             };
             var _ = await _context.SqlQueryAsync<SP_PENDINGFORAPPROVALResult>("EXEC @returnValue = [dbo].[SP_PENDINGFORAPPROVAL] @p_USERID", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>> SP_UPDATEWHERECLAUSE_WITHCONFIGIDAsync(int? p_configid, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "p_configid",
+                    Value = p_configid ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<SP_UPDATEWHERECLAUSE_WITHCONFIGIDResult>("EXEC @returnValue = [dbo].[SP_UPDATEWHERECLAUSE_WITHCONFIGID] @p_configid", sqlParameters, cancellationToken);
 
             returnValue?.SetValue(parameterreturnValue.Value);
 
