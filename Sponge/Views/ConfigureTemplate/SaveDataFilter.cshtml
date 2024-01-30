@@ -1,12 +1,17 @@
 ﻿@model Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var userName = Context.Session.GetString("thisUserName");
+    var subjectAreaName = Context.Session.GetString("thisSubjectAreaName");
 }
 
 <div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
+                <p class="card-title">
+                    Data Filter -> @subjectAreaName -> @userName
+                </p>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     @{
                         var i = 0;  // Counter outside of foreach for unique id for each group of components

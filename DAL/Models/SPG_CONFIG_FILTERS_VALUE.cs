@@ -19,5 +19,7 @@ namespace DAL.Models
         public string FLAG_CODE { get; set; }
         public string FLAG_NAME { get; set; }
         public string MASTER_NAME { get; set; }
+        public int? CONFIG_ID { get; set; }
+        public string DIMENSION_TABLE { get; set; }
     }
 }

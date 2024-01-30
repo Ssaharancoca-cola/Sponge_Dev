@@ -16,6 +16,42 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "[dbo].[DIM_BUSINESSORG]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_BUSINESSORG_test]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_CUSTOMER]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_GEOGRAPHY]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_LOOKUP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_LOOKUP_test]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_OUTLETSEGMENTATION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_PRODUCT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DIM_SALESORG]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[SPG_APPROVALSTATUS]",
          "ObjectType": 0
       },
@@ -77,10 +113,6 @@
       },
       {
          "Name": "[dbo].[SPG_SUBJECT_DIMENSION]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[SPG_SUBJECT_GENERIC_MASTER]",
          "ObjectType": 0
       },
       {

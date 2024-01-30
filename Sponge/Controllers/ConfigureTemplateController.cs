@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Linq;
 using System.Diagnostics.Metrics;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http;
 
 namespace Sponge.Controllers
 {
@@ -38,7 +39,8 @@ namespace Sponge.Controllers
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME, o.SUBJECTAREA_ID }).Distinct();
             ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
-           
+            
+
             return View();
         }
         public IActionResult SetUp(int configID)
@@ -191,10 +193,14 @@ namespace Sponge.Controllers
                                 username = g.Key.Name,
                                 activeflag  = g.Key.ACTIVE_FLAG
                             };
-         
+           
+            // TO check if the data is already saved in SPG_Config_filter for this config id
+            var savedConfigIDs = (from U in usernames
+                                  join CFV in context.SPG_CONFIG_FILTERS_VALUE on U.configID equals CFV.CONFIG_ID
+                                  select U.configID).Distinct().ToList();
 
             // UserInfo = query.ToList();
-            return Json(usernames);
+            return Json(new { Usernames = usernames, SavedConfigIDs = savedConfigIDs });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -208,8 +214,39 @@ namespace Sponge.Controllers
         public IActionResult DataFilter(int subjectAreaId,int configId) {
             SPONGE_Context spONGE_Ctx = new();
             //var subjectAreaId = spONGE_Ctx.SPG_CONFIG_STRUCTURE.Where(x => x.CONFIG_ID == configID).Select(x => x.SUBJECTAREA_ID).FirstOrDefault();
-            ViewBag.ConfigID = configId;
+            if(configId != null)
+            ViewBag.configID = configId;
+            // To reterive and get the current user name for selected data filter
+            var selectedUser = (from config in spONGE_Ctx.SPG_CONFIGURATION
+                                join user in spONGE_Ctx.SPG_USERS
+                                on config.USER_ID equals user.USER_ID
+                                where config.CONFIG_ID == configId
+                                select new
+                                {
+                                    UserId = config.USER_ID,
+                                    UserName = user.Name
+                                }).FirstOrDefault();
 
+            var selectedSubjectAreaName = (from sbjArea in spONGE_Ctx.SPG_SUBJECTAREA
+                                           where sbjArea.SUBJECTAREA_ID == subjectAreaId
+                                           select sbjArea.SUBJECTAREA_NAME).FirstOrDefault();
+            ViewBag.ThisUserName = selectedUser.UserName;
+            ViewBag.ThisSubjectAreaName = selectedSubjectAreaName;
+            if (selectedUser != null)
+            {
+                HttpContext.Session.SetString("thisUserName", selectedUser.UserName);
+            }
+
+            if (!string.IsNullOrEmpty(selectedSubjectAreaName))
+            {
+                HttpContext.Session.SetString("thisSubjectAreaName", selectedSubjectAreaName);
+            }
+            // TO check if the data is already saved in SPG_Config_filter for this config id
+            bool checkIfSaved = (from x in spONGE_Ctx.SPG_CONFIG_FILTERS
+                                where x.CONFIG_ID == configId
+                                select x).Any();
+
+            ViewBag.CheckIfSaved = checkIfSaved;
             var dimensionList = (from x in spONGE_Ctx.SPG_SUBJECT_DIMENSION
                                  where x.SUBJECTAREA_ID == subjectAreaId
                                  select new
@@ -356,6 +393,9 @@ namespace Sponge.Controllers
             
             // Save changes to the database
             _Context.SaveChanges();
+
+            ViewBag.ThisUserName = HttpContext.Session.GetString("thisUserName");
+            ViewBag.ThisSubjectAreaName = HttpContext.Session.GetString("thisSubjectAreaName");
 
             return Json(Url.Action("SaveDataFilter", "ConfigureTemplate"));
         }

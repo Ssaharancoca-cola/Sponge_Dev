@@ -27,17 +27,17 @@
                                 {
                                     <tr>
                                         <td>
-                                            <select class="form-control master prepopulated" name="data[0].Master">
+                                            <select class="form-control master prepopulated" readonly name="data[0].Master" >
                                                 <option selected>@master.MASTER_NAME</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <select class="form-control fieldName prepopulated" id="fieldName" name="data[0].FieldName">
+                                            <select class="form-control fieldName prepopulated" readonly id="fieldName" name="data[0].FieldName">
                                                 <option selected>@master.FIELD_NAME</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <input required type="text" class="form-control displayNamePrepopulated" id="displayName" name="data[0].DisplayName" value="@master.DISPLAY_NAME" readonly>
+                                            <input required type="text" class="form-control displayNamePrepopulated" readonly id="displayName" name="data[0].DisplayName" value="@master.DISPLAY_NAME" readonly>
                                         </td>
                                     </tr>
                                 }

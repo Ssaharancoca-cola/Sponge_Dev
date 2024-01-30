@@ -18,6 +18,15 @@ namespace DAL.Models
         {
         }
 
+        public virtual DbSet<DIM_BUSINESSORG> DIM_BUSINESSORG { get; set; }
+        public virtual DbSet<DIM_BUSINESSORG_test> DIM_BUSINESSORG_test { get; set; }
+        public virtual DbSet<DIM_CUSTOMER> DIM_CUSTOMER { get; set; }
+        public virtual DbSet<DIM_GEOGRAPHY> DIM_GEOGRAPHY { get; set; }
+        public virtual DbSet<DIM_LOOKUP> DIM_LOOKUP { get; set; }
+        public virtual DbSet<DIM_LOOKUP_test> DIM_LOOKUP_test { get; set; }
+        public virtual DbSet<DIM_OUTLETSEGMENTATION> DIM_OUTLETSEGMENTATION { get; set; }
+        public virtual DbSet<DIM_PRODUCT> DIM_PRODUCT { get; set; }
+        public virtual DbSet<DIM_SALESORG> DIM_SALESORG { get; set; }
         public virtual DbSet<SPG_APPROVALSTATUS> SPG_APPROVALSTATUS { get; set; }
         public virtual DbSet<SPG_CONFIGDATA> SPG_CONFIGDATA { get; set; }
         public virtual DbSet<SPG_CONFIGURATION> SPG_CONFIGURATION { get; set; }
@@ -35,7 +44,6 @@ namespace DAL.Models
         public virtual DbSet<SPG_SUBJECTAREA> SPG_SUBJECTAREA { get; set; }
         public virtual DbSet<SPG_SUBJECT_DATACOLLECTION> SPG_SUBJECT_DATACOLLECTION { get; set; }
         public virtual DbSet<SPG_SUBJECT_DIMENSION> SPG_SUBJECT_DIMENSION { get; set; }
-        public virtual DbSet<SPG_SUBJECT_GENERIC_MASTER> SPG_SUBJECT_GENERIC_MASTER { get; set; }
         public virtual DbSet<SPG_SUBJECT_MASTER> SPG_SUBJECT_MASTER { get; set; }
         public virtual DbSet<SPG_TEMPLATE> SPG_TEMPLATE { get; set; }
         public virtual DbSet<SPG_TIMECODE> SPG_TIMECODE { get; set; }
@@ -57,6 +65,798 @@ namespace DAL.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<DIM_BUSINESSORG>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("date");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("date");
+
+                entity.Property(e => e.ENT_COUNTRY_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_ENTITY_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_ENTITY_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_ENTITY_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_MASTER_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_MASTER_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_MASTER_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SITE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SITE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SUB_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SUB_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SUB_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.SRC_ENT_SITE_CODE)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SRC_ENT_SITE_DESC)
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<DIM_BUSINESSORG_test>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("date");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("date");
+
+                entity.Property(e => e.ENT_COUNTRY_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_COUNTRY_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_ENTITY_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_ENTITY_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_ENTITY_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_MASTER_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_MASTER_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_MASTER_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SITE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SITE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SUB_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SUB_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ENT_SUB_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.SRC_ENT_SITE_CODE)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SRC_ENT_SITE_DESC)
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<DIM_CUSTOMER>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.CUSTOMER_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUSTOMER_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUSTOMER_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUSTOMER_SUPPLYSOURCE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_CATEGORY_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_CATEGORY_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_CATEGORY_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_CMG_CLASS_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_CMG_CLASS_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_CMG_CLASS_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_CMG_VERTICAL_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_CMG_VERTICAL_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_CMG_VERTICAL_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_TRADE_TYPE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_TRADE_TYPE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_TRADE_TYPE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_VPO_CLASS_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_VPO_CLASS_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_OUTLET_VPO_CLASS_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_PARENT_CUSTOMER_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_PARENT_CUSTOMER_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_PARENT_CUSTOMER_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_REGION_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_REGION_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_REGION_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_TOWN_CLASS_CODE).IsUnicode(false);
+
+                entity.Property(e => e.CUS_TOWN_CLASS_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.CUS_TOWN_CLASS_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("date");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("date");
+            });
+
+            modelBuilder.Entity<DIM_GEOGRAPHY>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("date");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("date");
+
+                entity.Property(e => e.GEO_COUNTRY_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_COUNTRY_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_COUNTRY_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_COUNTRY_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_COUNTRY_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_COUNTRY_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_DDR_ZONE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_DDR_ZONE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_DDR_ZONE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_DISTRICT_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_DISTRICT_LONG_NAME)
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GEO_DISTRICT_SHORT_NAME)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GEO_NEIGHBOURHOOD_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_NEIGHBOURHOOD_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_NEIGHBOURHOOD_SHORT_NAME)
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_DIVISION_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_DIVISION_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_DIVISION_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_PINCODE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_PINCODE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_PINCODE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_REGION_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_REGION_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_POSTAL_REGION_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_REGION_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_REGION_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_REGION_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SECTOR_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SECTOR_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SECTOR_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_STATE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_STATE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_STATE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SUB_DISTRICT_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SUB_DISTRICT_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SUB_DISTRICT_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SUB_ZONE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SUB_ZONE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_SUB_ZONE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_TOWN_VILLAGE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_TOWN_VILLAGE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_TOWN_VILLAGE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_ZONE_CODE).IsUnicode(false);
+
+                entity.Property(e => e.GEO_ZONE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.GEO_ZONE_SHORT_NAME).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<DIM_LOOKUP>(entity =>
+            {
+                entity.HasKey(e => e.LOOKUPID)
+                    .HasName("PK__DIM_LOOK__7F261053DD8FFB55");
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("date");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("date");
+            });
+
+            modelBuilder.Entity<DIM_LOOKUP_test>(entity =>
+            {
+                entity.HasKey(e => e.LOOKUPID)
+                    .HasName("PK__DIM_LOOK__7F261053EFC6CE3B");
+            });
+
+            modelBuilder.Entity<DIM_OUTLETSEGMENTATION>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("date");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("date");
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_CODE).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_GROUP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_GROUP_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_GROUP_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_TYPE_CODE)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_TYPE_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SEGMENT_TYPE_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SUB_SEGMENT_CODE).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SUB_SEGMENT_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.OSG_OUTLET_SUB_SEGMENT_SHORT_NAME).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<DIM_PRODUCT>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.BPP_BEVERAGE_GROUP_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_GROUP_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_GROUP_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_SUB_GROUP_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_SUB_GROUP_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_SUB_GROUP_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_SUB_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_SUB_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_SUB_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BEVERAGE_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BRAND_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BRAND_FAMILY_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BRAND_FAMILY_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BRAND_FAMILY_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BRAND_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_BRAND_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_GROUP_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_GROUP_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_GROUP_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_SEGMENT_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_SEGMENT_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_SEGMENT_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CATEGORY_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_FILL_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_FILL_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_FILL_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_MATERIAL_SUB_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_MATERIAL_SUB_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_MATERIAL_SUB_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_MATERIAL_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_MATERIAL_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_MATERIAL_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_PACK_SEGMENT_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_PACK_SEGMENT_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_PACK_SEGMENT_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_SERVE_SIZE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_SERVE_SIZE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_SERVE_SIZE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_SHAPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_SHAPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_SHAPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_VOLUME).HasColumnType("decimal(10, 2)");
+
+                entity.Property(e => e.BPP_CONTAINER_VOLUME_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_VOLUME_UOM)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_CONTAINER_VOLUME_UOM_DESC)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_FLAVOR_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_FLAVOR_GROUP_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_FLAVOR_GROUP_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_FLAVOR_GROUP_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_FLAVOR_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_FLAVOR_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_INDUSTRY_TYPE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_INDUSTRY_TYPE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_INDUSTRY_TYPE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_MANUFACTURER_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_MANUFACTURER_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_MANUFACTURER_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_MASTER_CATEGORY_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_MASTER_CATEGORY_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_MASTER_CATEGORY_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_PRODUCT_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_PRODUCT_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_PRODUCT_SHORT_NAME)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SECONDARY_PACKAGE_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SECONDARY_PACKAGE_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SECONDARY_PACKAGE_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SUB_BRAND_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SUB_BRAND_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SUB_BRAND_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SUB_CATEGORY_CODE)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SUB_CATEGORY_LONG_NAME)
+                    .IsRequired()
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BPP_SUB_CATEGORY_SHORT_NAME)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DATE_FROM).HasColumnType("datetime");
+
+                entity.Property(e => e.DATE_TO).HasColumnType("datetime");
+
+                entity.Property(e => e.ISSCOM_BRAND_CODE)
+                    .HasMaxLength(510)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PRODUCT_ORIGIN)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PRODUCT_TYPE)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<DIM_SALESORG>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.ORG_AREA_SALES_HEAD_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ORG_AREA_SALES_HEAD_LONG_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_AREA_SALES_HEAD_SHORT_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_ENTITY_SALES_HEAD_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ORG_ENTITY_SALES_HEAD_FIRST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_ENTITY_SALES_HEAD_LAST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_PRE_SALES_REP_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ORG_PRE_SALES_REP_FIRST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_PRE_SALES_REP_LAST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_REGIONAL_SALES_HEAD_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ORG_REGIONAL_SALES_HEAD_FIRST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_REGIONAL_SALES_HEAD_LAST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_SALES_MANAGER_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ORG_SALES_MANAGER_FIRST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_SALES_MANAGER_LAST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_SALES_TEAM_LEAD_CODE).IsUnicode(false);
+
+                entity.Property(e => e.ORG_SALES_TEAM_LEAD_FIRST_NAME).IsUnicode(false);
+
+                entity.Property(e => e.ORG_SALES_TEAM_LEAD_LAST_NAME).IsUnicode(false);
+            });
+
             modelBuilder.Entity<SPG_APPROVALSTATUS>(entity =>
             {
                 entity.Property(e => e.DESCRIPTION)
@@ -423,6 +1223,10 @@ namespace DAL.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.CREATED_ON).HasColumnType("date");
+
+                entity.Property(e => e.DIMENSION_TABLE)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.FILTER_TEXT)
                     .HasMaxLength(1000)
@@ -939,38 +1743,6 @@ namespace DAL.Models
                 entity.Property(e => e.MODIFIED_DATE).HasColumnType("datetime");
 
                 entity.Property(e => e.MPP_DIMENSION_NAME)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-            });
-
-            modelBuilder.Entity<SPG_SUBJECT_GENERIC_MASTER>(entity =>
-            {
-                entity.HasKey(e => e.SUBJECT_GENERIC_ID)
-                    .HasName("PK__SPG_SUBJ__A86B436D15109988");
-
-                entity.Property(e => e.DIMENSION_TABLE)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.DISPLAY_NAME)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.FIELD_NAME)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.IS_KEY)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.IS_SHOW)
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.MASTER_NAME)
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });

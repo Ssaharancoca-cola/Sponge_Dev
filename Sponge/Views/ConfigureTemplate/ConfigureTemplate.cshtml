@@ -92,44 +92,48 @@
                     data: { subjectAreaId: subjectArea },
                     success: function (data) {
                         var content = '';
-                        if (data || data.length) {
+                        if (data.usernames || data.usernames.length) {
                             var table = document.getElementById('example');
                             while (table.rows.length > 1) {
                                 table.deleteRow(1);
                             }
                             var tableBody = $("#example tbody");
-                            $.each(data, function (i, username) {
+                            $.each(data.usernames, function (i, username) {
                                 var configID = username.configID;
                                 var subjectAreaID = username.subjectAreaid
                                 var datafilterurl = '@Url.Action("DataFilter", "ConfigureTemplate")' + '/subjectAreaID/' + subjectAreaID + '/configID/' + configID;
                                 var SetupUrl = '@Url.Action("SetUp", "ConfigureTemplate")' + '?configID=' + configID;
                                 let setupText = (username.activeflag == null ? 'Pending' : 'Done');
 
-                                var row = `
-                                <tr>
-                                    <td>
-                                             <input type="hidden" value="${username.configID}" name="userid">
+                                // Check if ConfigID is in SavedConfigIDs
+                                var isConfigIdSaved = $.inArray(configID, data.savedConfigIDs) !== -1 ? 'Yes' : 'No';
 
-                                                    ${username.username}
-                                    </td>
-                                    <td>
-                                    <a href="${datafilterurl}">
-                                    <i class="ti-file btn-icon-prepend"></i>
-                                     Data Filter</a>
-                                    </td>
-                                    <td>
-                                    <a href="${SetupUrl}" >
-                                    <i class="ti-file btn-icon-prepend"></i>
-                                            ${setupText} </a>
-                                    </td>
-                                </tr>
-                            `;
+                                // Set Data Filter text based on isConfigIdSaved
+                                let dataFilterText = isConfigIdSaved === "Yes" ? "Done" : "Pending";
+
+                                var row = `
+                <tr>
+                    <td>
+                             <input type="hidden" value="${username.configID}" name="userid">
+
+                                    ${username.username}
+                    </td>
+                    <td>
+                    <a href="${datafilterurl}">
+                    <i class="ti-file btn-icon-prepend"></i>
+                     ${dataFilterText}</a>
+                    </td>
+                    <td>
+                    <a href="${SetupUrl}" >
+                    <i class="ti-file btn-icon-prepend"></i>
+                            ${setupText} </a>
+                    </td>
+                </tr>
+            `;
                                 tableBody.append(row);
                             });
 
                         }
-
-
                     }
                 });
             }
