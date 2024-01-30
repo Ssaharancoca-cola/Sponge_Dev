@@ -259,12 +259,14 @@ namespace Sponge.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResult GetSubDimensionsList(List<string> dimensions) 
+        public JsonResult GetSubDimensionsList(List<string> dimensions,int configID) 
         {
             SPONGE_Context spONGE_Ctx = new();
             //To get the subdimensions list
-             //Create a Dictionary where each key is a dimension and the value is a list of corresponding names.
-            Dictionary<string, List<string>> dimensionData = new Dictionary<string, List<string>>();
+            //Create a Dictionary where each key is a dimension and the value is a list of corresponding names.
+            Dictionary<string, Dictionary<string, string>> dimensionData = new Dictionary<string, Dictionary<string, string>>();
+
+            List<string> savedMasterNames = new List<string>();
 
             foreach (var dimension in dimensions)
             {
@@ -276,16 +278,27 @@ namespace Sponge.Controllers
                                                     select g.First()
                                                 ).ToList();
 
-                List<string> names = new List<string>();
+                Dictionary<string, string> names = new Dictionary<string, string>();
 
                 foreach (var item in spg_mpp_master)
                 {
-                    names.Add(item.MASTER_DISPLAY_NAME);
+                    names.Add(item.MASTER_DISPLAY_NAME, item.MASTER_NAME);
+                    // check if MASTER_NAME is in SPG_CONFIG_FILTERS
+                    if (spONGE_Ctx.SPG_CONFIG_FILTERS.Any(cf => cf.MASTER_COLUMN == item.MASTER_NAME && cf.CONFIG_ID == configID))
+                    {
+                        if (!savedMasterNames.Contains(item.MASTER_NAME))
+                        {
+                            savedMasterNames.Add(item.MASTER_NAME);
+                        }
+                    }
                 }
 
-                dimensionData.Add(dimension, names);
+                if (!dimensionData.ContainsKey(dimension))
+                {
+                    dimensionData.Add(dimension, names);
+                }
             }
-            return Json(dimensionData);
+            return Json(new { DimensionData = dimensionData, SavedMasterNames = savedMasterNames });
         }
         public async Task<IActionResult> GetEmailSuggestions(string email, int configid)
         {
@@ -392,24 +405,28 @@ namespace Sponge.Controllers
             var masterNames = data.MasterNames;
             foreach (var dimension in masterNames)
             {
-
+    
                 foreach (string masterName in dimension.Value)
                 {
                     var dimensioncode = _Context.SPG_MPP_MASTER.Where(x => x.MPP_DIMENSION_NAME == dimension.Key)
-    .Select(x => x.DIMENSION_TABLE).FirstOrDefault();
+                    .Select(x => x.DIMENSION_TABLE).FirstOrDefault();
                     var mastercode = _Context.SPG_MPP_MASTER.Where(x => x.MASTER_DISPLAY_NAME == masterName && x.MPP_DIMENSION_NAME == dimension.Key)
-    .Select(x => x.MASTER_NAME).FirstOrDefault();
-                    // Create a new entity for your table
-                    SPG_CONFIG_FILTERS entity = new SPG_CONFIG_FILTERS
+                    .Select(x => x.MASTER_NAME).FirstOrDefault();
+
+                    if (!_Context.SPG_CONFIG_FILTERS.Any(x => x.MASTER_COLUMN == mastercode && x.CONFIG_ID == configId))
                     {
-                        CONFIG_ID = configId,
-                        DIMENSION_TABLE = dimensioncode,
-                        MASTER_COLUMN = mastercode,
-                        CREATED_BY = userName[1],
-                        CREATED_ON = DateTime.Now
-                    };
-                    // Add the entity to your context
-                    _Context.SPG_CONFIG_FILTERS.Add(entity);
+                        // Create a new entity for your table
+                        SPG_CONFIG_FILTERS entity = new SPG_CONFIG_FILTERS
+                        {
+                            CONFIG_ID = configId,
+                            DIMENSION_TABLE = dimensioncode,
+                            MASTER_COLUMN = mastercode,
+                            CREATED_BY = userName[1],
+                            CREATED_ON = DateTime.Now
+                        };
+                        // Add the entity to your context
+                        _Context.SPG_CONFIG_FILTERS.Add(entity);
+                    }
                 }
             }
             TempData["Masters"] = JsonConvert.SerializeObject(masterNames);

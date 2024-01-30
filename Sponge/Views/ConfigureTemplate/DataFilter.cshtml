@@ -89,18 +89,24 @@
                 url: '@Url.Action("GetSubDimensionsList", "ConfigureTemplate")',
                 type: 'POST',
                 dataType: 'json',
-                data: { dimensions: dimensions },
+                data: { dimensions: dimensions, configID: @ViewBag.configID },
                 success: function (response) {
                     $('#dropdownsContainer').empty();
-                    $.each(response, function (dimension, names) {
+                    $.each(response.dimensionData, function (dimension, names) {
                         var templateArray = ['<div class="dropdown"><button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-boundary="viewport" data-display="dynamic" data-original-text="', dimension, '">', dimension, '</button><ul class="dropdown-menu dropdown-menu-bottom" style="height: 200px; overflow-y: auto;">'];
-                        $.each(names, function (i, name) {
-                            var id = dimension + '_name_' + i;
-                            templateArray.push('<li><input type="checkbox" id="', id, '" value="', name, '"><label for="', id, '">', name, '</label></li>');
+                        $.each(names, function (displayName, masterName) {
+                            var id = dimension + '_name_' + displayName;
+                            templateArray.push('<li><input type="checkbox" id="', id, '" class="', masterName, '" value="', displayName, '"><label for="', id, '">', displayName, '</label></li>');
                         });
                         templateArray.push('</ul></div>');
                         $('#dropdownsContainer').append($(templateArray.join('')));
-                        $('#submitSelectionsID').css('visibility', 'visible');
+                    });
+                    $('#submitSelectionsID').css('visibility', 'visible');
+
+                    // Check checkboxes for saved master names
+                    $.each(response.savedMasterNames, function (i, masterName) {
+                        $('.' + masterName).prop('checked', true);
+                        $('.' + masterName).prop('disabled', true);
                     });
                 }
             });
