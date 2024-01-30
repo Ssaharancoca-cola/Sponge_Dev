@@ -10,7 +10,7 @@
         <div class="card">
             <div class="card-body">
                 <p class="card-title">Search Template</p>
-                <form class="forms-sample">
+                <div class="forms-sample">
                     <div class="form-group row ">
                         <div class="col">
                             <label for="subFunction">SubFunction</label>
@@ -59,7 +59,7 @@
                     </div>
                     <button class="btn btn-light mr-2">Cancel</button>
                     <button type="button" class="btn btn-primary" id="searchButton">Search</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -92,11 +92,8 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<script src="~/assists/js/hoverable-collapse.js"></script>
-<script src="~/assists/js/template.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -175,7 +172,10 @@
                                     render: function (data, type, row) {
                                         if (data) {
                                             var date = new Date(data);
-                                            var formattedDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+                                            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                                            ];
+                                            var formattedDate = monthNames[date.getMonth()] + '/' + date.getDate() + '/' + date.getFullYear();
                                             return formattedDate;
                                         } else {
                                             return '';

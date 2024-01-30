@@ -14,13 +14,13 @@
                             <div class="col">
                                 <label asp-for="Email" for="exampleInputEmail1">User EmailID</label>
 
-                                <input asp-for="Email" required type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                <input asp-for="Email" required type="email" class="form-control" id="email" name="email" placeholder="Email" />
                                 <div id="emailSuggestions" style="border:1px solid;display:none"></div>
                                 <span asp-validation-for="@Model.Email"></span>
                                 <div class="row">
                                     <br />
                                     <div class="col">
-                                        <button type="button" id="btnSearch" class="btn btn-primary">Search</button>
+                                        <button style="margin-top:10px" type="button" id="btnSearch" class="btn btn-primary">Search</button>
                                     </div>
                                 </div>
 

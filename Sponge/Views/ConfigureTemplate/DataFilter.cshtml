@@ -14,43 +14,39 @@
                     <div class="forms-sample" id="dataFilterFormID">
                         <div class="form-group row">
                             <div class="col ">
-                                <div class="row">
+                                <label>
                                     <input hidden name="configID" value="@ViewBag.ConfigID" />
                                     <label>Selected Dimensions:</label>
-                                </div>
-                                <div class="row">
+                                </label>
+                                
+                                <div class="form-check-row">
                                     @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
                                     {
-                                        <div>
-                                            <input type="checkbox" name="dimensionSelect" value=@item.Value checked readonly>
-                                            <label id="@("S"+item.Value)" for=@item.Value>@item.Text</label>
+                                        <div class="form-check form-check-flat form-check-primary">
+                                        <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
+                                            @item.Text
+                                            <input class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value checked>
+                                        </label>
                                         </div>
                                     }
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group-row">
-                            <div class="row">
-                                <button type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
-                                    Get Sub Dimensions
-                                </button>
-                            </div>
+
+                        <button type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
+                            Get Sub Dimensions
+                        </button>
+
+                        <div class="form-group row" id="dropdownsContainer">
+                        </div>
+                        <div class="form-group row" id="selectionContainerID">
+                        
                         </div>
 
-                        <div class="form-group-row">
-                            <div class="row" id="dropdownsContainer">
-                            </div>
-                            <div class="row" id="selectionContainerID">
-                            </div>
-                        </div>
-                        <br />
-                        <div class="form-group-row">
-                            <div class="">
-                                <button type="submit" asp-action="SaveDataFilterNext" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+                        <button type="submit" asp-action="SaveDataFilterNext" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
+                            Next
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -58,15 +54,16 @@
     </div>
 </form>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
 <script>
 
     $(document).ready(function () {
         $('#getSubDimensionsBTN').click(function () {
             var dimensions = [];
+            debugger;
             $('input[name="dimensionSelect"]:checked').each(function () {
-                dimensions.push($(this).next('label').text());
+                var dimensionText = $("label[for=" + $(this).attr('id') + "]").text().trim();
+                dimensions.push(dimensionText);
             });
 
             $.ajax({
@@ -115,7 +112,6 @@
                 $(this).siblings('.dropdown-menu').find('input[type="checkbox"]:checked').each(function () {
                     selectedMasterNames[dimensionName].push($(this).attr('value'));
                 });
-                debugger;
             });
 
             $.ajax({

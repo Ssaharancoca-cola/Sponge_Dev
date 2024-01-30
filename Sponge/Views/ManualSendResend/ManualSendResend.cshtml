@@ -34,13 +34,13 @@
                         </div>
                     </div>
                         <div class="form-group row">
-                            <div class="col">
+                            <div class="col-sm-4 col-md-4">
                                 <label for="onTime">On Time</label>
                                 @Html.DropDownList("onTime",
                             ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>, 
                             new { @class = "form-control", onchange = "OnChangeOnTime();" })
                             </div>
-                            <div class="col">
+                            <div class="col-sm-4 col-md-4">
                                 <label for="GranularTime">Granularity</label>
                                 @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control", @readonly = "readonly" })
                                 <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
