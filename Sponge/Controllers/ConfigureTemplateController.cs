@@ -250,6 +250,27 @@ namespace Sponge.Controllers
             }
             return Json(dimensionData);
         }
+        public async Task<IActionResult> GetEmailSuggestions(string email, int configid)
+        {
+            using (var sPONGE_Context = new SPONGE_Context())
+            {
+                var matchingEmails = await (from u in sPONGE_Context.SPG_USERS
+                                            join o in sPONGE_Context.SPG_USERS_FUNCTION on u.USER_ID equals o.USER_ID
+
+                                            join c in sPONGE_Context.SPG_CONFIGURATION on configid equals c.CONFIG_ID
+                                            join s in sPONGE_Context.SPG_SUBJECTAREA on c.SUBJECTAREA_ID equals s.SUBJECTAREA_ID
+                                            where u.EMAIL_ID.Contains(email) 
+                                           && (o.ROLE_ID == 4 || o.ROLE_ID == 5) && o.SUB_FUNCTION_ID == s.SUBFUNCTION_ID
+                                            select new
+                                            {
+                                                EMAIL_ID = u.EMAIL_ID,
+
+                                            }).Distinct().ToListAsync();
+                if (!matchingEmails.Any()) return NotFound();
+
+                return Ok(matchingEmails);
+            }
+        }
         //public IActionResult SaveDataFilter(IFormCollection formData)
         //{
         //    int count = 0;

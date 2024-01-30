@@ -41,7 +41,7 @@ namespace DAL
             // Log the exception here
             System.Diagnostics.Debug.WriteLine(exception);
 
-            context.Response.Redirect("/Error");
+            context.Response.Redirect("/ErrorPage");
 
             return Task.CompletedTask;
         }
