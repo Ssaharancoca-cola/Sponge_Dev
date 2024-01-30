@@ -520,8 +520,8 @@ namespace Sponge.Controllers
             }
             catch (Exception e)
             {
-                // Log the error message and throw the exception
-                // LogError(e.Message);
+                ErrorLog srsEx = new();
+                srsEx.LogErrorInTextFile(e);
                 throw;
             }
 
