@@ -118,7 +118,7 @@ namespace Sponge.Controllers
 
                             TemplateFile result2 = listErros.Find(x => x.FileName == fileName);
                             if (result2.ErrorType == "S")
-                                //SentMailToUploader(objFileModel);
+                                SentMailToUploader(objFileModel);
                             continue;
                         }
 
@@ -151,7 +151,7 @@ namespace Sponge.Controllers
                             TemplateFile result2 = listErros.Find(x => x.FileName == fileName);
 
                             if (result2.ErrorType == "S")
-                                //SentMailToUploader(objFileModel);
+                                SentMailToUploader(objFileModel);
 
                             continue;
                         }
@@ -181,7 +181,7 @@ namespace Sponge.Controllers
                             listErros = SaveUploadedExcelFile(listErros, TempFilePath + "\\" + Filename, TempFilePath, userId[1], objFileModel, approverUserId, UploadedDocumentsFilePath, WarningDocumentFilePath);//Save Excel to DB
                             TemplateFile result2 = listErros.Find(x => x.FileName == fileName);
                             if (result2.ErrorType == "S")
-                                //SentMailToUploader(objFileModel);
+                                SentMailToUploader(objFileModel);
 
                             continue;
                         }
