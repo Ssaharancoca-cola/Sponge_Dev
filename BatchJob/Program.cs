@@ -947,7 +947,7 @@ namespace BatchJob
                                 string ChangedSubjectArea = ot_details.SubjectArea.Replace("_", " ");
                                 ChangedSubjectArea = new CultureInfo("en-US").TextInfo.ToTitleCase(ChangedSubjectArea.ToLower());
 
-
+                               
                                // PeriodFromPeriodTo(ForTime, OnTime, out PeriodFrom, out PeriodTo);
                                 NameValueCollection mailBodyplaceHolders = new NameValueCollection();
                                 mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
@@ -958,11 +958,15 @@ namespace BatchJob
                                 mailBodyplaceHolders.Add("<Custom>", custom.ToString());
                                 //Format the header    
                                 string DataCollectionSubject = "[Sponge] - Data collection template for  [" + ot_details.SubjectArea + "] -[" + ot_details.ReportingPeriod + "]";
+                                srsLogFile.LogTextInTextFile("Send Email to users" + configId);
 
                                 string mailbody = "";
                                 string messageTemplatePath = System.IO.File.ReadAllText(_settings.TemplateGenerationEmail.ToString());
 
                                 mailbody = GetMessageBody(messageTemplatePath, mailBodyplaceHolders);
+
+                                srsLogFile.LogTextInTextFile("Send Email to users" + configId);
+
 
                                 try
                                 {
