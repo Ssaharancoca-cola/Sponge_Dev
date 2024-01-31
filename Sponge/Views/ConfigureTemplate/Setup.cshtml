@@ -266,21 +266,41 @@
 
         // Only make the AJAX call if at least 3 characters have been entered
         if (email.length >= 3) {
+            $('#emailSuggestions').empty();
+            $('#emailSuggestions').show();
+            $('#emailSuggestions').append('<div class="suggestion">Searching...</div>');
             $.ajax({
                 url: '/ConfigureTemplate/GetEmailSuggestions',
                 type: 'GET',
                 data: { 'email': email, 'configid': configid },
                 success: function (result) {
                     // clear old suggestions
-                    $('#emailSuggestions').empty();
-                    $('#emailSuggestions').show();
-                    debugger;
-                    // loop through result and append to suggestions div
-                    $.each(result, function (key, value) {
-                        $('#emailSuggestions').append('<div class="suggestion">' + value.emaiL_ID + '</div>');
-                    });
+                    // $('#emailSuggestions').empty();
+                    // $('#emailSuggestions').show();
+                    // debugger;
+                    // // loop through result and append to suggestions div
+                    // $.each(result, function (key, value) {
+                    //     $('#emailSuggestions').append('<div class="suggestion">' + value.emaiL_ID + '</div>');
+                    // });
+                    if (email != '') { 
+                        $('#emailSuggestions').empty();
+                        $('#emailSuggestions').show();
+                        if (result.length !== 0) { // check if we have suggestions
+                            $.each(result, function (key, value) {
+                                $('#emailSuggestions').append('<div class="suggestion">' + value.emaiL_ID + '</div>');
+                            });
+                        }
+                        else { // in case there are no suggestions
+                            $('#emailSuggestions').append('<div class="suggestion">No results</div>');
+                        }
+                    } 
+                    else {
+                        $('#emailSuggestions').hide();
+                    }
                 },
                 error: function (xhr, status, error) {
+                    $('#emailSuggestions').empty();
+                    $('#emailSuggestions').append('<div class="suggestion">No results</div>');
                     console.error('An error occurred: ', error);
                 }
             });
