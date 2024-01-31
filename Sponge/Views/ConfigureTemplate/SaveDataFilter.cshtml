@@ -78,7 +78,7 @@
                     }
                 </div>
                 <div class="cta-wrapper">
-                    <button class="btn btn-light mr-2">Cancel</button>
+                    <button class="btn btn-light mr-2" id="cancelButton">Cancel</button>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                 </div>
             </div>
@@ -167,8 +167,17 @@
             $.post("/ConfigureTemplate/SaveSelectedValues", {
                 data: JSON.stringify(selectedValues),
                 configId: configId
-            }, function (response) {
-                // Handle the response here
+            }, function (response) {             
+
+                if (response.success) {
+                    alert("Data saved successfully");
+                    // Redirect to homepage
+                    window.location.href = "ConfigureTemplate";
+                }
             });
         });
+
+    $("#cancelButton").click(function () {
+        window.location.href = "ConfigureTemplate";
+    });
 </script>
