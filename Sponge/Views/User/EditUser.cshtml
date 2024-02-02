@@ -60,6 +60,8 @@
                                     }
 
                                 </ul>
+                                <span id="roleSpan" class="text-danger" style="font-size:10px"></span>
+
                             </div>
                         </div>
 
@@ -84,6 +86,8 @@
                                     }
 
                                 </ul>
+                                <span asp-validation-for="SubFunction" id="subFunctionSpan" class="text-danger" style="font-size:10px"></span>
+
                             </div>
                         </div>
 
@@ -132,9 +136,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- End plugin js for this page -->
-<!-- inject:js -->
-<script src="~/assists/js/hoverable-collapse.js"></script>
-<script src="~/assists/js/template.js"></script>
+
 
 <!-- endinject -->
 <script>
@@ -220,22 +222,49 @@
             });
         });
         $("#btnUpdate").click(function (event) {
-            event.preventDefault();
             var form = $('#Userform').serialize();
-            $.ajax({
-                url: '@Url.Action("UpdateUser", "User")',
-                data: form,
-                type: 'POST',
-                success: function (data) {
-                    // onSuccess(data);
-                    alert(data);
-                    window.location.href = "/User/ManageUser"
-                },
-                error: function (error) {
-                    console.log('Error: ', error);
-                }
-            });
+            if (!validateInputs()) {
+                event.preventDefault();
+            }
+            else {
+                
+                $.ajax({
+                    url: '@Url.Action("UpdateUser", "User")',
+                    data: form,
+                    type: 'POST',
+                    success: function (data) {
+                        // onSuccess(data);
+                        alert(data);
+                        window.location.href = "/User/ManageUser"
+                    },
+                    error: function (error) {
+                        console.log('Error: ', error);
+                    }
+                });
+            }
+            
         });
     });
+    function validateInputs() {
+    let isValid = true;  // Assume the form is valid at first
+
+    if ($('input[name="Role"]:checked').length === 0) {
+        isValid = false;
+        $('#roleSpan').text('Please select at least one role.');
+    }
+    else {
+        $('#roleSpan').text('');
+    }
+
+    if ($('input[name="subFunction"]:checked').length === 0) {
+        isValid = false;
+        $('#subFunctionSpan').text('Please select at least one sub function.');
+    }
+    else {
+        $('#subFunctionSpan').text('');
+    }
+
+    return isValid;  // Return the validation result
+}
 
 </script>
