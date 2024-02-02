@@ -170,7 +170,7 @@ namespace BatchJob
 
             try
             {
-
+                lg.LogTextInTextFile("Calling Batch Job");
                 SPONGE_Context m = new SPONGE_Context();
 
                 List<SPG_CONFIG_STRUCTURE> lstConfigEntity = new List<SPG_CONFIG_STRUCTURE>();

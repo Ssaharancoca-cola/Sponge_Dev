@@ -97,8 +97,22 @@ namespace Sponge.Controllers
                 }
                 if (IsFileExist == true)
                     continue;
-
+                string FileCode = GetFileCode(TempFilePath + "\\" + file.FileName);
                 FileModel objFileModel = new FileModel();
+
+                if (!string.IsNullOrEmpty(FileCode))
+                {
+                    var fileNameDetails = (from SPT in dbcontext.SPG_TEMPLATE
+                                           where SPT.FILE_CODE == FileCode
+                                           select new { File_Name = SPT.FILE_NAME }).FirstOrDefault();
+                    fileName = fileNameDetails?.File_Name.ToString();
+                    Filename = fileName;
+                    if (string.IsNullOrEmpty(Filename))
+                    {
+                        listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "F", ErrorMessage = "Error!Invalid file" });
+                        return Json(new { UploadedFileCount = Request.Form.Files.Count, ErrorList = listErros });
+                    }
+                }
 
                 if (UserRole.ToUpper() == "ADMIN" || UserRole.ToUpper()== "DATA CONFIGURE")
                 {
@@ -195,6 +209,27 @@ namespace Sponge.Controllers
             }
 
             return Json(new { UploadedFileCount = Request.Form.Files.Count, ErrorList = listErros });
+        }
+
+        public string GetFileCode(string fileName)
+        {
+            string fileCode = string.Empty;
+            FileStream file = null;
+            file = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using (ExcelPackage package = new(file))
+            {
+                ExcelWorksheet hiddenSheet = package.Workbook.Worksheets[HiddenSheetName];
+                if (hiddenSheet == null)
+                {
+                    fileCode = string.Empty;
+                }
+                else
+                {
+                    fileCode = Convert.ToString(hiddenSheet.Cells[HiddenFileCodeRowIndex, HiddenFileCodeColIndex].Value);
+                }
+            }
+            file.Close();
+            return fileCode;        
         }
         public FileModel Checkauthorizeduser(string FileName, string[] userId, FileModel objFileModel, bool IsAdminOrDataApprover)
         {
@@ -299,7 +334,6 @@ namespace Sponge.Controllers
             try
             {
 
-                //dt = ReadUploadedExcelFile(FilepathAndName);
                 SPONGE_Context dbcontext = new SPONGE_Context();
                 dt = GetUploadedExcelData(FilepathAndName);
                 if (dt.Rows.Count == 0)
@@ -512,7 +546,11 @@ namespace Sponge.Controllers
 
                     }
                     dt.AcceptChanges();
-
+                    if (dt.Rows.Count == 0)
+                    {
+                        listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = "Error!No records Found in excel template!" });
+                        return listErros;
+                    }
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
                         StringBuilder StrInsertQuery = null;
