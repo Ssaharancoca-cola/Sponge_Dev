@@ -40,6 +40,7 @@
                             ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>, 
                             new { @class = "form-control", onchange = "OnChangeOnTime();" })
                             </div>
+                            @if(@Model.Version != "Y"){
                             <div class="col-sm-4 col-md-4">
                                 <label for="GranularTime">Granularity</label>
                                 @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control", @readonly = "readonly" })
@@ -48,6 +49,18 @@
                                 <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
                                 <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
                             </div>
+                            }
+                            else
+                            {
+                            <div class="col-sm-4 col-md-4">
+                                <label for="GranularTime">Granularity</label>
+                                @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control" })
+                                <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
+                                <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
+                                <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
+                                <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
+                            </div>
+                            }
                         </div>
                     <div class="form-group row">
                         <div class="col">
@@ -60,11 +73,8 @@
                                 <input min="@minDate" type="date" class="form-control" asp-for="@Model.EscalationAlertDate" id="EscalationAlertDate" name="EscalationAlertDate"
                                    placeholder="DD/MM/YYYY">
                         </div>
-                        <div class="col">
-                            <label for="lockDate">Lock Date</label>
-                                <input min="@minDate" type="date" class="form-control" asp-for="@Model.LockDate" id="lockDate" name="lockDate"
-                                   placeholder="DD/MM/YYYY">
-                        </div>
+                        <div class="col"> <label for="lockDate">Lock Date <span style="color:red">*</span></label> <input min="@minDate" type="date" class="form-control" 
+                            asp-for="@Model.LockDate" id="lockDate" name="lockDate" placeholder="DD/MM/YYYY" required> </div>
                     </div>
                     <button class="btn btn-light mr-2" id="btnCancel">Cancel</button>
                     <button type="submit" class="btn btn-primary">Send</button>
@@ -89,7 +99,6 @@
 }
 <script>
     $(document).ready(function () {
-        //debugger;       
         var text = $("#onTime").find('option:selected').text();
         $('#hdnOnTimeText').val(text);
         OnChangeOnTime();       
@@ -104,16 +113,14 @@
     $('#lockDate').keypress(function (e) {
         e.preventDefault();
     });
-    var FillReportingStartEndDate = function () {
-        
-       
+    var FillReportingStartEndDate = function () {        
+        debugger;
         var frequency = $('#hdnFrequency').val();
         var reportingStartDate, reportingEndDate, pattern, date;
         pattern = $('#hdnOnTimeText').val();
         var granularityText = $("#GranularTime option:selected").text();
         $('#hdnGranularTime').val($("#GranularTime option:selected").val());
         if (frequency == 'YEARLY') {
-            debugger;
             var obj = pattern.split('-');
             reportingStartDate = new Date(obj[0], Common.MonthEnum.JANUARY, 1);
             reportingEndDate = new Date(obj[0], Common.MonthEnum.DECEMBER, 31);
@@ -149,7 +156,6 @@
             reportingStartDate = obj.periodicStartDate;
             reportingEndDate = obj.periodicEndDate;
         }
-        debugger;
         $('#hdnPeriodFrom').val(Common.formatDate(reportingStartDate));
         $('#hdnPeriodTo').val(Common.formatDate(reportingEndDate));
 
@@ -255,7 +261,6 @@
         }
     }
     function OnChangeOnTime() {
-        debugger;
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         var text = $("#onTime").find('option:selected').text();
@@ -267,13 +272,45 @@
             fortime: value,
             ontimecode: value
         }
+        $.ajax({
+            url: '@Url.Action("LoadLockDetails", "ManualSendResend")',
+            type: 'POST',
+            data: parameter,
+            dataType: "json",
+            async: false,
+            success: function (classesData) {
+                if (classesData && classesData.Error == 1) {
+                    classesData = null;
+                }                
+                if (classesData == null) {
+                    $('#UploadReminderDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
+                    $('#lockDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
+                    $('#EscalationAlertDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
+                } else {
+                    if (classesData.uploadReminderDate != null)
+                        $('#UploadReminderDate').attr("value", classesData.uploadReminderDate.split("T")[0]).val(classesData.uploadReminderDate.split("T")[0]);
+                    else
+                        $('#UploadReminderDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
+
+                    if (classesData.lockDate != null)
+                        $('#lockDate').attr("value", classesData.lockDate.split("T")[0]).val(classesData.lockDate.split("T")[0]);
+                    else
+                        $('#lockDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
+
+                    if (classesData.esclationDate != null)
+                        $('#EscalationAlertDate').attr("value", classesData.esclationDate.split("T")[0]).val(classesData.esclationDate.split("T")[0]);
+                    else
+                        $('#EscalationAlertDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
+                }
+            }
+        });
 
         FillReportingStartEndDate();
         FillGranularDropdown();
     }
 
     $('#GranularTime').change(function () {
-        //debugger;;
+        debugger;
         FillReportingStartEndDate();
         FillGranularDropdown();
         var hdnGranularity = $('#hdnGranularTime');

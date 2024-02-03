@@ -104,13 +104,9 @@ namespace Sponge.Controllers
 
                     if (SearchSubjectAreaData.Count <= 0)
                     {
-                        if (data.VERSION == "on")
+                        data.VERSION = data.VERSION == "true" ? "Y" : "N";
+                        if (data.VERSION == "N")
                         {
-                            data.VERSION = "Y";
-                        }
-                        else
-                        {
-                            data.VERSION = "N";
                             data.ONTIMELEVEL = "0";
                         }
                         // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);

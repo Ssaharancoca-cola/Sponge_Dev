@@ -1,5 +1,4 @@
 ﻿var FillGranularDropdown = function () {
-    //debugger;
     var select = $('#GranularTime');
     if (select.length) {
         var granularTimeLevel = $('#hdnOnTimeLevel').val();
