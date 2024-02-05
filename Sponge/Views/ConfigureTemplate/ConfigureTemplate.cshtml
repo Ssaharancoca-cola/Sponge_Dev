@@ -2,61 +2,63 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var usersJson = ViewBag.lstusers;
 }
-<div class="row">
-    <div class="col-md-12 stretch-card grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">
-                    Configure Template
-                </p>
-                <div class="forms-sample">
-                    <div class="form-group row">
+<body>
+    <div class="row">
+        <div class="col-md-12 stretch-card grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">
+                        Configure Template
+                    </p>
+                    <div class="forms-sample">
+                        <div class="form-group row">
 
-                        <div class="col-sm-4 col-md-4">
-                            <label for="subjectAreaName">Subject Area Name</label>
-                            <select class="form-control" id="subjectArea" name="SubjectArea">
-                                <option selected disabled value = "Select">Select</option>
-                                @foreach (var f in ViewBag.SubjectArea)
-                                {
-                                    <option value="@f.Text">@f.Value</option>
-                                }
-                            </select>
+                            <div class="col-sm-4 col-md-4">
+                                <label for="subjectAreaName">Subject Area Name</label>
+                                <select class="form-control" id="subjectArea" name="SubjectArea">
+                                    <option selected disabled value="Select">Select</option>
+                                    @foreach (var f in ViewBag.SubjectArea)
+                                    {
+                                        <option value="@f.Text">@f.Value</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col ">
-                            <div class="table-responsive">
-                                <table id="example" class="display expandable-table" style="width:100%">
-                                    <thead>
-                                        <tr>
-                                            <th>Assign To</th>
-                                            <th>Data Filter</th>
-                                            <th>Setup </th>
+                        <div class="form-group row">
+                            <div class="col ">
+                                <div class="table-responsive">
+                                    <table id="example" class="display expandable-table" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Assign To</th>
+                                                <th>Data Filter</th>
+                                                <th>Setup </th>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                        <tr>
-                                            @*  <td>@item.UserName</td>
+                                            <tr>
+                                                @*  <td>@item.UserName</td>
 
-                                            <td>
-                                            <a href="@Url.Action("DataFilter", "ConfigureTemplate", new {id = item.UserId})" style="background-color:lightcoral" class="btn btn-outline-primary btn-icon-text">
-                                            <i class="ti-file btn-icon-prepend"></i>
-                                            Data Filter
-                                            </a>
-                                            </td>
-                                            <td>
-                                            <a href="@Url.Action("Setup", "ConfigureTemplate", new {id = item.UserId})" class="btn btn-outline-primary btn-icon-text">
-                                            <i class="ti-file btn-icon-prepend"></i>
-                                            Setup
-                                            </a>
-                                            </td> *@
-                                        </tr>
+                                                <td>
+                                                <a href="@Url.Action("DataFilter", "ConfigureTemplate", new {id = item.UserId})" style="background-color:lightcoral" class="btn btn-outline-primary btn-icon-text">
+                                                <i class="ti-file btn-icon-prepend"></i>
+                                                Data Filter
+                                                </a>
+                                                </td>
+                                                <td>
+                                                <a href="@Url.Action("Setup", "ConfigureTemplate", new {id = item.UserId})" class="btn btn-outline-primary btn-icon-text">
+                                                <i class="ti-file btn-icon-prepend"></i>
+                                                Setup
+                                                </a>
+                                                </td> *@
+                                            </tr>
 
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -64,25 +66,24 @@
             </div>
         </div>
     </div>
-</div>
+</body>
 <!-- Plugin js for this page -->
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script>
-
-</script>
-<!-- End plugin js for this page -->
-<!-- inject:js -->
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="~/assists/js/template.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<!-- endinject -->
 <script>
-    window.onbeforeunload = function() {
-    const dropdown = document.getElementById('subjectArea'); // Replace with your dropdown id
-    dropdown.value = "Select"; 
-};
+    window.onbeforeunload = function () {
+        const dropdown = document.getElementById('subjectArea'); // Replace with your dropdown id
+        dropdown.value = "Select";
+    };
     $(document).ready(function () {
+        $(document).on('click', '[data-toggle="minimize"]', function () {
+            var body = $('body');
+            body.toggleClass("sidebar-icon-only");
+        });
+
         $('#subjectArea').change(function () {
             var subjectArea = $(this).val();
             if (subjectArea && subjectArea != 'Select') {
@@ -112,24 +113,24 @@
                                 let dataFilterText = isConfigIdSaved === "Yes" ? "Done" : "Pending";
 
                                 var row = `
-                <tr>
-                    <td>
-                             <input type="hidden" value="${username.configID}" name="userid">
+                    <tr>
+                        <td>
+                                 <input type="hidden" value="${username.configID}" name="userid">
 
-                                    ${username.username}
-                    </td>
-                    <td>
-                    <a href="${datafilterurl}">
-                    <i class="ti-file btn-icon-prepend"></i>
-                     ${dataFilterText}</a>
-                    </td>
-                    <td>
-                    <a href="${SetupUrl}" >
-                    <i class="ti-file btn-icon-prepend"></i>
-                            ${setupText} </a>
-                    </td>
-                </tr>
-            `;
+                                        ${username.username}
+                        </td>
+                        <td>
+                        <a href="${datafilterurl}">
+                        <i class="ti-file btn-icon-prepend"></i>
+                         ${dataFilterText}</a>
+                        </td>
+                        <td>
+                        <a href="${SetupUrl}" >
+                        <i class="ti-file btn-icon-prepend"></i>
+                                ${setupText} </a>
+                        </td>
+                    </tr>
+                `;
                                 tableBody.append(row);
                             });
 

@@ -85,7 +85,8 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script>
     var initialData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
@@ -136,6 +137,38 @@
                 }
             }
         });
+
+        //To get and show the values in right selection which are already saved
+        $.ajax({
+            url: "/ConfigureTemplate/GetSavedFilterValues",
+            type: 'GET', 
+            success: function (savedData) {
+                debugger;
+                $('select[class*="rightSelect_"]').each(function (index) {
+                    var select = $(this);
+                    // Get the text of the previous label
+                    var labelText = select.siblings('label').text().replace('Selected ', '').replace(' values', '');
+
+                    // Iterate through savedData
+                    for (var i = 0; i < savedData.length; i++) {
+                        // Compare MASTER_NAME with labelText, and only append if they match
+                        if (savedData[i].masteR_NAME === labelText) {
+                            // Iterate the filteR_VALUE_List of the current savedData item
+                            savedData[i].filteR_VALUE_List.forEach(function (item) {
+                                var option = $('<option>').text(item.filteR_TEXT).val(item.filteR_VALUE).css('background-color', 'lightblue');;
+                                select.append(option);
+                            });
+                            // Break the loop as match is found
+                            break;
+                        }
+                    }
+                });
+            },
+            error: function (error) {
+                //This is where the response will be handled upon error
+                console.log(error);
+            }
+        });
     });
     @for (int j = 0; j < i; j++)
     {
@@ -146,12 +179,11 @@
             var selectedValues = {};
             $('select[class*="rightSelect_"]').each(function () {
                 var $select = $(this);
-                var dimensionName = $select.closest('.tab-pane').attr('id'); // Get dimension name from parent's id
-                var masterKey = $select.data("idx"); // Get master key from data attribute
+                var dimensionName = $select.closest('.tab-pane').attr('id');
+                var masterKey = $select.data("idx");
 
-                var options = $select.children("option");
-                var values = options.map(function () {
-                    return this.value;
+                var values = $select.children("option").map(function () {
+                    return { value: this.value, text: $(this).text() };
                 }).toArray();
 
                 if (!(dimensionName in selectedValues)) {
@@ -163,6 +195,9 @@
 
                 selectedValues[dimensionName][masterKey] = values;
             });
+
+            console.log(selectedValues);
+
 
             $.post("/ConfigureTemplate/SaveSelectedValues", {
                 data: JSON.stringify(selectedValues),
