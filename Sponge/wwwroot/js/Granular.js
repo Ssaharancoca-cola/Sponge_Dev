@@ -1,4 +1,5 @@
 ﻿var FillGranularDropdown = function () {
+    debugger;
     var select = $('#GranularTime');
     if (select.length) {
         var granularTimeLevel = $('#hdnOnTimeLevel').val();
@@ -42,11 +43,11 @@ var FillYearly_GranularDropdown = function (select, granularTimeValue) {
         Common.FillDropDownOptions(select, 'Q4', ProcessGranularCodeFor_HalfYearOrQuarter(endYear, Common.MonthEnum.OCTOBER, Common.MonthEnum.DECEMBER));
     }
     if (granularTimeValue == 'MONTHLY') {
-        for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
+        for (var i = Common.MonthFromEnum(Common.MonthEnum.JANUARY); i <= Common.MonthFromEnum(Common.MonthEnum.JUNE); i++) {
             var monthName = Common.SearchMonth(i - 1);
             Common.FillDropDownOptions(select, monthName, startYear + Common.base10(i));
         }
-        for (var i = Common.MonthFromEnum(Common.MonthEnum.JANUARY); i <= Common.MonthFromEnum(Common.MonthEnum.JUNE); i++) {
+        for (var i = Common.MonthFromEnum(Common.MonthEnum.JULY); i <= Common.MonthFromEnum(Common.MonthEnum.DECEMBER); i++) {
             var monthName = Common.SearchMonth(i - 1);
             Common.FillDropDownOptions(select, monthName, endYear + Common.base10(i));
         }
