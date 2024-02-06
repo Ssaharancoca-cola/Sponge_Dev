@@ -1,6 +1,7 @@
 ﻿@model DAL.Models.SPG_SUBFUNCTION
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var errorMsg = TempData["ErrorMsg"] as string;
 }
 @using (Html.BeginForm("SaveFunction", "Function",Model, FormMethod.Post))
 {
@@ -13,7 +14,7 @@
                         <div class="form-group row ">
 
                             <div class="col">
-                                <label for="Country">Country</label>
+                                <label for="Country">Country<span style="color:red">*</span></label>
                                 <select asp-for="COUNTRY_NAME" class="form-control" name="COUNTRY_NAME" id="Country">
                                     <option selected disabled>Select a Country</option>
                                     @foreach (var country in ViewBag.Countries)
@@ -21,29 +22,27 @@
                                         <option value="@country">@country</option>
                                     }
                                 </select>
+                                <span id="CountryError" class="text-danger" style="display:none;"></span>
+
                             </div>
                             <div class="col">
-                                <label for="FunctionName">Function Name</label>
+                                <label for="FunctionName">Function<span style="color:red">*</span></label>
                                 <input type="text" class="form-control" id="functionName"
                                        name="FUNCTION_NAME" value="@Model?.FUNCTION_NAME"
-                                       placeholder="Function Name" maxlength="30" onkeydown="return /[a-zA-Z]/i.test(event.key)">
-                                @* @Html.ValidationMessageFor(model => model.FUNCTION_NAME) *@
-                                <span asp-validation-for="@Model.FUNCTION_NAME" class="text-danger" style="font-size:10px"></span>
+                                       placeholder="Function Name" maxlength="30" onkeydown="return /[a-zA-Z]/i.test(event.key)">                                
+                                <span id="FunctionNameError" class="text-danger" style="display:none;"></span>
+
                             </div>
                             <div class="col">
-                                <label for="subFunctionName">Subfunction</label>
+                                <label for="subFunctionName">Sub Function<span style="color:red">*</span></label>
                                 @if (Model != null)
-
                                 {
-
-
                                 @Html.HiddenFor(m => m.SUBFUNCTION_ID)
                                 }
                                 <input type="text" class="form-control" id="subFunctionName"
                                        name="SUBFUNCTION_NAME" value="@Model?.SUBFUNCTION_NAME"
                                        placeholder="Sub function name" onkeydown="return /[a-zA-Z]/i.test(event.key)">
-                                @* @Html.ValidationMessageFor(model => model.SUBFUNCTION_NAME) *@
-                                <span asp-validation-for="@Model.SUBFUNCTION_NAME" class="text-danger" style="font-size:10px"></span>
+                                <span id="SubFunctionNameError" class="text-danger" style="display:none;"></span>
 
                             </div>
                             <div class="col">
@@ -52,25 +51,21 @@
                                     <label class="form-check-label">
                                         <input type="checkbox"
                                                id="activeFlag" name="ACTIVE_FLAG" class="form-check-input"
-                                               @* checked="@(Model?.ACTIVE_FLAG == "Y" ? true : false)" *@ checked >
+                                                checked >
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div>
-                                <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("Function", "Function")'">Cancel</button>
-                        @* @if(Model != null)
+                        @if (!string.IsNullOrEmpty(errorMsg))
                         {
-                        <button type="submit" name="Command" value="Update" class="btn btn-primary">Update</button>
+                            <script>
+                                alert('@errorMsg');
+                            </script>
                         }
-                        else
-                        { *@
+                        <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("Function", "Function")'">Cancel</button>
+
                         <button type="submit" name="Command" value="Save" class="btn btn-primary">Save</button>
-                        @* } *@
+
                     </div>
                 </div>
             </div>
@@ -80,30 +75,36 @@
 }
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
-@* <script>
-    $('#formid').on('submit', submitFormWithAjax);
 
-    function submitFormWithAjax(event) {
-        
-        let commandValue = $(document.activeElement).attr("value");
-        // Declare an object to store the form data
-        let form = {};
-        // Loop through form elements and collect the data
-        $('#formid input, #formid select').each(function () {
-            form[$(this).attr('name')] = $(this).val();
-        });
-        form['Command'] = commandValue;
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("SaveFunction", "Function")',
-            data: form,
-            success: function (data) {
-                // Update your DOM based on the received data.
-                onSuccess(data);
-            },
-            error: function (err) {
-                console.error("Error", err);
-            }
-        });
-    }
-</script> *@
+<script>
+    $("form").submit(function () {
+        var isValid = true;
+
+        var countryName = $('#Country').val();
+        var functionName = $('#functionName').val();
+        var subFunctionName = $('#subFunctionName').val();
+
+        if ($.trim(countryName) == '') {
+            $('#CountryError').html('Country Name is required.').show();
+            isValid = false;
+        } else {
+            $('#CountryError').hide();
+        }
+
+        if ($.trim(functionName) == '') {
+            $('#FunctionNameError').html('Function Name is required.').show();
+            isValid = false;
+        } else {
+            $('#FunctionNameError').hide();
+        }
+
+        if ($.trim(subFunctionName) == '') {
+            $('#SubFunctionNameError').html('Sub function name is required.').show();
+            isValid = false;
+        } else {
+            $('#SubFunctionNameError').hide();
+        }
+
+        return isValid;
+    });
+</script>

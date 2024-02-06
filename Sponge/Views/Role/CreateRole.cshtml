@@ -1,6 +1,7 @@
 ﻿@model DAL.Models.SPG_ROLE;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var errorMsg = TempData["ErrorMsg"] as string;
 }
 @using (Html.BeginForm("SaveRole", "Role", Model, FormMethod.Post))
 {
@@ -12,8 +13,9 @@
                     <div class="forms-sample">
                         <div class="form-group row ">
                             <div class="col">
-                                <label for="RoleName">Role Name</label>
+                                <label for="RoleName">Role Name<span style="color:red">*</span></label>
                                 @Html.TextBoxFor(m => m.ROLE_NAME, new { @class = "form-control", @id="roleName", @placeholder = "Role Name"})
+                                <span id="roleNameError" class="text-danger" style="display:none;"></span>
                             </div>
                             <div class="col">
                                 <label for="activeFlag">Active Flag</label>
@@ -26,20 +28,38 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div>
-                                <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageRole", "Role")'">Cancel</button>
-                        <button type="submit" class="btn btn-primary ">Save</button>
+                        @if (!string.IsNullOrEmpty(errorMsg))
+                        {
+                            <script>
+                                alert('@errorMsg');
+                            </script>
+                        }
+                        <button class="btn btn-light mr-2" id="cancelButton">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn" >Save</button>
 
                     </div>
                 </div>
             </div>
-
     </div>
 </div>
 }
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
+<script>
+    $(document).ready(function () {
+        $("form").submit(function (e) {
+            var roleName = $('#roleName').val();
+            if ($.trim(roleName) == '') {
+                e.preventDefault(); 
+                $('#roleNameError').html('Role name is required.').show(); 
+            } else {
+                $('#roleNameError').hide(); 
+            }
+        });
+
+        $('#cancelButton').click(function (e) {
+            e.preventDefault();
+            location.href = '@Url.Action("ManageRole", "Role")';
+        });
+    });
+</script>

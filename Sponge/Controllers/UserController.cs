@@ -67,25 +67,6 @@ namespace Sponge.Controllers
             return Ok("Emails fetched and cached successfully.");
         }
 
-        //Not using as of now as it is taking a lot of time to cache all emails
-        //public IActionResult GetEmailSuggestions(string email)
-        //{
-        //    List<string> matchingEmails = null;
-
-        //    // Try to get the cached emails
-        //    if (_cache.TryGetValue("Emails", out List<string> cachedEmails))
-        //    {
-        //        // If the emails are cached, filter and return matching emails
-        //        matchingEmails = cachedEmails.Where(email => email.Contains(email)).ToList();
-        //    }
-        //    else
-        //    {
-        //        // Handle the case where emails were not found in cache
-        //        return NotFound("Cached emails not found.");
-        //    }
-
-        //    return View(matchingEmails);
-        //}
         public ActionResult GetEmailSuggestions(string email)
         {
             List<string> matchingEmails = new List<string>();
@@ -199,7 +180,11 @@ namespace Sponge.Controllers
         public UserInfo GetUserInfoByName(string userName)
         {
             UserInfo userInfo = new UserInfo();
-
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                userInfo.ErrorMsg = "Enter valid user name.";
+                return userInfo;
+            }
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             int userid = spONGE_Context.SPG_USERS.Where(o => o.Name == userName).Count();
             if (userid > 0)
@@ -304,7 +289,7 @@ namespace Sponge.Controllers
         }
         [HttpPost]
         public IActionResult UpdateUser(IFormCollection data)
-        {
+        {            
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             try
             {
@@ -358,59 +343,6 @@ namespace Sponge.Controllers
             }
 
         }
-
-        //public IActionResult UpdateUser(IFormCollection data)
-        //{
-        //    string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-        //    try
-        //    {
-        //        SPONGE_Context sPONGE_Context = new SPONGE_Context();
-
-
-
-        //        string subFunctions = data["subFunction"];
-        //        string[] subFunctionArr = subFunctions.Split(',');
-
-        //        string Roles = data["Role"];
-        //        string[] RolesArr = Roles.Split(',');
-        //        int countRoleSub = 0;
-        //        foreach (string role in RolesArr)
-        //        {
-        //            foreach (string subFunction in subFunctionArr)
-        //            {
-        //                int subFunctionId = 0;
-        //                Int32.TryParse(subFunction, out subFunctionId);
-        //                int Roleid = 0;
-        //                Int32.TryParse(role, out Roleid);
-        //                int countSub = sPONGE_Context.SPG_USERS_FUNCTION.Where(o => o.USER_ID == data["userId"].ToString() && o.SUB_FUNCTION_ID == subFunctionId && o.ROLE_ID == Roleid).Count();
-        //                countRoleSub++;
-        //                if ((Roleid != 1 && (countRoleSub == 0 && countSub == 0)) || (Roleid == 1 && countSub == 0))
-        //                {
-        //                    SPG_USERS_FUNCTION sPG_1 = new SPG_USERS_FUNCTION();
-
-        //                    {
-        //                        sPG_1.ACTIVE_FLAG = data["status"];
-        //                        sPG_1.USER_ID = data["userId"];
-
-        //                        sPG_1.SUB_FUNCTION_ID = subFunctionId;
-
-        //                        sPG_1.ROLE_ID = Roleid;
-        //                    }
-        //                    sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
-
-        //                    sPONGE_Context.SaveChanges();
-
-
-        //                }
-        //            }
-
-        //        }
-        //            return Json("User details updated successfully");
-        //    }
-        //    catch (Exception ex) { }
-
-        //    return Json("Some error occured");
-        //}
 
         public IActionResult ManageUser()
         {
