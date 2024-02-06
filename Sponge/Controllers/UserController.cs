@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.Common;
+using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
@@ -232,9 +233,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             try
             {
-
                 SPONGE_Context sPONGE_Context = new SPONGE_Context();
-
                 SPG_USERS sPG_ = new SPG_USERS();
                 {
                     sPG_.USER_ID = data["userId"];
@@ -254,7 +253,6 @@ namespace Sponge.Controllers
 
                 foreach (string role in RoleArr)
                 {
-
                     foreach (string subFunction in subFunctionArr)
                     {
                         int subFunctionId = 0;
@@ -272,19 +270,22 @@ namespace Sponge.Controllers
                                 sPG_1.SUB_FUNCTION_ID = subFunctionId;
 
                                 sPG_1.ROLE_ID = roleid;
-
                             }
                             sPONGE_Context.SPG_USERS_FUNCTION.Add(sPG_1);
                         }
-
+                        else
+                        {
+                            return Json("User id is already exist");
+                        }
                     }
-
                 }
                 sPONGE_Context.SaveChanges();
                 return Json("User added successfully");
             }
-            catch (Exception ex) { }
-
+            catch (Exception ex) {
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
+            }
             return Json("Some error occured");
         }
         [HttpPost]
