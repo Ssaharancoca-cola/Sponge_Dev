@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.Common;
+using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -33,6 +34,7 @@ namespace Sponge.Controllers
             var viewmodel = from sp in sPONGE_Context.SPG_SUBJECTAREA
                             join p in sPONGE_Context.SPG_SUBFUNCTION on sp.SUBFUNCTION_ID equals p.SUBFUNCTION_ID
                             select new SubjectArea { SpgSubjectArea = sp, SpgSubfunction = p };
+
             return View(viewmodel);
         }
         public IActionResult CreateSubjectArea(int? InvalidEntry)
@@ -43,7 +45,7 @@ namespace Sponge.Controllers
             List<SelectListItem> timelvl = new List<SelectListItem>();
             SelectListItem item = new SelectListItem();
             ViewBag.Timelevel = timelvl;
-            ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubjectArea aleardy exist" : "";
+            ViewBag.ErrorMsg = InvalidEntry == 1 ? "SubjectArea already exist" : "";
             SubjectArea spg = new SubjectArea
             {
                 SpgSubfunction = new SPG_SUBFUNCTION(),
@@ -85,15 +87,7 @@ namespace Sponge.Controllers
             if (Request.Form["Command"] == "Save")
             {
                 try
-                {
-                    SPONGE_Context spONGE_Context = new SPONGE_Context();
-                    //var lst1 = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
-                    //ViewBag.SubFunction = new SelectList(lst1.ToList(), "SUBFUNCTION_NAME", "SUBFUNCTION_ID");
-                    //List<SelectListItem> timelvl = new List<SelectListItem>();
-                    //SelectListItem item = new SelectListItem();
-                    //ViewBag.Timelevel = timelvl;
-                    //if (ModelState.IsValid)
-                    //{
+                {                    
                     SPONGE_Context sPONGE_Context = new SPONGE_Context();
                     var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
                                                  select new SearchFunctionList
@@ -117,8 +111,9 @@ namespace Sponge.Controllers
                         data.CREATED_DATE = DateTime.Now;
                         data.CREATED_BY = userName[1].ToString();
                         sPONGE_Context.SPG_SUBJECTAREA.Add(data);
-
                         sPONGE_Context.SaveChanges();
+                        TempData["SuccessMessage"] = "Data Saved Successfully";
+
                         return RedirectToAction("ManageSubjectArea");
                     }
                     else
@@ -129,7 +124,8 @@ namespace Sponge.Controllers
                 }
                 catch (Exception ex)
                 {
-
+                    ErrorLog lgerr = new ErrorLog();
+                    lgerr.LogErrorInTextFile(ex);
                 }
             }
             return View();
@@ -140,49 +136,6 @@ namespace Sponge.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        private static string GetPeriod(string Frequency, string TimeLevel)
-        {
-            string Period = "";
-            if (Frequency == TimeLevel)
-            {
-                Period = "1";
-                return Period;
-            }
-            else if (Frequency == "HALF_YEARLY" && TimeLevel == "Monthly")
-            {
-                Period = "6";
-                return Period;
-            }
-            else if (Frequency == "HALF_YEARLY" && TimeLevel == "Monthly")
-            {
-                Period = "6";
-                return Period;
-            }
-            else if (Frequency == "YEARLY" && TimeLevel == "Monthly")
-            {
-                Period = "12";
-                return Period;
-            }
-            else if (Frequency == "YEARLY" && TimeLevel == "HALF_YEARLY")
-            {
-                Period = "2";
-                return Period;
-            }
-            else if (Frequency == "YEARLY" && TimeLevel == "QUARTERLY")
-            {
-                Period = "4";
-                return Period;
-            }
-            else if (Frequency == "MONTHLY" && TimeLevel == "Weekly")
-            {
-                Period = "4";
-                return Period;
-            }
-            return Period;
-        }
-
-       
 
         public JsonResult BindGranularity(string frequency)
         {

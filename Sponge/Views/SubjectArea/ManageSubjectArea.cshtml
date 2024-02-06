@@ -2,6 +2,7 @@
 @{
      var textInfo = new System.Globalization.CultureInfo("en-US", false).TextInfo;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var errorMsg = TempData["SuccessMessage"] as string;
 }
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
@@ -30,7 +31,7 @@
                                 <th>Frequency</th>
                                 <th>ForTime</th>
                                 <th>Active Flag</th>
-                                <th>Edit</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,7 +52,12 @@
                                     </td>
                                 </tr>
                             }
-                            
+                            @if (!string.IsNullOrEmpty(errorMsg))
+                            {
+                                <script>
+                                    alert('@errorMsg');
+                                </script>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -65,9 +71,15 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     new DataTable('#example', {
-        order: [[3, 'desc']]
+        order: [[3, 'desc']],
+        "oLanguage": {
+            "sEmptyTable": "No Data Found"
+        },
+        "aoColumnDefs": [
+            { "bSearchable": false, "bSortable": false, "aTargets": [6] }
+        ]
     });
-    //Initialize the Multiselect Dropdown:
+    
 
 </script>
 <!-- End plugin js for this page -->
@@ -101,9 +113,4 @@
         checkbox.addEventListener('change', handleCB);
     });
 </script>
-<!-- <script src="assists/js/virtual-select.min.js"></script>
-<script>
-    VirtualSelect.init({
-        ele: 'select'
-    });
-</script> -->
+
