@@ -242,7 +242,7 @@ namespace Sponge.Controllers
                           join h in sPONGE_Context.SPG_MPP_HIERARCHY on s.ENTITY_TYPE_ID equals h.ID into Details
                           from m in Details.DefaultIfEmpty()
                           where m.ID == null && !s.MASTER_DISPLAY_NAME.Contains("Mapping")
-                          select new { s.COLUMN_NAME, s.COLUMN_DISPLAY_NAME }).Distinct().ToList();
+                          select new { s.MASTER_NAME, s.MASTER_DISPLAY_NAME }).Distinct().ToList();
             return Json(fieldName);
         }
         public IActionResult GetUOM()
@@ -281,8 +281,8 @@ namespace Sponge.Controllers
                         sPG_1.UOM = collection.UOM;
                         sPG_1.IS_LOOKUP = collection?.IsLookUp;
                         if (collection?.IsLookUp == "Y")
-                            sPG_1.DISPLAY_TYPE = "DropDown";
-                        else sPG_1.DISPLAY_TYPE = "TextBox";
+                            sPG_1.DISPLAY_TYPE = "DROPDOWN";
+                        else sPG_1.DISPLAY_TYPE = "TEXTBOX";
                         sPG_1.LOOKUP_TYPE = collection?.LookUpType;
                         sPG_1.ACTIVE_FLAG = "Y";
                         sPG_1.CREATED_DATE = DateTime.Now;
