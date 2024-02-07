@@ -10,6 +10,7 @@ using System.Data;
 using System.Diagnostics.Metrics;
 using System.Dynamic;
 using System.Collections.Generic;
+using DAL.Common;
 
 namespace Sponge.Controllers
 {
@@ -30,10 +31,9 @@ namespace Sponge.Controllers
             return View(sPONGE_Context.SPG_SUBFUNCTION.ToList());
         }
 
-        public async Task<IActionResult> CreateFunction(int? InvalidEntry)
+        public async Task<IActionResult> CreateFunction()
         {
             ViewBag.Countries = await PopulateCountries();
-            ViewBag.ErrorMsg = InvalidEntry == 1 ? "Subfunction aleardy exist" : "";
             return View();
         }
         public async Task<List<string>> PopulateCountries()
@@ -67,11 +67,6 @@ namespace Sponge.Controllers
         {
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             var lst = sPONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.COUNTRY_NAME }).Distinct();
-            
-            //var lst = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.COUNTRY_NAME }).Distinct();
-            //ViewBag.Country = new SelectList(lst.ToList(), "COUNTRY_NAME", "COUNTRY_NAME");
-            
-
             SPG_SUBFUNCTION function = sPONGE_Context.SPG_SUBFUNCTION.Where(x => x.SUBFUNCTION_ID == id).FirstOrDefault();
             return View(function);
         }
@@ -136,8 +131,9 @@ namespace Sponge.Controllers
                             return RedirectToAction("Function");
                         }
                         else
-                        {                                                     
-                            return RedirectToAction("CreateFunction", new { InvalidEntry = 1 });
+                        {
+                            TempData["ErrorMsg"] = "Sub function already exist.";
+                            return View("CreateFunction");
                         }
                     }
                     else { return View("CreateFunction",data); }
@@ -145,31 +141,11 @@ namespace Sponge.Controllers
                 }
                 catch (Exception ex)
                 {
-
+                    ErrorLog lgerr = new ErrorLog();
+                    lgerr.LogErrorInTextFile(ex);
                 }
             }
-            //else if (Request.Form["Command"] == "Update")
-            //    {
-
-            //    if (data.ACTIVE_FLAG == "on")
-            //    {
-            //        data.ACTIVE_FLAG = "Y";
-            //    }
-            //    else
-            //    {
-            //        data.ACTIVE_FLAG = "N";
-            //    }
-            //    using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
-            //    {
-            //        SPG_SUBFUNCTION function2 = sPONGE_Context.SPG_SUBFUNCTION.Where(x => x.SUBFUNCTION_ID == Convert.ToInt16(data.SUBFUNCTION_ID)).FirstOrDefault();
-            //        function2.MODIFIED_BY = userName[1].ToString();
-            //        function2.MODIFIED_DATE = DateTime.Now;
-            //        function2.ACTIVE_FLAG = data.ACTIVE_FLAG;
-
-            //        sPONGE_Context.SaveChanges();
-            //    }
-
-            //}
+            
             return RedirectToAction("Function");
         }
 

@@ -1,21 +1,3 @@
-//To validate the fields on client side
-//function validateForm(form) {
-//    var isValid = true;
-
-//    $(':input[required]:visible', form).each(function () {
-//        if ($(this).val().trim() === '') {
-//            isValid = false;
-//            $(this).css('border', '1px solid red');
-//        } else {
-//            $(this).css('border', '');
-//        }
-//    });
-
-//    if (!isValid) {
-//        alert('Please fill all required fields.');
-//    }
-//    return isValid;
-//}
 $(document).ready(function () {
     $("#Frequency").change(function () {
         var selectedFrequency = $(this).val();

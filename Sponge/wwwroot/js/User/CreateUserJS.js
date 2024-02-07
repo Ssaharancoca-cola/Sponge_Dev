@@ -178,11 +178,12 @@ $(document).on('click', '.suggestion', function () {
 $(document).ready(function () {
     handleCB();
     handleRoleCB();
+    debugger;
     $("#btnSearch").on("click", function (e) {
         e.preventDefault();
         // get inputs
-        var email = $("#email").val();
-        var username = $("#UserName").val();
+        var email = $("#email").val().trim();
+        var username = $("#UserName").val().trim();
         if (email == "" && username == "") {
             alert('Please enter at least one field to search.');
         }
@@ -306,5 +307,5 @@ $(document).ready(function () {
 
 
     });
-});
 
+});
