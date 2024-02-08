@@ -63,6 +63,7 @@
                         </table>
 
                     </div>
+                    <button type="button" id="cancel" class="btn btn-cancel" >Cancel</button>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="submit" style="float:right" class="btn btn-primary" id="saveMastersBtnID">Next</button>
                 </div>
@@ -75,6 +76,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('#cancel').click(function () {
+            window.location.href = 'ConfigureSubjectArea';
+        });
         var rowIndex = 1;
 
         
