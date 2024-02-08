@@ -1,23 +1,17 @@
 ﻿using DAL.Common;
-using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Newtonsoft.Json;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
-using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
 using System.Globalization;
-using System.Linq;
-using System.Diagnostics.Metrics;
 using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Http;
 
 namespace Sponge.Controllers
 {
