@@ -26,7 +26,7 @@
                         
 
                         <div class="row" align="center">
-                            <button class="btn btn-light mr-2" id="BtnCancel" >Cancel</button>
+                            <button type="button" class="btn btn-light mr-2" id="BtnCancel" >Cancel</button>
                             <button type="submit" class="btn btn-primary" id="BtnUpload" >Upload</button>
                         </div>
                         <div id="dvUploadExcelDetails"></div>
@@ -47,7 +47,7 @@
     debugger;
     $(function () {
         $('#BtnCancel').click(function () {
-            location.reload(true);
+            window.location.href = '/';
         });
         $('#fileUpload').change(function () {
             //alert($(this).val());
