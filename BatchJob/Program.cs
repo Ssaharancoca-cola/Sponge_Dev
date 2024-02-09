@@ -669,7 +669,7 @@ namespace BatchJob
                                 objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
                                 objWorksheet.Cells["B3"].Value = "Lock Date-" + Convert.ToDateTime(dtlockdate).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
-                                objWorksheet.Cells["D3"].Value = uomName;
+                                objWorksheet.Cells["D3"].Value = "Uom-" + uomName;
                                 objWorksheet.Cells["A4"].Value = "";// customexcel;
                                 objWorksheet.Row(4).Hidden = true;//Hide 4th row
                                 objWorksheet.DefaultColWidth = 30;
