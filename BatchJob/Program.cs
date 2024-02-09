@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
@@ -8,17 +7,12 @@ using System.Text;
 using DAL;
 using DAL.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using NuGet.Protocol;
 using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Style;
 using Sponge.Common;
 using Sponge;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Data.SqlClient;
-using System.Linq.Expressions;
 
 namespace BatchJob
 {  /// <summary>
@@ -657,7 +651,10 @@ namespace BatchJob
                             //foreach (DataTable dtSrc in dsExcel)
                             if (dsExcel.Rows.Count > 0)
                             {
-
+                                SPONGE_Context spg = new();
+                                var uomName = spg.SPG_CONFIG_STRUCTURE
+                                .Where(w => w.CONFIG_ID == configId && w.COLLECTION_TYPE == "Measure")                                                              
+                                                              .Select(w => w.UOM).FirstOrDefault();
                                 ExcelWorksheet hiddenSheet = objExcelPackage.Workbook.Worksheets.Add(_settings.HiddenSheetName);
                                 hiddenSheet.Cells[1000000, 500].Value = FileCode;// Need to pass File Code 
                                 hiddenSheet.Hidden = eWorkSheetHidden.VeryHidden;
@@ -672,6 +669,7 @@ namespace BatchJob
                                 objWorksheet.Cells["A3"].Value = "Assigned User-" + ot_details.UserName;
                                 objWorksheet.Cells["B3"].Value = "Lock Date-" + Convert.ToDateTime(dtlockdate).ToString("dd/MMM/yyyy");
                                 objWorksheet.Cells["C3"].Value = "Generation Date-" + DateTime.Now.Date.ToString("dd/MMM/yyyy");
+                                objWorksheet.Cells["D3"].Value = uomName;
                                 objWorksheet.Cells["A4"].Value = "";// customexcel;
                                 objWorksheet.Row(4).Hidden = true;//Hide 4th row
                                 objWorksheet.DefaultColWidth = 30;
