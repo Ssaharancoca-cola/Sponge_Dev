@@ -109,7 +109,7 @@ namespace Sponge.Controllers
                     Filename = fileName;
                     if (string.IsNullOrEmpty(Filename))
                     {
-                        listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error!Invalid file" });
+                        listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error!Invalid file Code" });
                         return Json(new { UploadedFileCount = Request.Form.Files.Count, ErrorList = listErros });
                     }
                 }
@@ -491,25 +491,25 @@ namespace Sponge.Controllers
                 if (listOfInsertColumnnames.Count > 0)
                 {
 
-                    //Update Status to Abandon as  4 for previous document for same template
-                    var pendingStatusId = (int)Helper.ApprovalStatusEnum.Pending;
-                    var document = dbcontext.SPG_DOCUMENT.Where(s => s.TEMPLATEID == objFileModel.TemplateID && (s.APPROVALSTATUSID == pendingStatusId)).ToList();
-                    if (document.Count > 0)
-                    {
-                        int statusAbandonId = (int)Helper.ApprovalStatusEnum.Abandon;
-                        foreach (var item in document)
-                        {
-                            item.APPROVALSTATUSID = statusAbandonId;
-                            dbcontext.Entry(item);
-                        }
-                    }
-                    dbcontext.SaveChanges();
-                    //End
+                    ////Update Status to Abandon as  4 for previous document for same template
+                    //var pendingStatusId = (int)Helper.ApprovalStatusEnum.Pending;
+                    //var document = dbcontext.SPG_DOCUMENT.Where(s => s.TEMPLATEID == objFileModel.TemplateID && (s.APPROVALSTATUSID == pendingStatusId)).ToList();
+                    //if (document.Count > 0)
+                    //{
+                    //    int statusAbandonId = (int)Helper.ApprovalStatusEnum.Abandon;
+                    //    foreach (var item in document)
+                    //    {
+                    //        item.APPROVALSTATUSID = statusAbandonId;
+                    //        dbcontext.Entry(item);
+                    //    }
+                    //}
+                    //dbcontext.SaveChanges();
+                    ////End
 
 
 
-                    string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId,objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
-                    string datasetResults = "";
+                    //string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId,objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
+                    //string datasetResults = "";
 
                     // Remove Empty Rows
                     dt = dt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field =>
@@ -551,6 +551,25 @@ namespace Sponge.Controllers
                         listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records Found in excel template!" });
                         return listErros;
                     }
+                    var pendingStatusId = (int)Helper.ApprovalStatusEnum.Pending;
+                    var document = dbcontext.SPG_DOCUMENT.Where(s => s.TEMPLATEID == objFileModel.TemplateID && (s.APPROVALSTATUSID == pendingStatusId)).ToList();
+                    if (document.Count > 0)
+                    {
+                        int statusAbandonId = (int)Helper.ApprovalStatusEnum.Abandon;
+                        foreach (var item in document)
+                        {
+                            item.APPROVALSTATUSID = statusAbandonId;
+                            dbcontext.Entry(item);
+                        }
+                    }
+                    dbcontext.SaveChanges();
+                    //End
+
+
+
+                    string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId, objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
+                    string datasetResults = "";
+
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
                         StringBuilder StrInsertQuery = null;
@@ -1368,7 +1387,10 @@ namespace Sponge.Controllers
                 }
             }
         }
-
+        public JsonResult DeleteFileFromFolder(string FileName)
+        {           
+            return Json(new { msgerror = "Success", SelectedFileName = FileName });
+        }
         public List<string> GetDimensionNameForEmailTemplate(decimal ConfigId)
         {
             SPONGE_Context _Context = new();

@@ -192,6 +192,7 @@
                             }
                             $('#BtnUpload').hide();
                             $("#dvFilesDetails").empty();
+                            $('#upload')[0].reset();
                         }
                     },
                     error: function (xhr, error, status) {
@@ -255,6 +256,7 @@
                             if (rowCount == 1) {
                                 $("#BtnUpload").hide();
                                 $("#dvFilesDetails").empty();
+                            $('#upload')[0].reset();
                             }
                             else {
                                 $("#BtnUpload").show();
