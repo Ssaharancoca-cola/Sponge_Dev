@@ -109,8 +109,8 @@ namespace Sponge.Controllers
                     Filename = fileName;
                     if (string.IsNullOrEmpty(Filename))
                     {
-                        listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error!Invalid file Code" });
-                        return Json(new { UploadedFileCount = Request.Form.Files.Count, ErrorList = listErros });
+                        listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                        continue;
                     }
                 }
 
