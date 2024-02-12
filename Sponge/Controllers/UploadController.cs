@@ -112,9 +112,17 @@ namespace Sponge.Controllers
                     }
                     Filename = fileName;
                 }
-                using (var fileContent = new FileStream(Path.Combine(TempFilePath, fileName), FileMode.Create))
+                if (fileName is null)
                 {
-                    file.CopyTo(fileContent);
+                    listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                    continue;
+                }
+                else
+                {
+                    using (var fileContent = new FileStream(Path.Combine(TempFilePath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileContent);
+                    }
                 }
 
                 if (UserRole.ToUpper() == "ADMIN" || UserRole.ToUpper()== "DATA CONFIGURE")
