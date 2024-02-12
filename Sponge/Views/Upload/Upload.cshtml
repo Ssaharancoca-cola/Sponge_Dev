@@ -28,15 +28,14 @@
 
 
 
-
-                    <div class="row" align="center">
-                        <button class="btn btn-light mr-2" id="BtnCancel">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="BtnUpload">Upload</button>
-                    </div>
-                    <div id="dvUploadExcelDetails"></div>
-                    <input id='filesToDelete' name='filesToDelete' type='hidden' />
-                </form>
-
+                        <div class="row" align="center">
+                            <button type="button" class="btn btn-light mr-2" id="BtnCancel" >Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="BtnUpload" >Upload</button>
+                        </div>
+                        <div id="dvUploadExcelDetails"></div>
+                        <input id='filesToDelete' name='filesToDelete' type='hidden' />
+                    </form>
+                
             </div>
         </div>
     </div>
@@ -51,7 +50,7 @@
     debugger;
     $(function () {
         $('#BtnCancel').click(function () {
-            location.reload(true);
+            window.location.href = '/';
         });
         $('#fileUpload').change(function () {
             //alert($(this).val());
@@ -196,6 +195,7 @@
                             }
                             $('#BtnUpload').hide();
                             $("#dvFilesDetails").empty();
+                            $('#upload')[0].reset();
                         }
                     },
                     error: function (xhr, error, status) {
@@ -254,20 +254,20 @@
                         $(obj).closest('tr').remove();
                         $("#filesToDelete").val(Filelist);
 
-                        var rowCount = $('#tblRemoveFilesDetails >tbody >tr').length;
-
-                        if (rowCount == 1) {
-                            $("#BtnUpload").hide();
-                            $("#dvFilesDetails").empty();
+                            var rowCount = $('#tblRemoveFilesDetails >tbody >tr').length;
+                         
+                            if (rowCount == 1) {
+                                $("#BtnUpload").hide();
+                                $("#dvFilesDetails").empty();
+                            }
+                            else {
+                                $("#BtnUpload").show();
+                            }
                         }
                         else {
-                            $("#BtnUpload").show();
+                            alert(result.msgerror);
+                            return false;
                         }
-                    }
-                    else {
-                        alert(result.msgerror);
-                        return false;
-                    }
 
                 })
                 .error(function (error) {
