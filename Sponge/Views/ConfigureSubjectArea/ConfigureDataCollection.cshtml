@@ -57,19 +57,19 @@
                                             @{
                                                 if (@master.DATA_TYPE == "VC")
                                                 {
-                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "N")
                                                 {
-                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "DT")
                                                 {
-                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
                                                 }
                                             }
 
@@ -270,6 +270,22 @@
 
     });
 
+
+    // Function to check period value to avoid user from adding any row if Period > 1
+    
+    function checkPeriodValue()
+    { 
+        let periodValue;
+        $.ajax({
+            url:'ConfigureSubjectArea/CheckPeriodValue',
+            type:'Get',
+            success: function (result) {
+                periodValue = result;
+            }
+        });
+        return periodValue;
+    }
+
     $(document).ready(function () {
         $('#cancel').click(function () {
             window.location.href = 'ConfigureSubjectArea';
@@ -278,58 +294,71 @@
         var limit = 10;
         
         $("#addRow").click(function () {
+            
+            
+            // if (counter > 10) {
+            //     alert('You can only add 10 rows');
+            // }
+            
+            $.ajax({
+                url: '/ConfigureSubjectArea/CheckPeriodValue',
+                type: 'Get',
+                success: function (result) {
+                    var pValue = result;
+                    
+                    if (pValue > 1) {
+                        alert('New rows cannot be added for this subject area');
+                        document.getElementsByClassName('displayName')[0].value = '';
+                        document.getElementsByClassName('fieldName')[0].value = '';
+                    }
+                    else {
 
-            if (counter > 10) {
-                alert('You can only add 10 rows');
-            }
 
-            else 
-            { 
+                        var newRowContents = '<tr>'
+                            + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
+                            + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
+                            + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
+                            + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
+                            + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Perchent</option></select></td>'
+                            + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
+                            + '</tr>';
+                        counter++;
 
+                        $("#example tbody").append(newRowContents);
 
-                var newRowContents = '<tr>'
-                    + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
-                    + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
-                    + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
-                    + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
-                    + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Perchent</option></select></td>'
-                    + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
-                    + '</tr>';
-                counter++;
+                        $(this).prop('disabled', true);
+                        // Populate UOM dropdown for newly added row
+                        populateUOM($("#example tbody tr:last .uOM"));
 
-                $("#example tbody").append(newRowContents);
-
-                $(this).prop('disabled', true);
-                // Populate UOM dropdown for newly added row
-                populateUOM($("#example tbody tr:last .uOM"));
-
-                // Add change event for newly added IsLookUp select
-                $("#example tbody tr:last .isLookUp").change(function () {
-                    var lookupTypeField = $(this).closest('tr').find('.lookUpType');
-                    if ($(this).val() == "1") {
-                        $.ajax({
-                            url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
-                            type: 'GET',
-                            dataType: 'json',
-                            success: function (data) {
-                                lookupTypeField.empty();
-                                $.each(data, function (i, item) {
-                                    lookupTypeField.append($('<option>', {
-                                        value: item.columN_DISPLAY_NAME,
-                                        text: item.columN_DISPLAY_NAME
-                                    }));
+                        // Add change event for newly added IsLookUp select
+                        $("#example tbody tr:last .isLookUp").change(function () {
+                            var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+                            if ($(this).val() == "1") {
+                                $.ajax({
+                                    url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        lookupTypeField.empty();
+                                        $.each(data, function (i, item) {
+                                            lookupTypeField.append($('<option>', {
+                                                value: item.columN_DISPLAY_NAME,
+                                                text: item.columN_DISPLAY_NAME
+                                            }));
+                                        });
+                                        lookupTypeField.prop('disabled', false);
+                                    },
+                                    error: function () {
+                                        alert('Failed to retrieve Lookup Type.');
+                                    }
                                 });
-                                lookupTypeField.prop('disabled', false);
-                            },
-                            error: function () {
-                                alert('Failed to retrieve Lookup Type.');
+                            } else {
+                                lookupTypeField.prop('disabled', true);
                             }
                         });
-                    } else {
-                        lookupTypeField.prop('disabled', true);
                     }
-                });
-            }
+                }
+            });
             
         });
         // Make the LookupType readonly by default
@@ -361,7 +390,7 @@
                     error: function () {
                         alert('Failed to retrieve master name.');
                     }
-                });
+                }); 
             } else {
                 lookupTypeField.empty();
                 lookupTypeField.prop('disabled', true);

@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
 using System.Globalization;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http;
+using System.Data.Common;
 
 namespace Sponge.Controllers
 {
@@ -449,51 +451,99 @@ namespace Sponge.Controllers
 
                 foreach (var mastervalue in dimension.Value)
                 {
-
                     using (var command = _Context.Database.GetDbConnection().CreateCommand())
                     {
-                        command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
-                        var dimensionParam = new SqlParameter("@p_DimensionName", dimension.Key);
-                        var masterParam = new SqlParameter("@p_MasterName", mastervalue);
-                        var config_ID = new SqlParameter("@v_configId", configID);
-                        command.Parameters.Add(dimensionParam);
-                        command.Parameters.Add(masterParam);
-                        command.Parameters.Add(config_ID);
-
+                        // Count rows stored procedure
+                        command.CommandText = "SP_GETFILTERATION_DATA_FINAL_COUNT";
                         command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                        command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                        command.Parameters.Add(new SqlParameter("@v_configId", configID));
 
                         _Context.Database.OpenConnection();
 
-                        using (var result = command.ExecuteReader())
+                        var count = Convert.ToInt32(command.ExecuteScalar());
+
+                        var dataList = new List<Dictionary<string, string>>();
+
+                        if (count > 100)
                         {
-                            var dataTable = new DataTable();
-                            dataTable.Load(result);
-
-                            // parse datatable into list of dictionaries
-                            var dataList = new List<Dictionary<string, string>>();
-                            foreach (DataRow row in dataTable.Rows)
-                            {
-                                var dict = new Dictionary<string, string>();
-                                foreach (DataColumn column in dataTable.Columns)
-                                {
-                                    dict[column.ColumnName] = row[column].ToString();
-                                }
-                                dataList.Add(dict);
-                            }
-
-                            dimensionDict.Add(mastervalue, dataList);
+                            // adding special row
+                            dataList.Add(new Dictionary<string, string> { { "SpecialRow", "Please type 5 characters to search..." } });
                         }
+                        else
+                        {
+                            command.Parameters.Clear(); // clearing parameters for previous command
+
+                            command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
+                            command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                            command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                            command.Parameters.Add(new SqlParameter("@v_configId", configID));
+
+                            using (var result = command.ExecuteReader())
+                            {
+                                var dataTable = new DataTable();
+                                dataTable.Load(result);
+
+
+                                foreach (DataRow row in dataTable.Rows)
+                                {
+                                    var dict = new Dictionary<string, string>();
+                                    foreach (DataColumn column in dataTable.Columns)
+                                    {
+                                        dict[column.ColumnName] = row[column].ToString();
+                                    }
+                                    dataList.Add(dict);
+                                }
+                            }
+                        }
+
+                        dimensionDict.Add(mastervalue, dataList);
                     }
                 }
-
-                masterValuesDictionary.Add(dimension.Key, dimensionDict);
+                // sort the master values dictionary here
+                var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
+                masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
             }
-
-
-
-
-
             return View(masterValuesDictionary);
+        }
+        [HttpPost]
+        public async Task<JsonResult> SearchMasters(string DimensionName, string MasterKey, string SearchTerm)
+        {
+            var configID = TempData["ConfigId"];
+            TempData.Keep();
+            SPONGE_Context sPONGE_Context = new SPONGE_Context();
+
+            var resultData = new List<Dictionary<string, object>>();
+            using (var command = sPONGE_Context.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "SP_GETFILTERATION_DATA_FINAL_SEARCH";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@p_DimensionName", SqlDbType.VarChar) { Value = DimensionName });
+                command.Parameters.Add(new SqlParameter("@p_MasterName", SqlDbType.VarChar) { Value = MasterKey });
+                command.Parameters.Add(new SqlParameter("@v_configId", SqlDbType.Int) { Value = configID });
+                command.Parameters.Add(new SqlParameter("@p_SearchText", SqlDbType.VarChar) { Value = SearchTerm });
+
+                await sPONGE_Context.Database.OpenConnectionAsync(); 
+
+                using (DbDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var dataRow = new Dictionary<string, object>();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            dataRow.Add(reader.GetName(i), reader.GetValue(i));
+                        }
+                        resultData.Add(dataRow);
+                    }
+                }
+            }
+            string jsonResult = JsonConvert.SerializeObject(resultData, Formatting.Indented);
+
+            return Json(jsonResult);
         }
         public class SavedDataFilterValues
         {
@@ -511,7 +561,7 @@ namespace Sponge.Controllers
         {
             SPONGE_Context sPONGE_Context = new();
             var configID = TempData["ConfigId"];
-
+            TempData.Keep();
             //To fetch and show the values from the SPG_CONFIG_FILTER_VALUE
             if (configID != null)
             {
@@ -523,7 +573,7 @@ namespace Sponge.Controllers
                                     DIMENSION_TABLE = g.Key.DIMENSION_TABLE,
                                     MASTER_NAME = sPONGE_Context.SPG_MPP_MASTER
                                                   .Where(x => x.MASTER_NAME == g.Key.MASTER_NAME)
-                                                  .Select(x => x.MASTER_DISPLAY_NAME ).FirstOrDefault(),
+                                                  .Select(x => x.MASTER_DISPLAY_NAME).FirstOrDefault(),
                                     FILTER_VALUE_List = g.Select(x => new FilterValueItem { FILTER_TEXT = x.FILTER_TEXT, FILTER_VALUE = x.FILTER_VALUE }).ToList()
                                 }).ToList();
                 return Json(savedData);
@@ -545,12 +595,12 @@ namespace Sponge.Controllers
             // To delete existing data from the table
 
             var dataToDelete = _context.SPG_CONFIG_FILTERS_VALUE.Where(item => item.CONFIG_ID == configId).ToList();
-            if(dataToDelete.Count > 0)
+            if (dataToDelete.Count > 0)
             {
                 _context.SPG_CONFIG_FILTERS_VALUE.RemoveRange(dataToDelete);
                 _context.SaveChanges();
             }
-            
+
             foreach (var dimension in selectedValues)
             {
                 var dimensionCode = _context.SPG_MPP_MASTER.Where(x => x.MPP_DIMENSION_NAME == dimension.Key)

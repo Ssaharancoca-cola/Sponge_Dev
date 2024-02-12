@@ -10,20 +10,23 @@
         <div class="card">
             <div class="card-body">
                 <p class="card-title">Upload Excel</p>
-                
-                    <form id="upload" enctype="multipart/form-data" action="@Url.Action("UploadExcelFiles", "Upload")" method="POST">
-                        <div class="row">
+
+                <form id="upload" enctype="multipart/form-data" action="@Url.Action("UploadExcelFiles", "Upload")" method="POST">
+                    <div class="row">
                         <div class="col-sm-4 com-md-4"><input type="file" name="fileUpload" id="fileUpload" accept=".XlSX," multiple class="btn btn-default btn-file"></div>
-                            <div class="col-sm-8 com-md-8">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8 com-md-8">
                             <div id="dvFilesDetails"></div>
                             <br />
                             <div id="dvErrorDetails"></div>
                             <br />
                             <div id="dvWarningDetails"></div>
-                            </div>
                         </div>
-                        
-                        
+                    </div>
+
+
 
                         <div class="row" align="center">
                             <button type="button" class="btn btn-light mr-2" id="BtnCancel" >Cancel</button>
@@ -91,7 +94,7 @@
                     $('#BtnCancel').show();
 
                 }
-                
+
             }
             if (fi.files.length > 0) {
                 $("#dvFilesDetails").empty();
@@ -234,29 +237,28 @@
             }
         });
     }
-        function RemoveFile(obj) {
+    function RemoveFile(obj) {
 
-            if (confirm("Are you confirm to remove this file!")) {
-                $(obj).closest('tr').remove();
-                var FileName = $(obj).attr('name');
-                var id = $(obj).attr('id');
-                var index = id.replace("btnremove", "");
+        if (confirm("Are you sure you want to remove this file!")) {
+            $(obj).closest('tr').remove();
+            var FileName = $(obj).attr('name');
+            var id = $(obj).attr('id');
+            var index = id.replace("btnremove", "");
 
-                document.getElementById('filesToDelete').value += (FileName + ",");
-                $.getJSON("../Upload/DeleteFileFromFolder", { FileName: FileName },
-                    function (result) {
-                        if (result.msgerror == "Success") {
+            document.getElementById('filesToDelete').value += (FileName + ",");
+            $.getJSON("../Upload/DeleteFileFromFolder", { FileName: FileName },
+                function (result) {
+                    if (result.msgerror == "Success") {
 
-                            Filelist.push(result.SelectedFileName);
-                            $(obj).closest('tr').remove();
-                            $("#filesToDelete").val(Filelist);
+                        Filelist.push(result.SelectedFileName);
+                        $(obj).closest('tr').remove();
+                        $("#filesToDelete").val(Filelist);
 
                             var rowCount = $('#tblRemoveFilesDetails >tbody >tr').length;
                          
                             if (rowCount == 1) {
                                 $("#BtnUpload").hide();
                                 $("#dvFilesDetails").empty();
-                            $('#upload')[0].reset();
                             }
                             else {
                                 $("#BtnUpload").show();
@@ -267,46 +269,46 @@
                             return false;
                         }
 
-                    })
-                    .error(function (error) {
+                })
+                .error(function (error) {
 
-                        alert(error.responseText);
-                        console.log(error.statusCode);
-                    });
-            } else {
-                return false;
-            }
+                    alert(error.responseText);
+                    console.log(error.statusCode);
+                });
+        } else {
+            return false;
         }
+    }
 
-        function YesWarningFun(obj) {
-            debugger;
-            var id = obj.id;
-            var FileName = $(obj).attr('name');
-            var Message = $(obj).attr('message');
-            var ErrorType = $(obj).attr('ErrorType');
-            if (confirm("Are you confirm to load this file!")) {
+    function YesWarningFun(obj) {
+        debugger;
+        var id = obj.id;
+        var FileName = $(obj).attr('name');
+        var Message = $(obj).attr('message');
+        var ErrorType = $(obj).attr('ErrorType');
+        if (confirm("Are you sure you want to load this file!")) {
 
-                LoadWraningMessageFile(FileName, ErrorType);
-                $(obj).closest('tr').remove();
-                var rowCount = $('#tblwarning >tbody >tr').length;
-                console.log("Count Warning Rows after upload sucessfully :" + rowCount);
-                if (rowCount == 1) {
-                    $("#dvWarningDetails").empty();
-                }
-
-            } else {
-
-                return false;
-            }
-        }
-        function NoWarningFun(obj) {
-            debugger;
+            LoadWraningMessageFile(FileName, ErrorType);
             $(obj).closest('tr').remove();
             var rowCount = $('#tblwarning >tbody >tr').length;
-            console.log("Count Warning Rows for function NoWarningFun() val :" + rowCount);
+            console.log("Count Warning Rows after upload sucessfully :" + rowCount);
             if (rowCount == 1) {
                 $("#dvWarningDetails").empty();
             }
+
+        } else {
+
+            return false;
         }
+    }
+    function NoWarningFun(obj) {
+        debugger;
+        $(obj).closest('tr').remove();
+        var rowCount = $('#tblwarning >tbody >tr').length;
+        console.log("Count Warning Rows for function NoWarningFun() val :" + rowCount);
+        if (rowCount == 1) {
+            $("#dvWarningDetails").empty();
+        }
+    }
 </script>
 <!-- End plugin js for this page -->
