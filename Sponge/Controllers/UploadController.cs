@@ -99,18 +99,29 @@ namespace Sponge.Controllers
                     continue;
                 string FileCode = GetFileCode(TempFilePath + "\\" + file.FileName);
                 FileModel objFileModel = new FileModel();
-
                 if (!string.IsNullOrEmpty(FileCode))
                 {
                     var fileNameDetails = (from SPT in dbcontext.SPG_TEMPLATE
                                            where SPT.FILE_CODE == FileCode
                                            select new { File_Name = SPT.FILE_NAME }).FirstOrDefault();
                     fileName = fileNameDetails?.File_Name.ToString();
-                    Filename = fileName;
-                    if (string.IsNullOrEmpty(Filename))
+                    if (System.IO.File.Exists(TempFilePath + "\\" + Filename))
                     {
-                        listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error!Invalid file Code" });
-                        return Json(new { UploadedFileCount = Request.Form.Files.Count, ErrorList = listErros });
+                        FileInfo FileInfo = new FileInfo(TempFilePath + "\\" + Filename);
+                        FileInfo.Delete();
+                    }
+                    Filename = fileName;
+                }
+                if (fileName is null)
+                {
+                    listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                    continue;
+                }
+                else
+                {
+                    using (var fileContent = new FileStream(Path.Combine(TempFilePath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileContent);
                     }
                 }
 
