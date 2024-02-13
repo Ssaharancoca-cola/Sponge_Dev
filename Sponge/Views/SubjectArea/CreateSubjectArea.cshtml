@@ -18,7 +18,7 @@
                             <div class="col">
                                 <label for="SubFunction">Sub Function<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.SUBFUNCTION_ID" class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
-                                    <option selected value="">Select</option>
+                                    <option selected value="" disabled>Select</option>
                                     @foreach (var f in ViewBag.SubFunction)
                                     {
                                         <option value="@f.Text">@f.Value</option>
@@ -37,7 +37,7 @@
                             <div class="col">
                                 <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
-                                    <option selected value="">Select</option>
+                                    <option selected value="" disabled>Select</option>
                                     <option value="CURRENT">Current</option>
                                     <option value="NEXT">Next</option>
                                     <option value="PREVIOUS">Previous</option>
@@ -47,7 +47,7 @@
                             <div class="col-sm-4">
                                 <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
-                                    <option selected value="">Select</option>                                    
+                                    <option selected value="" disabled>Select</option>                                    
                                     <option value="YEARLY">Yearly</option>
                                     <option value="HALF_YEARLY">Half Yearly</option>
                                     <option value="QUARTERLY">Quarterly</option>
@@ -77,7 +77,7 @@
                             <div class="col-sm-4">
                                 <label asp-for="SpgSubjectArea.ACTIVE_FLAG" for="Active">Active<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
-                                    <option selected value="">Select</option>
+                                    <option selected value="" disabled>Select</option>
                                     <option value="Y">Active</option>
                                     <option value="N">Inactive</option>
                                 </select>

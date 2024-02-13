@@ -251,7 +251,7 @@ namespace Sponge.Controllers
                 else if (frequency.ToUpper().Trim() == "HALF_YEARLY")
                 {
                     items = new SelectListItem();
-                    items.Text = "Half_Yearly";
+                    items.Text = "Half Yearly";
                     items.Value = "HALF_YEARLY";
                     lstItems.Add(items);
                     items = new SelectListItem();

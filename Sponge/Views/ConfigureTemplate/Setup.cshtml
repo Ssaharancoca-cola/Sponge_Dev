@@ -113,6 +113,7 @@
                                 <label for="approverEmailID">Approver Email ID</label>
                                 <input required type="email" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
                                 <div id="emailSuggestions" style="border:1px solid;display:none"></div>
+                                <div><label id="gettingDetailsLBL" style="display:none">Getting details...</label></div>
                             </div>
                             <div class="col btn-align">
                                 <button type="submit" id="getapprover" class="btn btn-primary">Get Approver Info</button>
@@ -238,6 +239,7 @@
         });
         $("#getapprover").click(function (e) {
             e.preventDefault(); // Prevent the button from submitting the form
+            document.getElementById('gettingDetailsLBL').style.display = 'block';
 
             // Get the email
             var email = $("#approverEmailID").val();
@@ -245,10 +247,12 @@
             // Make an AJAX request to your action
             $.getJSON('/ConfigureTemplate/GetUserInfoByEmail', { email: email }, function (data) {
                 if (data.userName == null || data.userId == null) {
+                    document.getElementById('gettingDetailsLBL').style.display = 'none';
                     alert('Unable to get details, please enter correct email');
                 }
                 else {
                     // Fill the approver name and ID fields with the returned data
+                    document.getElementById('gettingDetailsLBL').style.display = 'none';
                     $("#approverName").val(data.userName);
                     $("#approverID").val(data.userId);
                 }
@@ -262,6 +266,12 @@
         if (email == "") {
             $('#emailSuggestions').empty();
         }
+        else {
+            $('#emailSuggestions').empty();
+            $('#emailSuggestions').show();
+            $('#emailSuggestions').append('<div class="suggestion">Searching...</div>');
+        }
+        
         var configid = $("#configID").val();
 
 
