@@ -58,76 +58,93 @@ namespace Sponge.Controllers
         {
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
             var viewmodel = (from sp in sPONGE_Context.SPG_SUBJECTAREA
-                            join p in sPONGE_Context.SPG_SUBFUNCTION on sp.SUBFUNCTION_ID equals p.SUBFUNCTION_ID
-                            where sp.SUBJECTAREA_ID == id
-                            select new SubjectArea { SpgSubjectArea = sp, SpgSubfunction = p }).FirstOrDefault();
+                             join p in sPONGE_Context.SPG_SUBFUNCTION on sp.SUBFUNCTION_ID equals p.SUBFUNCTION_ID
+                             where sp.SUBJECTAREA_ID == id
+                             select new SubjectArea { SpgSubjectArea = sp, SpgSubfunction = p }).FirstOrDefault();
             return View(viewmodel);
         }
-        public IActionResult UpdateSubjectArea(int id, string activeFlag, SPG_SUBJECTAREA spg)
+        [HttpPost]
+        public IActionResult UpdateSubjectArea(SPG_SUBJECTAREA spg)
         {
-            SPONGE_Context spONGE_Context = new SPONGE_Context();
-            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            var lst1 = spONGE_Context.SPG_SUBJECTAREA.FirstOrDefault(x => x.SUBJECTAREA_ID == id);
-            
-            if (lst1 != null)
+            if (spg == null || spg.SUBJECTAREA_ID == 0)
             {
-                //lst1.ACTIVE_FLAG = activeFlag;
-                lst1.ACTIVE_FLAG = spg.ACTIVE_FLAG;
-                lst1.MODIFIED_BY = userName[1];
-                lst1.MODIFIED_DATE = DateTime.Now;
-                spONGE_Context.SaveChanges();
+                return Json(new { success = false, message = "Invalid Subject Area data." });
             }
-           return RedirectToAction("ManageSubjectArea");
+
+            try
+            {
+                SPONGE_Context spONGE_Context = new SPONGE_Context();
+                string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+                var lst1 = spONGE_Context.SPG_SUBJECTAREA.FirstOrDefault(x => x.SUBJECTAREA_ID == spg.SUBJECTAREA_ID);
+
+                if (lst1 != null)
+                {
+                    lst1.ACTIVE_FLAG = spg.ACTIVE_FLAG;
+                    lst1.MODIFIED_BY = userName[1];
+                    lst1.MODIFIED_DATE = DateTime.Now;
+                    spONGE_Context.SaveChanges();
+                    return Json(new { success = true, message = "Subject Area updated successfully." });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Subject Area not found." });
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
+                return Json(new { success = false, message = "An error occurred while updating the Subject Area." });
+            }
         }
         [HttpPost]
         public IActionResult SaveSubjectArea(SPG_SUBJECTAREA data)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
 
-            if (Request.Form["Command"] == "Save")
+            try
             {
-                try
-                {                    
-                    SPONGE_Context sPONGE_Context = new SPONGE_Context();
-                    var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
-                                                 select new SearchFunctionList
-                                                 {
-                                                     SubjectAreaName = func.SUBJECTAREA_NAME
-                                                 }).ToList();
-                    SearchSubjectAreaData = SearchSubjectAreaData.Where(s => s.SubjectAreaName == data.SUBJECTAREA_NAME).ToList();
+                SPONGE_Context sPONGE_Context = new SPONGE_Context();
+                var SearchSubjectAreaData = (from func in sPONGE_Context.SPG_SUBJECTAREA
+                                             select new SearchFunctionList
+                                             {
+                                                 SubjectAreaName = func.SUBJECTAREA_NAME
+                                             }).ToList();
+                SearchSubjectAreaData = SearchSubjectAreaData.Where(s => s.SubjectAreaName == data.SUBJECTAREA_NAME).ToList();
 
-                    if (SearchSubjectAreaData.Count <= 0)
-                    {
-                        data.VERSION = data.VERSION == "true" ? "Y" : "N";
-                        if (data.VERSION == "N")
-                        {
-                            data.ONTIMELEVEL = "0";
-                        }
-                        // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
-                        string PERIOD = sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY && s.TIME_LEVEL == data.TIME_LEVEL).Select(s => s.PERIOD).FirstOrDefault().ToString();
-
-                        data.SUBJECTAREA_TABLE = "SPG_" + data.SUBJECTAREA_NAME;
-                        data.PERIOD = PERIOD;
-                        data.CREATED_DATE = DateTime.Now;
-                        data.CREATED_BY = userName[1].ToString();
-                        sPONGE_Context.SPG_SUBJECTAREA.Add(data);
-                        sPONGE_Context.SaveChanges();
-                        TempData["SuccessMessage"] = "Data Saved Successfully";
-
-                        return RedirectToAction("ManageSubjectArea");
-                    }
-                    else
-                    {
-                        return RedirectToAction("CreateSubjectArea", new { InvalidEntry = 1 });
-                    }
-
-                }
-                catch (Exception ex)
+                if (SearchSubjectAreaData.Count <= 0)
                 {
-                    ErrorLog lgerr = new ErrorLog();
-                    lgerr.LogErrorInTextFile(ex);
+                    data.VERSION = data.VERSION == "true" ? "Y" : "N";
+                    if (data.VERSION == "N")
+                    {
+                        data.ONTIMELEVEL = "0";
+                    }
+                    // string PERIOD = GetPeriod(data.FREQUENCY, data.TIME_LEVEL);
+                    string PERIOD = sPONGE_Context.SPG_GET_PERIOD.Where(s => s.FREQUENCY == data.FREQUENCY && s.TIME_LEVEL == data.TIME_LEVEL).Select(s => s.PERIOD).FirstOrDefault().ToString();
+
+                    data.SUBJECTAREA_TABLE = "SPG_" + data.SUBJECTAREA_NAME;
+                    data.PERIOD = PERIOD;
+                    data.CREATED_DATE = DateTime.Now;
+                    data.CREATED_BY = userName[1].ToString();
+                    sPONGE_Context.SPG_SUBJECTAREA.Add(data);
+                    sPONGE_Context.SaveChanges();
+                    TempData["SuccessMessage"] = "Data Saved Successfully";
+
+                    return Json(new { success = true, message = "Data Saved Successfully" });
                 }
+                else
+                {
+                    return Json(new { success = false, message = "Subject area already exists." });
+                }
+
             }
+            catch (Exception ex)
+            {
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
+                return Json(new { success = false, message = "An error occurred while saving the data." });
+            }
+
             return View();
         }
 
@@ -192,7 +209,7 @@ namespace Sponge.Controllers
                 }
                 else if (frequency.ToUpper().Trim() == "MONTHLY")
                 {
-                   
+
 
                     items = new SelectListItem();
                     items.Text = "Weekly";
@@ -205,7 +222,7 @@ namespace Sponge.Controllers
                 }
                 else if (frequency.ToUpper().Trim() == "WEEKLY")
                 {
-                   
+
 
                     items = new SelectListItem();
                     items.Text = "Daily";

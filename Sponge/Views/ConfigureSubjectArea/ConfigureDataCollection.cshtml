@@ -57,19 +57,19 @@
                                             @{
                                                 if (@master.DATA_TYPE == "VC")
                                                 {
-                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "N")
                                                 {
-                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "DT")
                                                 {
-                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
                                                 }
                                             }
 
@@ -114,12 +114,12 @@
                                 </tr>
                             </tbody>
                         </table>
-
+                        <label style="display:none" id="periodValueTxtID"></label>
 
                     </div>
                     <button type="button" id="cancel" class="btn btn-cancel">Cancel</button>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
-                    <button type="submit" id="saveData" class="btn btn-primary " style="float:right">Next</button>
+                    <button type="button" id="saveData" class="btn btn-primary " style="float:right">Next</button>
                 </div>
             </div>
         </div>
@@ -191,7 +191,7 @@
             alert('Duplicates are not allowed in Display Name');
         }
         else {
-            
+
             var input1 = $(lastRow).find('.displayName');
             var input2 = $(lastRow).find('.fieldName');
 
@@ -221,7 +221,7 @@
         var currentValue = currentInput.val().toLowerCase();
         var isDuplicate = false;
 
-        // If value is blank, don't proceed with duplicate check 
+        // If value is blank, don't proceed with duplicate check
         if (currentValue.trim() === '') {
 
         }
@@ -282,42 +282,36 @@
 
 
     // Function to check period value to avoid user from adding any row if Period > 1
-    
-    function checkPeriodValue()
-    { 
-        let periodValue;
+    $(document).ready(function () {
+        // To fetch and set the vlue of Period on label
         $.ajax({
-            url:'ConfigureSubjectArea/CheckPeriodValue',
-            type:'Get',
+            url: '/ConfigureSubjectArea/CheckPeriodValue',
+            type: 'Get',
             success: function (result) {
-                periodValue = result;
+                $('#periodValueTxtID').text(result);
             }
         });
-        return periodValue;
-    }
 
-    $(document).ready(function () {
-        
 
         $('#cancel').click(function () {
             window.location.href = 'ConfigureSubjectArea';
         });
         var counter = 1;
         var limit = 10;
-        
+
         $("#addRow").click(function () {
-            
-            
+
+
             // if (counter > 10) {
             //     alert('You can only add 10 rows');
             // }
-            
+
             $.ajax({
                 url: '/ConfigureSubjectArea/CheckPeriodValue',
                 type: 'Get',
                 success: function (result) {
                     var pValue = result;
-                    
+
                     if (pValue > 1) {
                         alert('New rows cannot be added for this subject area');
                         document.getElementsByClassName('displayName')[0].value = '';
@@ -371,7 +365,7 @@
                     }
                 }
             });
-            
+
         });
         // Make the LookupType readonly by default
         $(".lookUpType").prop('disabled', true);
@@ -402,101 +396,153 @@
                     error: function () {
                         alert('Failed to retrieve master name.');
                     }
-                }); 
+                });
             } else {
                 lookupTypeField.empty();
                 lookupTypeField.prop('disabled', true);
             }
         });
         $('#saveData').click(function (e) {
-            $.ajax({
-                url: '/ConfigureSubjectArea/CheckPeriodValue',
-                type: 'Get',
-                success: function (result) {
-                        var pValue = result;
 
-                    if (pValue > 1) {
-                        e.preventDefault();
-                        alert('New rows cannot be added for this subject area');
-                        document.getElementsByClassName('displayName')[0].value = '';
-                        document.getElementsByClassName('fieldName')[0].value = '';
+            e.preventDefault();
+            var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+
+            var actualRowCount = rows.length - 1; // subtracting 1 for header row
+            if ($('#periodValueTxtID').val() > 1) 
+            { 
+                let displayName = $('#displayName').val();
+                let fieldName = $('#fieldName').val();
+                if (displayName !== '' || fieldName !== '') { 
+                    alert('There can only be one row for this subject area');
+                    document.getElementById('displayName').value = '';
+                    document.getElementById('fieldName').value = '';
+                }
+                else
+                {
+                    if (actualRowCount === 1) {
+                        var row = rows[1];
+                        for (var i = 0; i < row.cells.length; i++) {
+                            var inputs = row.cells[i].querySelectorAll('input[type=text]');
+                            var selects = row.cells[i].getElementsByTagName('select');
+
+                            for (var j = 0; j < inputs.length; j++) {
+                                inputs[j].required = true;
+                                inputs[j].style.borderColor = 'red'; // set border color to red
+                            }
+
+                            for (var j = 0; j < selects.length; j++) {
+                                selects[j].required = true;
+                                selects[j].style.borderColor = 'red'; // set border color to red
+                            }
+                        }
                     }
                     else {
-                        var table = document.getElementById('example');
-                        var rows = table.getElementsByTagName('tr');
+                        var lastRow = rows[rows.length - 1];
 
-                        var actualRowCount = rows.length - 1; // subtracting 1 for header row
+                        // get the inputs from the last row
+                        var input1 = $(lastRow).find('.displayName');
+                        var input2 = $(lastRow).find('.fieldName');
 
-                        if (actualRowCount === 1) {
-                            var row = rows[1];
-                            for (var i = 0; i < row.cells.length; i++) {
-                                var inputs = row.cells[i].querySelectorAll('input[type=text]');
-                                var selects = row.cells[i].getElementsByTagName('select');
-
-                                for (var j = 0; j < inputs.length; j++) {
-                                    inputs[j].required = true;
-                                    inputs[j].style.borderColor = 'red'; // set border color to red
-                                }
-
-                                for (var j = 0; j < selects.length; j++) {
-                                    selects[j].required = true;
-                                    selects[j].style.borderColor = 'red'; // set border color to red
-                                }
-                            }
+                        if (input1.val() && !input2.val()) {
+                            e.preventDefault();
+                            // If the first input is filled and the second is empty, add 'required' class
+                            input2.attr('required', true);
+                            input2.css("border-color", "red");
+                        }
+                        else if (input2.val() && !input1.val()) {
+                            e.preventDefault();
+                            // If the second input is filled and the first is empty, mark the first as required
+                            input1.attr('required', true);
+                            input1.css("border-color", "red");
                         }
                         else {
-                            var lastRow = rows[rows.length - 1];
-
-                            // get the inputs from the last row
-                            var input1 = $(lastRow).find('.displayName');
-                            var input2 = $(lastRow).find('.fieldName');
-
-                            if (input1.val() && !input2.val()) {
-                                e.preventDefault();
-                                // If the first input is filled and the second is empty, add 'required' class
-                                input2.attr('required', true);
-                                input2.css("border-color", "red");
-                            }
-                            else if (input2.val() && !input1.val()) {
-                                e.preventDefault();
-                                // If the second input is filled and the first is empty, mark the first as required
-                                input1.attr('required', true);
-                                input1.css("border-color", "red");
-                            }
-                            else {
-                                // Otherwise, remove the 'required' class
-                                input1.attr('required', false);
-                                input1.css("border-color", "none");
-                                input2.attr('required', false);
-                                input2.css("border-color", "none");
-                            }
+                            // Otherwise, remove the 'required' class
+                            input1.attr('required', false);
+                            input1.css("border-color", "none");
+                            input2.attr('required', false);
+                            input2.css("border-color", "none");
                         }
-                        $('.prepopulated').prop('disabled', true);  
+                    }
+                    $('.prepopulated').prop('disabled', true);
+                    $('#ConfDataCollForm').submit()
+                }
 
+            }
+            else {
+                if (actualRowCount === 1) {
+                    var row = rows[1];
+                    for (var i = 0; i < row.cells.length; i++) {
+                        var inputs = row.cells[i].querySelectorAll('input[type=text]');
+                        var selects = row.cells[i].getElementsByTagName('select');
+
+                        for (var j = 0; j < inputs.length; j++) {
+                            inputs[j].required = true;
+                            inputs[j].style.borderColor = 'red'; // set border color to red
+                        }
+
+                        for (var j = 0; j < selects.length; j++) {
+                            selects[j].required = true;
+                            selects[j].style.borderColor = 'red'; // set border color to red
+                        }
                     }
                 }
-            });
-            
-        });
-    });
+                else {
+                    var lastRow = rows[rows.length - 1];
 
-    function populateUOM($element) {
-        $.ajax({
-            url: '@Url.Action("GetUOM", "ConfigureSubjectArea")',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                $element.empty();
-                $.each(data, function (i, item) {
-                    $element.append($('<option>', {
-                        value: item.uoM_CODE,
-                        text: item.uoM_DESC
-                    }));
-                });
-            },
-            error: function () {
-                alert('Failed to retrieve UOM.');
+                    // get the inputs from the last row
+                    var input1 = $(lastRow).find('.displayName');
+                    var input2 = $(lastRow).find('.fieldName');
+
+                    if (input1.val() && !input2.val()) {
+                        e.preventDefault();
+                        // If the first input is filled and the second is empty, add 'required' class
+                        input2.attr('required', true);
+                        input2.css("border-color", "red");
+                    }
+                    else if (input2.val() && !input1.val()) {
+                        e.preventDefault();
+                        // If the second input is filled and the first is empty, mark the first as required
+                        input1.attr('required', true);
+                        input1.css("border-color", "red");
+                    }
+                    else {
+                        // Otherwise, remove the 'required' class
+                        input1.attr('required', false);
+                        input1.css("border-color", "none");
+                        input2.attr('required', false);
+                        input2.css("border-color", "none");
+                    }
+                }
+                $('.prepopulated').prop('disabled', true);
+                $('#ConfDataCollForm').submit()
             }
+
+            
+
+
+            
+
         });
-    }
+
+        function populateUOM($element) {
+            $.ajax({
+                url: '@Url.Action("GetUOM", "ConfigureSubjectArea")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $element.empty();
+                    $.each(data, function (i, item) {
+                        $element.append($('<option>', {
+                            value: item.uoM_CODE,
+                            text: item.uoM_DESC
+                        }));
+                    });
+                },
+                error: function () {
+                    alert('Failed to retrieve UOM.');
+                }
+            });
+        }
+    });
 </script>

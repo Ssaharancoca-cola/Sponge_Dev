@@ -70,3 +70,22 @@ $(document).ready(function () {
 
     });
 });
+function saveSubjectArea() {
+    $.ajax({
+        url: '/SubjectArea/SaveSubjectArea', 
+        type: 'POST',
+        data: $('#createSubjectFormID').serialize(),
+        success: function (response) {
+            if (response.success) {
+                alert(response.message);
+                  window.location.href = '/SubjectArea/ManageSubjectArea';
+            } else {
+                alert(response.message);
+                // Handle failure case
+            }
+        },
+        error: function () {
+            alert('Error occurred while saving the data');
+        }
+    });
+}
