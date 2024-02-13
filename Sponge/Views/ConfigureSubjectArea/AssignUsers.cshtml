@@ -65,6 +65,17 @@
             var isChecked = $(this).prop('checked');
             $('input[name="UserName"]').prop('checked', isChecked);
         });
+        // Event listener for the individual checkboxes
+        $(document).on('click', 'input[name="UserName"]', function () {
+            // If any checkbox is unchecked, then uncheck "Select All" checkbox
+            if (!$(this).prop('checked')) {
+                $('#select-all').prop('checked', false);
+            } else {
+                // Check if all checkboxes are checked and update "Select All" checkbox accordingly
+                var allChecked = $('input[name="UserName"]').length === $('input[name="UserName"]:checked').length;
+                $('#select-all').prop('checked', allChecked);
+            }
+        });
         $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
             debugger;
             var tableBody = $("#usersTableID tbody");

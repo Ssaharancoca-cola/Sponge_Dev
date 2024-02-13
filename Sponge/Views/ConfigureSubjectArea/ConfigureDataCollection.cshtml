@@ -57,19 +57,19 @@
                                             @{
                                                 if (@master.DATA_TYPE == "VC")
                                                 {
-                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "N")
                                                 {
-                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "DT")
                                                 {
-                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
                                                 }
                                             }
 
@@ -150,6 +150,11 @@
         if (currentValue.trim() === '') {
 
         }
+        if (currentValue !== '' && currentValue.trim() === '') {
+            alert('Input cannot be only whitespace.');
+            // Clear the input field
+            $(this).val('');
+        }
         else {
             $('.displayName').each(function () {
 
@@ -220,6 +225,11 @@
         if (currentValue.trim() === '') {
 
         }
+        if (currentValue !== '' && currentValue.trim() === '') {
+            alert('Input cannot be only whitespace.');
+            // Clear the input field
+            $(this).val('');
+        }
         else {
             $('.fieldName').each(function () {
 
@@ -287,6 +297,8 @@
     }
 
     $(document).ready(function () {
+        
+
         $('#cancel').click(function () {
             window.location.href = 'ConfigureSubjectArea';
         });
@@ -397,56 +409,74 @@
             }
         });
         $('#saveData').click(function (e) {
-            var table = document.getElementById('example');
-            var rows = table.getElementsByTagName('tr');
+            $.ajax({
+                url: '/ConfigureSubjectArea/CheckPeriodValue',
+                type: 'Get',
+                success: function (result) {
+                        var pValue = result;
 
-            var actualRowCount = rows.length - 1; // subtracting 1 for header row
-
-            if (actualRowCount === 1) {
-                var row = rows[1];
-                for (var i = 0; i < row.cells.length; i++) {
-                    var inputs = row.cells[i].querySelectorAll('input[type=text]');
-                    var selects = row.cells[i].getElementsByTagName('select');
-
-                    for (var j = 0; j < inputs.length; j++) {
-                        inputs[j].required = true;
-                        inputs[j].style.borderColor = 'red'; // set border color to red
+                    if (pValue > 1) {
+                        e.preventDefault();
+                        alert('New rows cannot be added for this subject area');
+                        document.getElementsByClassName('displayName')[0].value = '';
+                        document.getElementsByClassName('fieldName')[0].value = '';
                     }
+                    else {
+                        var table = document.getElementById('example');
+                        var rows = table.getElementsByTagName('tr');
 
-                    for (var j = 0; j < selects.length; j++) {
-                        selects[j].required = true;
-                        selects[j].style.borderColor = 'red'; // set border color to red
+                        var actualRowCount = rows.length - 1; // subtracting 1 for header row
+
+                        if (actualRowCount === 1) {
+                            var row = rows[1];
+                            for (var i = 0; i < row.cells.length; i++) {
+                                var inputs = row.cells[i].querySelectorAll('input[type=text]');
+                                var selects = row.cells[i].getElementsByTagName('select');
+
+                                for (var j = 0; j < inputs.length; j++) {
+                                    inputs[j].required = true;
+                                    inputs[j].style.borderColor = 'red'; // set border color to red
+                                }
+
+                                for (var j = 0; j < selects.length; j++) {
+                                    selects[j].required = true;
+                                    selects[j].style.borderColor = 'red'; // set border color to red
+                                }
+                            }
+                        }
+                        else {
+                            var lastRow = rows[rows.length - 1];
+
+                            // get the inputs from the last row
+                            var input1 = $(lastRow).find('.displayName');
+                            var input2 = $(lastRow).find('.fieldName');
+
+                            if (input1.val() && !input2.val()) {
+                                e.preventDefault();
+                                // If the first input is filled and the second is empty, add 'required' class
+                                input2.attr('required', true);
+                                input2.css("border-color", "red");
+                            }
+                            else if (input2.val() && !input1.val()) {
+                                e.preventDefault();
+                                // If the second input is filled and the first is empty, mark the first as required
+                                input1.attr('required', true);
+                                input1.css("border-color", "red");
+                            }
+                            else {
+                                // Otherwise, remove the 'required' class
+                                input1.attr('required', false);
+                                input1.css("border-color", "none");
+                                input2.attr('required', false);
+                                input2.css("border-color", "none");
+                            }
+                        }
+                        $('.prepopulated').prop('disabled', true);  
+
                     }
                 }
-            }
-            else {
-                var lastRow = rows[rows.length - 1];
-
-                // get the inputs from the last row
-                var input1 = $(lastRow).find('.displayName');
-                var input2 = $(lastRow).find('.fieldName');
-
-                if (input1.val() && !input2.val()) {
-                    e.preventDefault();
-                    // If the first input is filled and the second is empty, add 'required' class
-                    input2.attr('required', true);
-                    input2.css("border-color", "red");
-                }
-                else if (input2.val() && !input1.val()) {
-                    e.preventDefault();
-                    // If the second input is filled and the first is empty, mark the first as required
-                    input1.attr('required', true);
-                    input1.css("border-color", "red");
-                }
-                else {
-                    // Otherwise, remove the 'required' class
-                    input1.attr('required', false);
-                    input1.css("border-color", "none");
-                    input2.attr('required', false);
-                    input2.css("border-color", "none");
-                }
-            }
-            $('.prepopulated').prop('disabled', true);
+            });
+            
         });
     });
 
