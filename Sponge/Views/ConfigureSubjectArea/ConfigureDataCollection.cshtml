@@ -4,7 +4,7 @@
     var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
     TempData.Keep();
     var selectedDataCollection = ViewBag.SelectedDataCollection as List<DAL.Models.SPG_SUBJECT_DATACOLLECTION>;
-
+    var periodValue = ViewBag.PeriodValue;
 }
 
 <form asp-action="SaveDataCollection" asp-controller="ConfigureSubjectArea" method="post" id="ConfDataCollForm">
@@ -79,6 +79,8 @@
                                         </td>
                                     </tr>
                                 }
+                                @if(periodValue == "1")
+                                {                               
                                 <tr>
                                     <td>
                                         <input type="text" class="form-control displayName" name="data[0].DisplayName">
@@ -112,6 +114,7 @@
                                         </select>
                                     </td>
                                 </tr>
+                                }
                             </tbody>
                         </table>
                         <label style="display:none" id="periodValueTxtID"></label>
