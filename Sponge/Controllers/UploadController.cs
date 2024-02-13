@@ -352,7 +352,7 @@ namespace Sponge.Controllers
                     listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records found in excel template!" });
                     return listErros;
                 }
-                else if (dt.Rows.Count <= 7)
+                else if (dt.Rows.Count <= 5)
                 {
                     listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records found in excel template!" });
                     return listErros;
