@@ -113,7 +113,7 @@ namespace Sponge.Controllers
                     dt = dt.AddYears(1);
 
                     lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H1")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}12", dt.Year +1, dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H2")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}12", dt.Year , dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H2")));
                 }
             }
             if (subArea.FREQUENCY.Equals(Helper.Constant.QUARTERLY))
