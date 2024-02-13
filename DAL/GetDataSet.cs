@@ -459,8 +459,8 @@ namespace DAL
 
                     cmd.Parameters.Add(new SqlParameter("@p_ConfigID", configid));
                     cmd.Parameters.Add(new SqlParameter("@p_document_ID", documentId));
-                    cmd.Parameters.Add(new SqlParameter("@p_EffectiveToDate", p_EffectiveToDate)); 
-
+                    cmd.Parameters.Add(new SqlParameter("@p_EffectiveToDate", p_EffectiveToDate));
+                    cmd.CommandTimeout = 180;
                     try
                     {
                         context.Database.OpenConnection();

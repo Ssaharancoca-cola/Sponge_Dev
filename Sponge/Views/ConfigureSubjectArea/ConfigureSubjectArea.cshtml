@@ -15,7 +15,7 @@
                             <div class="col-sm-4 col-md-4">
                                 <label for="subjectAreaName">Subject Area Name</label>
                                 <select class="form-control" id="subjectArea" name="SUBJECTAREA_ID">
-                                    <option selected>Select</option>
+                                    <option selected disabled>Select</option>
                                     @foreach (var f in ViewBag.SubjectArea)
                                     {
                                         <option value="@f.Text">@f.Value</option>

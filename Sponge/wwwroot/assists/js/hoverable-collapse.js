@@ -22,4 +22,8 @@
       }
     }
   });
+    $(document).on('click', '[data-toggle="minimize"]', function () {
+        var body = $('body');
+        body.toggleClass("sidebar-icon-only");
+    });
 })(jQuery);

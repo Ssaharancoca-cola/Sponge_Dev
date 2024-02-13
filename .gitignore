@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Sponge/Properties/launchSettings.json
+/Sponge/Views/SearchTemplate/Privacy.cshtml
+/Sponge/Views/Home/Privacy.cshtml

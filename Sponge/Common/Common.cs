@@ -59,8 +59,7 @@ namespace Sponge.Common
                 else if (Frequency.ToUpper() == "YEARLY" && TimeLevel.ToUpper() == "HALF_YEARLY" && GetColumnNames.Count > 0)
                 {
 
-
-                    var GetYearlyAndHalfYearly = GetColumnNames.Select(s => new { DisplayName = GetFinancialYear.Trim() + "" + s.DisplayName.Trim(), DataType = s.DataType }).ToList();
+                    var GetYearlyAndHalfYearly = GetColumnNames.Select(s => new { DisplayName = GetFinancialYear.Trim() + "" + s.DisplayName.Trim(), ColumnCode = s.DisplayName.Trim(), DataType = s.DataType }).ToList();
 
                     foreach (var item in GetYearlyAndHalfYearly)
                     {
@@ -71,6 +70,8 @@ namespace Sponge.Common
                         objtimeCode.DISPLAY_NAME = item.DisplayName;
                         objtimeCode.DOCUMENT_ID = DocumentId;
                         objtimeCode.TEMPLATE_ID = TemplateId;
+                        objtimeCode.COLUMN_CODE = item.ColumnCode + "-" + item.DataType;
+
                         if (item.DisplayName.Contains("H1"))
                         {
                             objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "01" + PeriodFrom.Value.Year + "06".Trim();
@@ -87,7 +88,7 @@ namespace Sponge.Common
                 }
                 else if (Frequency.ToUpper() == "YEARLY" && TimeLevel.ToUpper() == "QUARTERLY" && GetColumnNames.Count > 0)
                 {
-                    var GetYearlyAndQuartely = GetColumnNames.Select(s => new { DisplayName = GetFinancialYear.Trim() + "" + s.DisplayName.Trim(), DataType = s.DataType }).ToList();
+                    var GetYearlyAndQuartely = GetColumnNames.Select(s => new { DisplayName = GetFinancialYear.Trim() + "" + s.DisplayName.Trim(), ColumnCode = s.DisplayName.Trim(),DataType = s.DataType }).ToList();
                     foreach (var item in GetYearlyAndQuartely)
                     {
 
@@ -97,6 +98,8 @@ namespace Sponge.Common
                         objtimeCode.DISPLAY_NAME = item.DisplayName;
                         objtimeCode.DOCUMENT_ID = DocumentId;
                         objtimeCode.TEMPLATE_ID = TemplateId;
+                        objtimeCode.COLUMN_CODE = item.ColumnCode + "-" + item.DataType;
+
                         if (item.DisplayName.Contains("Q1"))
                         {
                             objtimeCode.FORTIMECODE = PeriodFrom.Value.Year + "01" + PeriodFrom.Value.Year + "03".Trim();
@@ -107,11 +110,11 @@ namespace Sponge.Common
                         }
                         else if (item.DisplayName.Contains("Q3"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "06" + PeriodTO.Value.Year + "09".Trim();
+                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "07" + PeriodTO.Value.Year + "09".Trim();
                         }
                         else if (item.DisplayName.Contains("Q4"))
                         {
-                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "09" + PeriodTO.Value.Year + "12".Trim();
+                            objtimeCode.FORTIMECODE = PeriodTO.Value.Year + "10" + PeriodTO.Value.Year + "12".Trim();
                         }
                         objContext.SPG_GETTIMECODE.Add(objtimeCode);
                         objContext.SaveChanges();
@@ -140,6 +143,8 @@ namespace Sponge.Common
                             objtimeCode.DOCUMENT_ID = DocumentId;
                             objtimeCode.TEMPLATE_ID = TemplateId;
                             objtimeCode.DATA_TYPE = colname.DisplayName;
+                            objtimeCode.COLUMN_CODE = colname.DisplayName + "-" + colname.DataType;
+
                             if (i <= 5)
                             {
                                 if (i > 0 && i < 3)
@@ -198,6 +203,8 @@ namespace Sponge.Common
                         objtimeCode.DOCUMENT_ID = DocumentId;
                         objtimeCode.TEMPLATE_ID = TemplateId;
                         objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
+                        objtimeCode.COLUMN_CODE = item.DisplayName + "-" + item.DataType;
+
                         objContext.SPG_GETTIMECODE.Add(objtimeCode);
                         objContext.SaveChanges();
                         var TimeCodeId = objtimeCode.CONFIG_TIMECODE_ID;
@@ -231,6 +238,8 @@ namespace Sponge.Common
                         objtimeCode.DOCUMENT_ID = DocumentId;
                         objtimeCode.TEMPLATE_ID = TemplateId;
                         objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
+                        objtimeCode.COLUMN_CODE = item.DisplayName + "-" + item.DataType;
+
                         objContext.SPG_GETTIMECODE.Add(objtimeCode);
                         objContext.SaveChanges();
                         var TimeCodeId = objtimeCode.CONFIG_TIMECODE_ID;
@@ -260,6 +269,8 @@ namespace Sponge.Common
                         objtimeCode.DATA_TYPE = item.DataType;
                         objtimeCode.DOCUMENT_ID = DocumentId;
                         objtimeCode.TEMPLATE_ID = TemplateId;
+                        objtimeCode.COLUMN_CODE = item.DisplayName + "-" + item.DataType;
+
                         if (item.DisplayName.Contains("W1") || item.DisplayName.Contains("W2") || item.DisplayName.Contains("W3") || item.DisplayName.Contains("W4"))
                         {
                             MonthVal = GetQuartelyAndWeekly[0].Substring(0, 3);
@@ -310,13 +321,15 @@ namespace Sponge.Common
                         objtimeCode.DATA_TYPE = item.DataType;
                         objtimeCode.DOCUMENT_ID = DocumentId;
                         objtimeCode.TEMPLATE_ID = TemplateId;
+                        objtimeCode.COLUMN_CODE = item.DisplayName + "-" + item.DataType;
+
                         if (item.DisplayName.Contains("W1"))
                         {
                             MonthVal = GetMonthlyAndWeekly[0].Substring(0, 3);//Retrun Month Name eg. July-
                             GetMonth = (Int16)((Helper.MMM)Enum.Parse(typeof(Helper.MMM), MonthVal));//Retrun Month value eg. 07
                             GetYear = GetMonthlyAndWeekly[0].Substring(4, GetMonthlyAndWeekly[0].LastIndexOf("-") + 1).Trim();
                             objtimeCode.DISPLAY_NAME = GetMonthlyAndWeekly[0].Trim() + "" + item.DisplayName.Trim();//Return column name e.g July-W1
-                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();//Retuen ForTimeCode e.g 201807
+                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart() + "" + 1;
                         }
                         else if (item.DisplayName.Contains("W2"))
                         {
@@ -324,7 +337,7 @@ namespace Sponge.Common
                             GetMonth = (Int16)((Helper.MMM)Enum.Parse(typeof(Helper.MMM), MonthVal));
                             GetYear = GetMonthlyAndWeekly[0].Substring(4, GetMonthlyAndWeekly[0].LastIndexOf("-") + 1).Trim();
                             objtimeCode.DISPLAY_NAME = GetMonthlyAndWeekly[0].Trim() + "" + item.DisplayName.Trim();
-                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
+                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart() + "" + 2;
                         }
                         else if (item.DisplayName.Contains("W3"))
                         {
@@ -332,7 +345,7 @@ namespace Sponge.Common
                             GetMonth = (Int16)((Helper.MMM)Enum.Parse(typeof(Helper.MMM), MonthVal));
                             GetYear = GetMonthlyAndWeekly[0].Substring(4, GetMonthlyAndWeekly[0].LastIndexOf("-") + 1).Trim();
                             objtimeCode.DISPLAY_NAME = GetMonthlyAndWeekly[0].Trim() + "" + item.DisplayName.Trim();
-                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
+                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart() + "" + 3;
                         }
                         else if (item.DisplayName.Contains("W4"))
                         {
@@ -340,7 +353,7 @@ namespace Sponge.Common
                             GetMonth = (Int16)((Helper.MMM)Enum.Parse(typeof(Helper.MMM), MonthVal));
                             GetYear = GetMonthlyAndWeekly[0].Substring(4, GetMonthlyAndWeekly[0].LastIndexOf("-") + 1).Trim();
                             objtimeCode.DISPLAY_NAME = GetMonthlyAndWeekly[0].Trim() + "" + item.DisplayName.Trim();
-                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
+                            objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart() + "" + 4;
                         }
                         objContext.SPG_GETTIMECODE.Add(objtimeCode);
                         objContext.SaveChanges();

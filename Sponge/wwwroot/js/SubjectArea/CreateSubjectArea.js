@@ -1,21 +1,3 @@
-//To validate the fields on client side
-//function validateForm(form) {
-//    var isValid = true;
-
-//    $(':input[required]:visible', form).each(function () {
-//        if ($(this).val().trim() === '') {
-//            isValid = false;
-//            $(this).css('border', '1px solid red');
-//        } else {
-//            $(this).css('border', '');
-//        }
-//    });
-
-//    if (!isValid) {
-//        alert('Please fill all required fields.');
-//    }
-//    return isValid;
-//}
 $(document).ready(function () {
     $("#Frequency").change(function () {
         var selectedFrequency = $(this).val();
@@ -88,3 +70,22 @@ $(document).ready(function () {
 
     });
 });
+function saveSubjectArea() {
+    $.ajax({
+        url: '/SubjectArea/SaveSubjectArea', 
+        type: 'POST',
+        data: $('#createSubjectFormID').serialize(),
+        success: function (response) {
+            if (response.success) {
+                alert(response.message);
+                  window.location.href = '/SubjectArea/ManageSubjectArea';
+            } else {
+                alert(response.message);
+                // Handle failure case
+            }
+        },
+        error: function () {
+            alert('Error occurred while saving the data');
+        }
+    });
+}

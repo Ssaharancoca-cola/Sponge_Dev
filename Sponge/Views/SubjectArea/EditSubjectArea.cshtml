@@ -10,8 +10,9 @@
                 <p class="card-title">
                     Edit Subject Area
                 </p>
-                <form action="@Url.Action("UpdateSubjectArea", "SubjectArea", new {id = Model.SpgSubjectArea.SUBJECTAREA_ID, activeFlag = Model.SpgSubjectArea.ACTIVE_FLAG})" method="post">
+                <form id="editSubjectAreaFormID" method="post">
                     <div class="form-group row">
+                        <input type="hidden" id="SUBJECTAREA_ID" name="SUBJECTAREA_ID" value="@Model.SpgSubjectArea.SUBJECTAREA_ID" />
                         <div class="col-sm-4">
                         <label>Sub Function Name</label>
                         <input type="text" class="form-control" value="@Model.SpgSubfunction.SUBFUNCTION_NAME" readonly/>
@@ -58,16 +59,19 @@
                         <div class="col-sm-4">
                             <label for="Active">Active</label>
                             <select asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
-                                <option selected>Select</option>
                                 <option value="Y">Active</option>
                                 <option value="N">Inactive</option>
                             </select>
                         </div>
                     </div>
+                    <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
 
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" onclick="updateSubjectArea()" class="btn btn-primary">Update</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
+<script src="~/js/subjectarea/editsubjectarea.js"></script>

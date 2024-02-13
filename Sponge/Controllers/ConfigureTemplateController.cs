@@ -1,91 +1,87 @@
 ﻿using DAL.Common;
-using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Newtonsoft.Json;
 using Sponge.Common;
 using Sponge.Models;
 using Sponge.ViewModel;
-using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
 using System.Globalization;
-using System.Linq;
-using System.Diagnostics.Metrics;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Http;
+using System.Data.Common;
 
 namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
     public class ConfigureTemplateController : Controller
-{
-    private readonly ILogger<HomeController> _logger;
+    {
+        private readonly ILogger<HomeController> _logger;
         private IConfiguration _configuration;
         public ConfigureTemplateController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
         }
-        
+
 
         public IActionResult ConfigureTemplate()
         {
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             var lst = spONGE_Context.SPG_SUBJECTAREA.Select(o => new { o.SUBJECTAREA_NAME, o.SUBJECTAREA_ID }).Distinct();
             ViewBag.SubjectArea = new SelectList(lst.ToList(), "SUBJECTAREA_NAME", "SUBJECTAREA_ID");
-            
+
 
             return View();
         }
         public IActionResult SetUp(int configID)
         {
-            
+
 
             using (SPONGE_Context context = new SPONGE_Context())
             {
-               var  result = context.SPG_CONFIGURATION
-                    .Join(context.SPG_USERS,
-                        config => config.USER_ID,
-                        user => user.USER_ID,
-                        (config, user) => new { CONFIGURATION = config, USER = user })
-                    .Join(context.SPG_SUBJECTAREA,
-                        configUser => configUser.CONFIGURATION.SUBJECTAREA_ID,
-                        subject => subject.SUBJECTAREA_ID,
-                        (configUser, subject) => new
-                        {
+                var result = context.SPG_CONFIGURATION
+                     .Join(context.SPG_USERS,
+                         config => config.USER_ID,
+                         user => user.USER_ID,
+                         (config, user) => new { CONFIGURATION = config, USER = user })
+                     .Join(context.SPG_SUBJECTAREA,
+                         configUser => configUser.CONFIGURATION.SUBJECTAREA_ID,
+                         subject => subject.SUBJECTAREA_ID,
+                         (configUser, subject) => new
+                         {
                              configUser.CONFIGURATION.CONFIG_ID,
-                            NAME = configUser.USER.Name,
-                            subject.SUBJECTAREA_NAME,
+                             NAME = configUser.USER.Name,
+                             subject.SUBJECTAREA_NAME,
                              subject.FREQUENCY,
                              subject.TIME_LEVEL,
-                            ACTIVE_FLAG = configUser.CONFIGURATION.ACTIVE_FLAG ?? "Y",
-                            SCHEDULED = configUser.CONFIGURATION.SCHEDULED ?? "N",
-                            configUser.CONFIGURATION.LOCK_DATE,
-                            configUser.CONFIGURATION.PATTERN_MONTH,
-                            configUser.CONFIGURATION.PATTERN,
-                            configUser.CONFIGURATION.REMMINDER_DATE,
-                            configUser.CONFIGURATION.ESCALATION_DATE,
-                            configUser.CONFIGURATION.APPROVER_EMAILD,
-                            configUser.CONFIGURATION.APPROVER_NAME,
-                            configUser.CONFIGURATION.APPROVER_ID,
-                            configUser.CONFIGURATION.EFFECTIVE_TO,
-                            configUser.CONFIGURATION.Created_On,
-                            configUser.CONFIGURATION.Config_Name
+                             ACTIVE_FLAG = configUser.CONFIGURATION.ACTIVE_FLAG ?? "Y",
+                             SCHEDULED = configUser.CONFIGURATION.SCHEDULED ?? "N",
+                             configUser.CONFIGURATION.LOCK_DATE,
+                             configUser.CONFIGURATION.PATTERN_MONTH,
+                             configUser.CONFIGURATION.PATTERN,
+                             configUser.CONFIGURATION.REMMINDER_DATE,
+                             configUser.CONFIGURATION.ESCALATION_DATE,
+                             configUser.CONFIGURATION.APPROVER_EMAILD,
+                             configUser.CONFIGURATION.APPROVER_NAME,
+                             configUser.CONFIGURATION.APPROVER_ID,
+                             configUser.CONFIGURATION.EFFECTIVE_TO,
+                             configUser.CONFIGURATION.Created_On,
+                             configUser.CONFIGURATION.Config_Name
 
-                        })
-                    .Where(x => x.CONFIG_ID == configID)
-                    .FirstOrDefault();
-                
+                         })
+                     .Where(x => x.CONFIG_ID == configID)
+                     .FirstOrDefault();
+
 
                 if (result != null)
                 {
-                    
+
                     ViewBag.Result = result;
                     ViewBag.Months = GetMonths();
                     return View();
@@ -129,7 +125,7 @@ namespace Sponge.Controllers
                 configRecord.REMMINDER_DATE = data.REMMINDER_DATE;
                 configRecord.ESCALATION_DATE = data.ESCALATION_DATE;
                 configRecord.APPROVER_NAME = data.APPROVER_NAME;
-                configRecord.APPROVER_EMAILD =data.APPROVER_EMAILID;
+                configRecord.APPROVER_EMAILD = data.APPROVER_EMAILID;
                 configRecord.APPROVER_ID = data.APPROVER_ID;
                 configRecord.MODIFIED_BY = userName[1];
                 configRecord.MODIFIED_DATE = DateTime.Now;
@@ -173,27 +169,27 @@ namespace Sponge.Controllers
             }
             catch (Exception ex)
             {
-                
+
             }
             return Json(userInfo);
         }
         [HttpGet]
         public IActionResult GetUserList(int subjectAreaId)
         {
-           
-            SPONGE_Context context = new();            
+
+            SPONGE_Context context = new();
             var usernames = from U in context.SPG_USERS
                             join SPG in context.SPG_CONFIGURATION on U.USER_ID equals SPG.USER_ID
                             where SPG.SUBJECTAREA_ID == subjectAreaId
-                            group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, SPG.ACTIVE_FLAG} into g
-                            select new 
+                            group U by new { SPG.CONFIG_ID, U.Name, U.USER_ID, SPG.ACTIVE_FLAG } into g
+                            select new
                             {
                                 subjectAreaid = subjectAreaId,
                                 configID = g.Key.CONFIG_ID,
                                 username = g.Key.Name,
-                                activeflag  = g.Key.ACTIVE_FLAG
+                                activeflag = g.Key.ACTIVE_FLAG
                             };
-           
+
             // TO check if the data is already saved in SPG_Config_filter for this config id
             var savedConfigIDs = (from U in usernames
                                   join CFV in context.SPG_CONFIG_FILTERS_VALUE on U.configID equals CFV.CONFIG_ID
@@ -211,11 +207,12 @@ namespace Sponge.Controllers
 
 
         [Route("ConfigureTemplate/DataFilter/subjectAreaId/{subjectAreaId:int}/configID/{configId:int}")]
-        public IActionResult DataFilter(int subjectAreaId,int configId) {
+        public IActionResult DataFilter(int subjectAreaId, int configId)
+        {
             SPONGE_Context spONGE_Ctx = new();
             //var subjectAreaId = spONGE_Ctx.SPG_CONFIG_STRUCTURE.Where(x => x.CONFIG_ID == configID).Select(x => x.SUBJECTAREA_ID).FirstOrDefault();
-            if(configId != null)
-            ViewBag.configID = configId;
+            if (configId != null)
+                ViewBag.configID = configId;
             // To reterive and get the current user name for selected data filter
             var selectedUser = (from config in spONGE_Ctx.SPG_CONFIGURATION
                                 join user in spONGE_Ctx.SPG_USERS
@@ -243,8 +240,8 @@ namespace Sponge.Controllers
             }
             // TO check if the data is already saved in SPG_Config_filter for this config id
             bool checkIfSaved = (from x in spONGE_Ctx.SPG_CONFIG_FILTERS
-                                where x.CONFIG_ID == configId
-                                select x).Any();
+                                 where x.CONFIG_ID == configId
+                                 select x).Any();
 
             ViewBag.CheckIfSaved = checkIfSaved;
             var dimensionList = (from x in spONGE_Ctx.SPG_SUBJECT_DIMENSION
@@ -259,7 +256,7 @@ namespace Sponge.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResult GetSubDimensionsList(List<string> dimensions,int configID) 
+        public JsonResult GetSubDimensionsList(List<string> dimensions, int configID)
         {
             SPONGE_Context spONGE_Ctx = new();
             //To get the subdimensions list
@@ -309,7 +306,7 @@ namespace Sponge.Controllers
 
                                             join c in sPONGE_Context.SPG_CONFIGURATION on configid equals c.CONFIG_ID
                                             join s in sPONGE_Context.SPG_SUBJECTAREA on c.SUBJECTAREA_ID equals s.SUBJECTAREA_ID
-                                            where u.EMAIL_ID.Contains(email) 
+                                            where u.EMAIL_ID.Contains(email)
                                            && (o.ROLE_ID == 4 || o.ROLE_ID == 5) && o.SUB_FUNCTION_ID == s.SUBFUNCTION_ID
                                             select new
                                             {
@@ -391,21 +388,21 @@ namespace Sponge.Controllers
         //}
         public class DataFilterModel
         {
-            public int ConfigId { get; set; } 
+            public int ConfigId { get; set; }
             public List<string> Dimensions { get; set; }
             public Dictionary<string, List<string>> MasterNames { get; set; }
         }
         [HttpPost]
         public IActionResult SaveDataFilterNext([FromBody] DataFilterModel data)
         {
-           string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+            string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context _Context = new();
             var configId = data.ConfigId;
             //var dimensions = data.Dimensions;
             var masterNames = data.MasterNames;
             foreach (var dimension in masterNames)
             {
-    
+
                 foreach (string masterName in dimension.Value)
                 {
                     var dimensioncode = _Context.SPG_MPP_MASTER.Where(x => x.MPP_DIMENSION_NAME == dimension.Key)
@@ -431,7 +428,7 @@ namespace Sponge.Controllers
             }
             TempData["Masters"] = JsonConvert.SerializeObject(masterNames);
             TempData["ConfigId"] = configId;
-                // Save changes to the database
+            // Save changes to the database
             _Context.SaveChanges();
 
             ViewBag.ThisUserName = HttpContext.Session.GetString("thisUserName");
@@ -453,56 +450,156 @@ namespace Sponge.Controllers
                 var dimensionDict = new Dictionary<string, List<Dictionary<string, string>>>();
 
                 foreach (var mastervalue in dimension.Value)
-                {                   
-
+                {
                     using (var command = _Context.Database.GetDbConnection().CreateCommand())
                     {
-                        command.CommandText = "SP_GETFILTERATION_DATA";
-                        var dimensionParam = new SqlParameter("@p_DimensionName", dimension.Key);
-                        var masterParam = new SqlParameter("@p_MasterName", mastervalue);
-
-                        command.Parameters.Add(dimensionParam);
-                        command.Parameters.Add(masterParam);
+                        // Count rows stored procedure
+                        command.CommandText = "SP_GETFILTERATION_DATA_FINAL_COUNT";
                         command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                        command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                        command.Parameters.Add(new SqlParameter("@v_configId", configID));
 
                         _Context.Database.OpenConnection();
 
-                        using (var result = command.ExecuteReader())
+                        var count = Convert.ToInt32(command.ExecuteScalar());
+
+                        var dataList = new List<Dictionary<string, string>>();
+
+                        if (count > 100)
                         {
-                            var dataTable = new DataTable();
-                            dataTable.Load(result);
-
-                            // parse datatable into list of dictionaries
-                            var dataList = new List<Dictionary<string, string>>();
-                            foreach (DataRow row in dataTable.Rows)
-                            {
-                                var dict = new Dictionary<string, string>();
-                                foreach (DataColumn column in dataTable.Columns)
-                                {
-                                    dict[column.ColumnName] = row[column].ToString();
-                                }
-                                dataList.Add(dict);
-                            }
-
-                            dimensionDict.Add(mastervalue, dataList);
+                            // adding special row
+                            dataList.Add(new Dictionary<string, string> { { "SpecialRow", "Please type 5 characters to search..." } });
                         }
+                        else
+                        {
+                            command.Parameters.Clear(); // clearing parameters for previous command
+
+                            command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
+                            command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                            command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                            command.Parameters.Add(new SqlParameter("@v_configId", configID));
+
+                            using (var result = command.ExecuteReader())
+                            {
+                                var dataTable = new DataTable();
+                                dataTable.Load(result);
+
+
+                                foreach (DataRow row in dataTable.Rows)
+                                {
+                                    var dict = new Dictionary<string, string>();
+                                    foreach (DataColumn column in dataTable.Columns)
+                                    {
+                                        dict[column.ColumnName] = row[column].ToString();
+                                    }
+                                    dataList.Add(dict);
+                                }
+                            }
+                        }
+
+                        dimensionDict.Add(mastervalue, dataList);
                     }
                 }
-
-                masterValuesDictionary.Add(dimension.Key, dimensionDict);
+                // sort the master values dictionary here
+                var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
+                masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
             }
-
             return View(masterValuesDictionary);
+        }
+        [HttpPost]
+        public async Task<JsonResult> SearchMasters(string DimensionName, string MasterKey, string SearchTerm)
+        {
+            var configID = TempData["ConfigId"];
+            TempData.Keep();
+            SPONGE_Context sPONGE_Context = new SPONGE_Context();
+
+            var resultData = new List<Dictionary<string, object>>();
+            using (var command = sPONGE_Context.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "SP_GETFILTERATION_DATA_FINAL_SEARCH";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@p_DimensionName", SqlDbType.VarChar) { Value = DimensionName });
+                command.Parameters.Add(new SqlParameter("@p_MasterName", SqlDbType.VarChar) { Value = MasterKey });
+                command.Parameters.Add(new SqlParameter("@v_configId", SqlDbType.Int) { Value = configID });
+                command.Parameters.Add(new SqlParameter("@p_SearchText", SqlDbType.VarChar) { Value = SearchTerm });
+
+                await sPONGE_Context.Database.OpenConnectionAsync(); 
+
+                using (DbDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var dataRow = new Dictionary<string, object>();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            dataRow.Add(reader.GetName(i), reader.GetValue(i));
+                        }
+                        resultData.Add(dataRow);
+                    }
+                }
+            }
+            string jsonResult = JsonConvert.SerializeObject(resultData, Formatting.Indented);
+
+            return Json(jsonResult);
+        }
+        public class SavedDataFilterValues
+        {
+            public string DIMENSION_TABLE { get; set; }
+            public string MASTER_NAME { get; set; }
+            public List<FilterValueItem> FILTER_VALUE_List { get; set; }
+        }
+        public struct FilterValueItem
+        {
+            public string FILTER_TEXT { get; set; }
+            public string FILTER_VALUE { get; set; }
+        }
+
+        public JsonResult GetSavedFilterValues()
+        {
+            SPONGE_Context sPONGE_Context = new();
+            var configID = TempData["ConfigId"];
+            TempData.Keep();
+            //To fetch and show the values from the SPG_CONFIG_FILTER_VALUE
+            if (configID != null)
+            {
+                var savedData = sPONGE_Context.SPG_CONFIG_FILTERS_VALUE
+                                .Where(x => x.CONFIG_ID == (int)configID)
+                                .GroupBy(x => new { x.DIMENSION_TABLE, x.MASTER_NAME })
+                                .Select(g => new SavedDataFilterValues
+                                {
+                                    DIMENSION_TABLE = g.Key.DIMENSION_TABLE,
+                                    MASTER_NAME = sPONGE_Context.SPG_MPP_MASTER
+                                                  .Where(x => x.MASTER_NAME == g.Key.MASTER_NAME)
+                                                  .Select(x => x.MASTER_DISPLAY_NAME).FirstOrDefault(),
+                                    FILTER_VALUE_List = g.Select(x => new FilterValueItem { FILTER_TEXT = x.FILTER_TEXT, FILTER_VALUE = x.FILTER_VALUE }).ToList()
+                                }).ToList();
+                return Json(savedData);
+            }
+            else
+            {
+                return Json(new List<SavedDataFilterValues>());
+            }
         }
 
         [HttpPost]
         public IActionResult SaveSelectedValues(string data, int configId)
         {
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            Dictionary<string, Dictionary<string, List<string>>> selectedValues =
-                  JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>(data);
+            Dictionary<string, Dictionary<string, List<object>>> selectedValues =
+                                                    JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<object>>>>(data);
             SPONGE_Context _context = new();
             var newEntities = new List<SPG_CONFIG_FILTERS_VALUE>();
+            // To delete existing data from the table
+
+            var dataToDelete = _context.SPG_CONFIG_FILTERS_VALUE.Where(item => item.CONFIG_ID == configId).ToList();
+            if (dataToDelete.Count > 0)
+            {
+                _context.SPG_CONFIG_FILTERS_VALUE.RemoveRange(dataToDelete);
+                _context.SaveChanges();
+            }
 
             foreach (var dimension in selectedValues)
             {
@@ -512,22 +609,32 @@ namespace Sponge.Controllers
                 {
                     var mastercode = _context.SPG_MPP_MASTER.Where(x => x.MASTER_DISPLAY_NAME == master.Key && x.MPP_DIMENSION_NAME == dimension.Key)
                                       .Select(x => x.MASTER_NAME).FirstOrDefault();
-                    foreach (var values in master.Value)
+                    foreach (var item in master.Value)
                     {
-                        var entity = new SPG_CONFIG_FILTERS_VALUE
+                        // Convert the item to a dictionary
+                        var values = item as Newtonsoft.Json.Linq.JObject;
+
+                        // Access the 'value' and 'text'
+                        var value = values["value"].ToString();
+                        var text = values["text"].ToString();
+
+                        if (!_context.SPG_CONFIG_FILTERS_VALUE.Any(x => (x.FILTER_VALUE == value || x.FILTER_TEXT == text) && x.CONFIG_ID == configId))
                         {
-                            DIMENSION_TABLE = dimensionCode,
-                            MASTER_NAME = mastercode,
-                            FILTER_VALUE = values,
-                            CONFIG_ID = configId,
-                            CREATED_ON = DateTime.Now,
-                            CREATED_BY = userName[1]
-                        };
-                        newEntities.Add(entity);
+                            var entity = new SPG_CONFIG_FILTERS_VALUE
+                            {
+                                DIMENSION_TABLE = dimensionCode,
+                                MASTER_NAME = mastercode,
+                                FILTER_TEXT = text, // save the text
+                                FILTER_VALUE = value, // save the value
+                                CONFIG_ID = configId,
+                                CREATED_ON = DateTime.Now,
+                                CREATED_BY = userName[1]
+                            };
+                            newEntities.Add(entity);
+                        }
                     }
                 }
             }
-
             try
             {
                 _context.SPG_CONFIG_FILTERS_VALUE.AddRange(newEntities);

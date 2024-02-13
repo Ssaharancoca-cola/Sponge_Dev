@@ -48,20 +48,33 @@
                         </div> *@
                         
                     </div>
-                    <button class="btn btn-light mr-2">Cancel</button>
+                    <a class="btn btn-light mr-2" href="/ConfigureSubjectArea/ConfigureSubjectArea">Cancel</a>
                     <button type="submit" id="saveusers" class="btn btn-primary ">Save</button>
                 </div>
             </div>
         </div>
     </div>
 }
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
 <script>
     var selectedUser = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.SelectedUser));
     $(document).ready(function () {
         $('#select-all').click(function () {
             var isChecked = $(this).prop('checked');
             $('input[name="UserName"]').prop('checked', isChecked);
+        });
+        // Event listener for the individual checkboxes
+        $(document).on('click', 'input[name="UserName"]', function () {
+            // If any checkbox is unchecked, then uncheck "Select All" checkbox
+            if (!$(this).prop('checked')) {
+                $('#select-all').prop('checked', false);
+            } else {
+                // Check if all checkboxes are checked and update "Select All" checkbox accordingly
+                var allChecked = $('input[name="UserName"]').length === $('input[name="UserName"]:checked').length;
+                $('#select-all').prop('checked', allChecked);
+            }
         });
         $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
             debugger;

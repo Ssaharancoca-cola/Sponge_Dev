@@ -70,13 +70,17 @@
 </div>
 <!-- Plugin js for this page -->
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
-    $('#example').dataTable({
-        "oLanguage": {
-            "sEmptyTable": "No Data Found"
-        }
-    });
+$('#example').dataTable({
+    "oLanguage": {
+        "sEmptyTable": "No Data Found"
+    },
+    "aoColumnDefs": [
+        { "bSearchable": false, "bSortable": false, "aTargets": [6] }
+    ]
+});
 </script>
 <!-- End plugin js for this page -->
 <!-- inject:js -->
@@ -109,9 +113,3 @@
         checkbox.addEventListener('change', handleCB);
     });
 </script>
-@*  <script src="~/assists/js/virtual-select.min.js"></script>
-<script>
-    VirtualSelect.init({
-        ele: 'select'
-    });
-</script> *@

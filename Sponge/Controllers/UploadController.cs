@@ -11,9 +11,9 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 using OfficeOpenXml;
-using LinqToExcel;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
+
 
 namespace Sponge.Controllers
 {
@@ -97,8 +97,33 @@ namespace Sponge.Controllers
                 }
                 if (IsFileExist == true)
                     continue;
-
+                string FileCode = GetFileCode(TempFilePath + "\\" + file.FileName);
                 FileModel objFileModel = new FileModel();
+                if (!string.IsNullOrEmpty(FileCode))
+                {
+                    var fileNameDetails = (from SPT in dbcontext.SPG_TEMPLATE
+                                           where SPT.FILE_CODE == FileCode
+                                           select new { File_Name = SPT.FILE_NAME }).FirstOrDefault();
+                    fileName = fileNameDetails?.File_Name.ToString();
+                    if (System.IO.File.Exists(TempFilePath + "\\" + Filename))
+                    {
+                        FileInfo FileInfo = new FileInfo(TempFilePath + "\\" + Filename);
+                        FileInfo.Delete();
+                    }
+                    Filename = fileName;
+                }
+                if (fileName is null)
+                {
+                    listErros.Add(new TemplateFile { FileName = file.FileName, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                    continue;
+                }
+                else
+                {
+                    using (var fileContent = new FileStream(Path.Combine(TempFilePath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileContent);
+                    }
+                }
 
                 if (UserRole.ToUpper() == "ADMIN" || UserRole.ToUpper()== "DATA CONFIGURE")
                 {
@@ -126,7 +151,7 @@ namespace Sponge.Controllers
                     }
                     else
                     {
-                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
                         continue;
 
                     }
@@ -158,7 +183,7 @@ namespace Sponge.Controllers
                     }
                     else
                     {
-                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
                         continue;
 
                     }
@@ -188,13 +213,34 @@ namespace Sponge.Controllers
                     }
                     else
                     {
-                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
+                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file! Please upload the valid excel template which is sent to you;" });
                         continue;
                     }
                 }
             }
 
             return Json(new { UploadedFileCount = Request.Form.Files.Count, ErrorList = listErros });
+        }
+
+        public string GetFileCode(string fileName)
+        {
+            string fileCode = string.Empty;
+            FileStream file = null;
+            file = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using (ExcelPackage package = new(file))
+            {
+                ExcelWorksheet hiddenSheet = package.Workbook.Worksheets[HiddenSheetName];
+                if (hiddenSheet == null)
+                {
+                    fileCode = string.Empty;
+                }
+                else
+                {
+                    fileCode = Convert.ToString(hiddenSheet.Cells[HiddenFileCodeRowIndex, HiddenFileCodeColIndex].Value);
+                }
+            }
+            file.Close();
+            return fileCode;        
         }
         public FileModel Checkauthorizeduser(string FileName, string[] userId, FileModel objFileModel, bool IsAdminOrDataApprover)
         {
@@ -299,17 +345,16 @@ namespace Sponge.Controllers
             try
             {
 
-                //dt = ReadUploadedExcelFile(FilepathAndName);
                 SPONGE_Context dbcontext = new SPONGE_Context();
                 dt = GetUploadedExcelData(FilepathAndName);
-                if (dt.Rows.Count == 0)
+                if (dt is null)
                 {
-                    listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = "Error!No records found in excel template!" });
+                    listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records found in excel template!" });
                     return listErros;
                 }
                 else if (dt.Rows.Count <= 5)
                 {
-                    listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = "Error!No records found in excel template!" });
+                    listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records found in excel template!" });
                     return listErros;
                 }
                 //delete 1st rows from DT
@@ -374,7 +419,7 @@ namespace Sponge.Controllers
 
                 if (dt.Rows.Count == 0)
                 {
-                    listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = "Error!No records Found in excel template!" });
+                    listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records Found in excel template!" });
                     return listErros;
                 }
                 List<String> lsColumnsExcel = new List<string>();
@@ -457,25 +502,25 @@ namespace Sponge.Controllers
                 if (listOfInsertColumnnames.Count > 0)
                 {
 
-                    //Update Status to Abandon as  4 for previous document for same template
-                    var pendingStatusId = (int)Helper.ApprovalStatusEnum.Pending;
-                    var document = dbcontext.SPG_DOCUMENT.Where(s => s.TEMPLATEID == objFileModel.TemplateID && (s.APPROVALSTATUSID == pendingStatusId)).ToList();
-                    if (document.Count > 0)
-                    {
-                        int statusAbandonId = (int)Helper.ApprovalStatusEnum.Abandon;
-                        foreach (var item in document)
-                        {
-                            item.APPROVALSTATUSID = statusAbandonId;
-                            dbcontext.Entry(item);
-                        }
-                    }
-                    dbcontext.SaveChanges();
-                    //End
+                    ////Update Status to Abandon as  4 for previous document for same template
+                    //var pendingStatusId = (int)Helper.ApprovalStatusEnum.Pending;
+                    //var document = dbcontext.SPG_DOCUMENT.Where(s => s.TEMPLATEID == objFileModel.TemplateID && (s.APPROVALSTATUSID == pendingStatusId)).ToList();
+                    //if (document.Count > 0)
+                    //{
+                    //    int statusAbandonId = (int)Helper.ApprovalStatusEnum.Abandon;
+                    //    foreach (var item in document)
+                    //    {
+                    //        item.APPROVALSTATUSID = statusAbandonId;
+                    //        dbcontext.Entry(item);
+                    //    }
+                    //}
+                    //dbcontext.SaveChanges();
+                    ////End
 
 
 
-                    string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId,objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
-                    string datasetResults = "";
+                    //string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId,objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
+                    //string datasetResults = "";
 
                     // Remove Empty Rows
                     dt = dt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field =>
@@ -512,6 +557,29 @@ namespace Sponge.Controllers
 
                     }
                     dt.AcceptChanges();
+                    if (dt.Rows.Count == 0)
+                    {
+                        listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error!No records Found in excel template!" });
+                        return listErros;
+                    }
+                    var pendingStatusId = (int)Helper.ApprovalStatusEnum.Pending;
+                    var document = dbcontext.SPG_DOCUMENT.Where(s => s.TEMPLATEID == objFileModel.TemplateID && (s.APPROVALSTATUSID == pendingStatusId)).ToList();
+                    if (document.Count > 0)
+                    {
+                        int statusAbandonId = (int)Helper.ApprovalStatusEnum.Abandon;
+                        foreach (var item in document)
+                        {
+                            item.APPROVALSTATUSID = statusAbandonId;
+                            dbcontext.Entry(item);
+                        }
+                    }
+                    dbcontext.SaveChanges();
+                    //End
+
+
+
+                    string DocumentId = InsertIntoSPG_Document(objFileModel.UploderUserId, objFileModel.TemplateID, objFileModel.FileName, objFileModel.ApproverName, UploadedDocumentsFilePath, objFileModel.LockDate, objFileModel.ApproverID);
+                    string datasetResults = "";
 
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
@@ -602,13 +670,13 @@ namespace Sponge.Controllers
                         }
                         else
                         {
-                            listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = "Error! Filepath and name(" + FilepathAndName + ") does not exist" });
+                            listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error! File path and name(" + FilepathAndName + ") does not exist" });
                             return listErros;
                         }
                     }
                     else
                     {
-                        listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = "Error! DocumentId " + DocumentId + " is not generated and flag is " + flag + "; " });
+                        listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = "Error! DocumentId " + DocumentId + " is not generated and flag is " + flag + "; " });
                         return listErros;
                     }
                 }
@@ -616,7 +684,7 @@ namespace Sponge.Controllers
             catch (Exception ex)
 
             {
-                listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                listErros.Add(new TemplateFile { FileName = objFileModel.FileName, ErrorType = "E", ErrorMessage = ex.Message });
                 return listErros;
             }
             return listErros;
@@ -724,14 +792,13 @@ namespace Sponge.Controllers
                 return null;
             }
         }
+
         public string GeLookUpValue(decimal? ConFigId, string LookUp_DESC)
         {
             string LookVal = "";
-            string LinkServerName = _configuration["LinkServerName"];
-            string LINK_DWD = _configuration["LINK_DWD"];
 
             string Dynamic_SP_name = "SP_GET_DYNAMIC_QUERY_RESULTS";
-            string dynamicsqlQuery = "Select distinct DATA_TYPE,  LOOKUP_VALUE,LOOKUP_DESC,Display_Name from " + LinkServerName + "DIM_LOOKUP " + LINK_DWD + " p, SPG_CONFIG_STRUCTURE C " +
+            string dynamicsqlQuery = "Select distinct DATA_TYPE,  LOOKUP_VALUE,LOOKUP_DESC,Display_Name from DIM_LOOKUP  p, SPG_CONFIG_STRUCTURE C " +
 "WHERE c.config_id ='" + ConFigId + "' and C.LOOKUP_TYPE = p.LOOKUP_TYPE and c.DISPLAY_TYPE = 'DROPDOWN' and LookUp_DESC = '" + LookUp_DESC + "' order by DATA_TYPE asc";
             DataSet dsResults = new DataSet();
             using (GetDataSet objGetDataSetValue = new GetDataSet())
@@ -791,12 +858,11 @@ namespace Sponge.Controllers
             SPONGE_Context dbcontext = new();            
             string UploadedDocumentsFilePath = _configuration["AppSettings:UploadedDocumentsFilePath"];
             string WarningDocumentFilePath = _configuration["AppSettings:WarningDocumentFilePath"];
-            string msgerror = "";
             string UserRole = HttpContext.Session.GetString("ROLE").ToString();
-            string UserName = HttpContext.Session.GetString("NAME").ToString();
+            //string UserName = HttpContext.Session.GetString("NAME").ToString();
             string[] userId = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            int DataApproverRoleId = Convert.ToInt16(_configuration["AppSettings:DataApproverRoleId"]);
-            string approverUserId = string.Empty;
+            //int DataApproverRoleId = Convert.ToInt16(_configuration["AppSettings:DataApproverRoleId"]);
+            string approverUserId;
             string FilePath = WarningDocumentFilePath + "\\" + FileName;
             List<TemplateFile> listErros = new List<TemplateFile>();
             
@@ -830,7 +896,7 @@ namespace Sponge.Controllers
                         {
                             ErrorLog srsEx = new();
                             srsEx.LogErrorInTextFile(ex);
-                            listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                            listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "E", ErrorMessage = ex.Message });
                         }
                     }
                     else if (UserRole.ToUpper() == "DATA APPROVER")
@@ -854,7 +920,7 @@ namespace Sponge.Controllers
                             {
                                 ErrorLog srsEx = new();
                                 srsEx.LogErrorInTextFile(ex);
-                                listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                                listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "E", ErrorMessage = ex.Message });
                             }
 
                         }
@@ -880,7 +946,7 @@ namespace Sponge.Controllers
                         {
                             ErrorLog srsEx = new();
                             srsEx.LogErrorInTextFile(ex);
-                            listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                            listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "E", ErrorMessage = ex.Message });
                         }
                     }
                 }
@@ -889,7 +955,7 @@ namespace Sponge.Controllers
             {
                 ErrorLog srsEx = new();
                 srsEx.LogErrorInTextFile(ex);
-                listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "F", ErrorMessage = ex.Message });
+                listErros.Add(new TemplateFile { FileName = FileName, ErrorType = "E", ErrorMessage = ex.Message });
             }
             return Json(new { msgerror = listErros });
         }
@@ -952,7 +1018,7 @@ namespace Sponge.Controllers
             }
         }
 
-        public string ValidateHiddenSheet(string fileName, SPONGE_Context objContext, string FileCode)
+        public string ValidateHiddenSheet(string fileName)
         {
             string fileCode = string.Empty;
             FileStream file = null;
@@ -967,11 +1033,7 @@ namespace Sponge.Controllers
                 else
                 {
                     fileCode = Convert.ToString(hiddenSheet.Cells[HiddenFileCodeRowIndex, HiddenFileCodeColIndex].Value);
-                    //var IsExistFileCode= 
-                    if (fileCode != FileCode)
-                    {
-                        fileCode = string.Empty;
-                    }
+                    
                 }
             }
             file.Close();
@@ -983,12 +1045,19 @@ namespace Sponge.Controllers
             SPONGE_Context objContext = new();
             string WarningdocumentFilePath = _configuration["AppSettings:WarningDocumentFilePath"];
             string UserRole = HttpContext.Session.GetString("ROLE").ToString();
-            var FileCode = ValidateHiddenSheet(FilePath + "\\" + Filename, objContext, objFileModel.FileCode);
+            var FileCode = ValidateHiddenSheet(FilePath + "\\" + Filename);
+            string uploadedById = objContext.SPG_DOCUMENT
+                                            .Where(doc => doc.TEMPLATEID == objFileModel.TemplateID && doc.FILE_NAME == objFileModel.DocumentFileNAME && doc.ID == objFileModel.DocumentID)
+                                            .Select(doc => doc.UPLOADEDBY).FirstOrDefault();
+
+            string uplodedByUserName = objContext.SPG_USERS.Where(x => x.USER_ID == uploadedById)
+                                       .Select(x => x.Name)
+                                       .FirstOrDefault();
             if (UserRole.ToUpper() == "ADMIN" || UserRole.ToUpper() == "DATA CONFIGURE")
             {
                 if (string.IsNullOrEmpty(objFileModel.FileName))//Check valid file name 
                 {
-                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file(Invalid File name)! Upload the valid excel template which is sent to you;" });
+                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file(Invalid File name)! Upload the valid excel template which is sent to you;" });
                     if (System.IO.File.Exists(FilePath + "\\" + Filename))
                     {
                         System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -996,9 +1065,9 @@ namespace Sponge.Controllers
                     }
                     return listErros;
                 }
-                else if (string.IsNullOrEmpty(objFileModel.FileCode))//Check valid  file code
+                if (string.IsNullOrEmpty(objFileModel.FileCode))//Check valid  file code
                 {
-                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
+                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
                     if (System.IO.File.Exists(FilePath + "\\" + Filename))
                     {
                         System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1028,7 +1097,7 @@ namespace Sponge.Controllers
                     }
                     else
                     {
-                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "W", ErrorMessage = "File was uploaded earlier also for same reporting period. Do you wish to upload it again?" });
+                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "W", ErrorMessage = "File was uploaded earlier also for same reporting period by " + uplodedByUserName + ". Do you wish to upload it again?" });
                         if (System.IO.File.Exists(FilePath + "\\" + Filename))
                         {
                             System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1040,7 +1109,7 @@ namespace Sponge.Controllers
                 }
                 else if (string.IsNullOrEmpty(FileCode))
                 {
-                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
+                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
                     if (System.IO.File.Exists(FilePath + "\\" + Filename))
                     {
                         System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1076,7 +1145,7 @@ namespace Sponge.Controllers
                     listErros.Add(new TemplateFile
                     {
                         FileName = objFileModel.FileName,
-                        ErrorType = "F",
+                        ErrorType = "E",
                         ErrorMessage = "Invalid Lock Date!"
 
                     });
@@ -1093,7 +1162,7 @@ namespace Sponge.Controllers
             {
                 if (string.IsNullOrEmpty(objFileModel.FileName))//Check valid file name 
                 {
-                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file(Invalid File name)! Upload the valid excel template which is sent to you;" });
+                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file(Invalid File name)! Upload the valid excel template which is sent to you;" });
                     if (System.IO.File.Exists(FilePath + "\\" + Filename))
                     {
                         System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1103,7 +1172,7 @@ namespace Sponge.Controllers
                 }
                 else if (string.IsNullOrEmpty(objFileModel.FileCode))//Check valid  file code
                 {
-                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
+                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
                     if (System.IO.File.Exists(FilePath + "\\" + Filename))
                     {
                         System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1115,7 +1184,7 @@ namespace Sponge.Controllers
                 {
                     if (objFileModel.ApproverID != userId)
                     {
-                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "You are not authorized user! Please upload the valid excel template which is sent to you;" });
+                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "You are not authorized user! Please upload the valid excel template which is sent to you;" });
                         if (System.IO.File.Exists(FilePath + "\\" + Filename))
                         {
                             System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1167,7 +1236,7 @@ namespace Sponge.Controllers
                             }
                             else
                             {
-                                listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "W", ErrorMessage = "File was uploaded earlier also for same reporting period. Do you wish to upload it again?" });
+                                listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "W", ErrorMessage = "File was uploaded earlier also for same reporting period by " + uplodedByUserName + ". Do you wish to upload it again?" });
                                 if (System.IO.File.Exists(FilePath + "\\" + Filename))
                                 {
                                     System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1223,7 +1292,7 @@ namespace Sponge.Controllers
                     }
                     else
                     {
-                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "W", ErrorMessage = "File was uploaded earlier also for same reporting period. Do you wish to upload it again?" });
+                        listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "W", ErrorMessage = "File was uploaded earlier also for same reporting period by " + uplodedByUserName + ". Do you wish to upload it again?" });
                         if (System.IO.File.Exists(FilePath + "\\" + Filename))
                         {
                             System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1235,7 +1304,7 @@ namespace Sponge.Controllers
                 }
                 else if (string.IsNullOrEmpty(FileCode))
                 {
-                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "F", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
+                    listErros.Add(new TemplateFile { FileName = Filename, ErrorType = "E", ErrorMessage = "Error in file(Invalid File Code)! Upload the valid excel template which is sent to you;" });
                     if (System.IO.File.Exists(FilePath + "\\" + Filename))
                     {
                         System.IO.FileInfo FileInfo = new System.IO.FileInfo(FilePath + "\\" + Filename);
@@ -1291,7 +1360,7 @@ namespace Sponge.Controllers
                     listErros.Add(new TemplateFile
                     {
                         FileName = objFileModel.FileName,
-                        ErrorType = "F",
+                        ErrorType = "E",
                         ErrorMessage = "Invalid Lock Date!"
 
                     });
@@ -1329,7 +1398,10 @@ namespace Sponge.Controllers
                 }
             }
         }
-
+        public JsonResult DeleteFileFromFolder(string FileName)
+        {           
+            return Json(new { msgerror = "Success", SelectedFileName = FileName });
+        }
         public List<string> GetDimensionNameForEmailTemplate(decimal ConfigId)
         {
             SPONGE_Context _Context = new();

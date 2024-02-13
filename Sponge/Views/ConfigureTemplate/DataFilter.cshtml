@@ -62,6 +62,7 @@
                         <div class="form-group row" id="selectionContainerID">
                         
                         </div>
+                        <button type="button" id="cancel" class="btn btn-cancel">Cancel</button>
 
                         <button type="submit" asp-action="SaveDataFilterNext" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
                             Next
@@ -74,10 +75,14 @@
     </div>
 </form>
 
-
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="~/assists/js/hoverable-collapse.js"></script>
 <script>
 
     $(document).ready(function () {
+        $('#cancel').click(function () {
+            window.location.href = '@Url.Action("ConfigureTemplate","ConfigureTemplate")';
+        });
         $('#getSubDimensionsBTN').click(function () {
             var dimensions = [];
             debugger;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using Sponge;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,13 +9,15 @@ using System.Threading.Tasks;
 namespace BatchJob
 {
     public class ErrorLog : IDisposable
-    {         
+    {
+        private readonly string webRootPath = "E:\\Sponge\\Excel";
+
+
         void IDisposable.Dispose()
         {
         }
         public void LogErrorInTextFile(Exception ex)
         {
-            string webRootPath = Directory.GetCurrentDirectory();
 
             string logFolderPath = Path.Combine(webRootPath, "ErrorLog");
             string logFilePath = Path.Combine(logFolderPath, "ErrorLog.txt");
@@ -32,8 +36,6 @@ namespace BatchJob
         }
         public void LogTextInTextFile(string st)
         {
-            string webRootPath = Directory.GetCurrentDirectory();
-
             string logFolderPath = Path.Combine(webRootPath, "ErrorLog");
             string logFilePath = Path.Combine(logFolderPath, "ErrorLog.txt");
 
@@ -52,8 +54,6 @@ namespace BatchJob
         }
         public void LogErrorInTextFile(Exception ex,string ErrorDetails)
         {
-            string webRootPath = Directory.GetCurrentDirectory();
-
             string logFolderPath = Path.Combine(webRootPath, "ErrorLog");
             string logFilePath = Path.Combine(logFolderPath, "ErrorLog.txt");
 

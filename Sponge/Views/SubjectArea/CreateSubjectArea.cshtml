@@ -3,12 +3,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="~/assists/js/hoverable-collapse.js"></script>
     <script src="~/js/subjectarea/createsubjectarea.js"></script>
 </head>
-@* @using (Html.BeginForm("SaveSubjectArea", "SubjectArea", Model, FormMethod.Post, new { id = "createSubjectFormID" })) *@
-
-<form asp-controller="SubjectArea" asp-action="SaveSubjectArea" method="post" id="createSubjectFormID">
+<form id="createSubjectFormID">
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
@@ -17,9 +16,9 @@
                     <form class="forms-sample">
                         <div class="form-group row ">
                             <div class="col">
-                                <label for="SubFunction">Sub Function</label>
+                                <label for="SubFunction">Sub Function<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.SUBFUNCTION_ID" class="form-control" id="SubFunction" name="SUBFUNCTION_ID">
-                                    <option selected value="">Select</option>
+                                    <option selected value="" disabled>Select</option>
                                     @foreach (var f in ViewBag.SubFunction)
                                     {
                                         <option value="@f.Text">@f.Value</option>
@@ -28,7 +27,7 @@
                                 <span asp-validation-for="SpgSubjectArea.SUBFUNCTION_ID" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col">
-                                <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME">Subject Area Name</label>
+                                <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME">SubjectArea <span style="color:red">*</span></label>
                                 <input required asp-for="SpgSubjectArea.SUBJECTAREA_NAME" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-z0-9_]/i.test(event.key)" />
                                 <span style="font-size:10px">Please enter only uppercase A-Z, lowercase a-z, numbers 0-9, or underscore _</span>
                                 @* <span asp-validation-for="SpgSubjectArea.SUBJECTAREA_NAME" class="text-danger" style="font-size:10px"></span> *@
@@ -36,9 +35,9 @@
                         </div>
                         <div class="form-group row">
                             <div class="col">
-                                <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period</label>
+                                <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
-                                    <option selected value="">Select</option>
+                                    <option selected value="" disabled>Select</option>
                                     <option value="CURRENT">Current</option>
                                     <option value="NEXT">Next</option>
                                     <option value="PREVIOUS">Previous</option>
@@ -46,9 +45,9 @@
                                 <span asp-validation-for="@Model.SpgSubjectArea.REPORTING_PERIOD" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
-                                <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency</label>
+                                <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
-                                    <option selected value="">Select</option>                                    
+                                    <option selected value="" disabled>Select</option>                                    
                                     <option value="YEARLY">Yearly</option>
                                     <option value="HALF_YEARLY">Half Yearly</option>
                                     <option value="QUARTERLY">Quarterly</option>
@@ -59,7 +58,7 @@
                                 <span asp-validation-for="SpgSubjectArea.FREQUENCY" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
-                                <label for="ForTime">For Time</label>
+                                <label for="ForTime">For Time<span style="color:red">*</span></label>
                                 <select required class="form-control" id="ForTime" name="TIME_LEVEL">
                                     <option disabled selected value="">Select</option>
                                     @if (Model != null)
@@ -76,9 +75,9 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-4">
-                                <label asp-for="SpgSubjectArea.ACTIVE_FLAG" for="Active">Active</label>
+                                <label asp-for="SpgSubjectArea.ACTIVE_FLAG" for="Active">Active<span style="color:red">*</span></label>
                                 <select required asp-for="SpgSubjectArea.ACTIVE_FLAG" class="form-control" id="Active" name="ACTIVE_FLAG">
-                                    <option selected value="">Select</option>
+                                    <option selected value="" disabled>Select</option>
                                     <option value="Y">Active</option>
                                     <option value="N">Inactive</option>
                                 </select>
@@ -104,10 +103,15 @@
                                 <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
                             </div>
                         </div>
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <script type="text/javascript">
+                                alert("@TempData["SuccessMessage"]");
+                            </script>
+                        }
                         <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
                         
-                        @* <button id="validateFormBtnID" name="ValidateForm" class="btn btn-primary">Save</button> *@
-                        <button id="saveFormData" type="submit" name="Command" value="Save" class="btn btn-primary">Submit</button>
+                        <button id="saveFormData" type="button" name="Command" value="Save" onclick="saveSubjectArea()" class="btn btn-primary">Save</button>
                         
                     </form>
                 </div>
