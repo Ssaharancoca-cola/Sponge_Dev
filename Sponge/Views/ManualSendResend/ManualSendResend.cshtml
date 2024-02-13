@@ -129,6 +129,7 @@
 
         }
         if (frequency == 'HALF_YEARLY') {
+            debugger;
             var obj = GetHalfYearlyStartEndDate(pattern);
             reportingStartDate = obj.periodicStartDate;
             reportingEndDate = obj.periodicEndDate;
@@ -212,6 +213,7 @@
         Common.selectedStartYear = arrayVal[0];
         arrayVal = arrayVal[1].split(',');
         Common.selectedEndYear = arrayVal[0];
+        debugger;
         if (arrayVal[1] == 'H1') {
             var H1 = Common.HalfYearlyEnum.H1();
             return {

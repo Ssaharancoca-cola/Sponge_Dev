@@ -83,7 +83,7 @@ namespace Sponge.Controllers
                 for (int i = 0; i < range; i++)
                 {
                     dt = dt.AddYears(1);
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}12", dt.Year, dt.Year), string.Format("{0}-{1}", dt.Year, dt.Year+1 )));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}12", dt.Year, dt.Year), string.Format("{0}-{1}", dt.Year, dt.Year )));
                 }
             }
             if (subArea.FREQUENCY.Equals(Helper.Constant.MONTHLY))
@@ -112,8 +112,8 @@ namespace Sponge.Controllers
                 {
                     dt = dt.AddYears(1);
 
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H1")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}12", dt.Year , dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "H2")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year , "H1")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}12", dt.Year , dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year , "H2")));
                 }
             }
             if (subArea.FREQUENCY.Equals(Helper.Constant.QUARTERLY))
@@ -126,10 +126,10 @@ namespace Sponge.Controllers
                 for (int i = 0; i < range; i++)
                 {
                     dt = dt.AddYears(1);
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}03", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q1")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}04{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q2")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}09", dt.Year, dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q3")));
-                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}10{1}12", dt.Year , dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year + 1, "Q4")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}01{1}03", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year , "Q1")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}04{1}06", dt.Year, dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year , "Q2")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}07{1}09", dt.Year, dt.Year ), string.Format("{0}-{1},{2}", dt.Year, dt.Year , "Q3")));
+                    lst.Add(new KeyValuePair<string, string>(string.Format("{0}10{1}12", dt.Year , dt.Year), string.Format("{0}-{1},{2}", dt.Year, dt.Year , "Q4")));
                 }
 
             }
