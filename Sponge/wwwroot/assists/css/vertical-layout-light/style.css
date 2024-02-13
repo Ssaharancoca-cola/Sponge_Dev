@@ -73,15 +73,23 @@ html {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-@media screen and (min-width: 1920px) {
+
+
+@media screen and (min-width: 1024px) and (max-width: 1280px) {
     html {
-        font-size: 16px;
+        font-size: 12px;
     }
 }
 
 @media screen and (min-width: 1280px) and (max-width: 1920px) {
     html {
         font-size: 14px;
+    }
+}
+
+@media screen and (min-width: 1920px) {
+    html {
+        font-size: 16px;
     }
 }
 
@@ -18496,7 +18504,7 @@ body.avgrund-active {
     background: var(--primary);
     padding: 15px 10px;
     color: #ffffff;
-    font-size: 14px;
+    /*font-size: 14px;*/
 }
 
     .expandable-table thead tr th:first-child {
@@ -18514,7 +18522,7 @@ body.avgrund-active {
 
 .expandable-table tr td {
     padding: 14px;
-    font-size: 14px;
+    /*font-size: 14px;*/
 }
 
     .expandable-table tr td.select-checkbox {
