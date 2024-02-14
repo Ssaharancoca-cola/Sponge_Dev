@@ -274,41 +274,61 @@
         <text>window.leftToRightMultiSelect(@j); </text>
     }
 
-        $("#submit").click(function () {
-            var selectedValues = {};
+        $("#submit").click(function (e) {
+
+            var optionExists = false; 
+
             $('select[class*="rightSelect_"]').each(function () {
-                var $select = $(this);
-                var dimensionName = $select.closest('.tab-pane').attr('id');
-                var masterKey = $select.data("idx");
-
-                var values = $select.children("option").map(function () {
-                    return { value: this.value, text: $(this).text() };
-                }).toArray();
-
-                if (!(dimensionName in selectedValues)) {
-                    selectedValues[dimensionName] = {};
-                }
-                if (!(masterKey in selectedValues[dimensionName])) {
-                    selectedValues[dimensionName][masterKey] = [];
-                }
-
-                selectedValues[dimensionName][masterKey] = values;
-            });
-
-            console.log(selectedValues);
-
-
-            $.post("/ConfigureTemplate/SaveSelectedValues", {
-                data: JSON.stringify(selectedValues),
-                configId: configId
-            }, function (response) {
-
-                if (response.success) {
-                    alert("Data saved successfully");
-                    // Redirect to homepage
-                    window.location.href = "ConfigureTemplate";
+                if ($(this).find('option').length > 0) {
+                    optionExists = true;
+                    return false; 
                 }
             });
+
+            // If no option exists in any select, preventing form submission and alert the user
+            if (!optionExists) {
+                e.preventDefault(); 
+                alert("Please select at least one option before submitting.");
+            }
+            else
+            {
+                var selectedValues = {};
+                $('select[class*="rightSelect_"]').each(function () {
+                    var $select = $(this);
+                    var dimensionName = $select.closest('.tab-pane').attr('id');
+                    var masterKey = $select.data("idx");
+
+                    var values = $select.children("option").map(function () {
+                        return { value: this.value, text: $(this).text() };
+                    }).toArray();
+
+                    if (!(dimensionName in selectedValues)) {
+                        selectedValues[dimensionName] = {};
+                    }
+                    if (!(masterKey in selectedValues[dimensionName])) {
+                        selectedValues[dimensionName][masterKey] = [];
+                    }
+
+                    selectedValues[dimensionName][masterKey] = values;
+                });
+
+                console.log(selectedValues);
+
+
+                $.post("/ConfigureTemplate/SaveSelectedValues", {
+                    data: JSON.stringify(selectedValues),
+                    configId: configId
+                }, function (response) {
+
+                    if (response.success) {
+                        alert("Data saved successfully");
+                        // Redirect to homepage
+                        window.location.href = "ConfigureTemplate";
+                    }
+                });
+            }
+
+            
         });
 
     $("#cancelButton").click(function () {
