@@ -243,7 +243,15 @@ namespace Sponge.Controllers
 
             var subjectAreaName = HttpContext.Session.GetString("SubjectAreaName");
             ViewBag.SubjectAreaName = subjectAreaName;
-
+            var periodValue = sPONGE_Context.SPG_SUBJECTAREA.Where(x => x.SUBJECTAREA_ID == selectedSubjectArea).Select(x => x.PERIOD).FirstOrDefault();
+            if (periodValue != null)
+            {
+                ViewBag.PeriodValue = periodValue;
+            }
+            else
+            {
+                ViewBag.PeriodValue = "1"; 
+            }
             return View("Views\\ConfigureSubjectArea\\ConfigureDataCollection.cshtml");
         }
         public IActionResult GetMasterName()

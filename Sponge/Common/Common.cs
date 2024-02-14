@@ -132,50 +132,58 @@ namespace Sponge.Common
                     int i = 0;
                     foreach (var colname in GetColumnNames)
                     {
+                        string MonthVal = GetHalfYearlyAndQuartly[i].Substring(0, 3);
+                        var GetMonth = (Int16)((Helper.MMM)Enum.Parse(typeof(Helper.MMM), MonthVal));
+                        string GetYear = GetHalfYearlyAndQuartly[i].Substring(4, GetHalfYearlyAndQuartly[i].LastIndexOf("-") + 1).Trim();
+                        SPG_GETTIMECODE objtimeCode = new SPG_GETTIMECODE();
+                        objtimeCode.CONFIG_ID = ConfigId;
+                        objtimeCode.DOCUMENT_ID = DocumentId;
+                        objtimeCode.TEMPLATE_ID = TemplateId;
+                        objtimeCode.DATA_TYPE = colname.DataType;
 
-                        foreach (var item in GetHalfYearlyAndQuartly)
+                        if (GetMonth >= 7)
                         {
-                            string MonthVal = GetHalfYearlyAndQuartly[i].Substring(0, 3);
-                            var GetMonth = (Int16)((Helper.MMM)Enum.Parse(typeof(Helper.MMM), MonthVal));
-                            string GetYear = GetHalfYearlyAndQuartly[i].Substring(4, GetHalfYearlyAndQuartly[i].LastIndexOf("-") + 1).Trim();
-                            SPG_GETTIMECODE objtimeCode = new SPG_GETTIMECODE();
-                            objtimeCode.CONFIG_ID = ConfigId;
-                            objtimeCode.DOCUMENT_ID = DocumentId;
-                            objtimeCode.TEMPLATE_ID = TemplateId;
-                            objtimeCode.DATA_TYPE = colname.DisplayName;
-                            objtimeCode.COLUMN_CODE = colname.DisplayName + "-" + colname.DataType;
-
-                            if (i <= 5)
+                            objtimeCode.DISPLAY_NAME = "H2-" + colname.DisplayName;
+                            if (colname.DisplayName == "Q3")
                             {
-                                if (i > 0 && i < 3)
-                                    objtimeCode.DISPLAY_NAME = "H1-Q1";
-                                else if (i <= 5)
-                                    objtimeCode.DISPLAY_NAME = "H1-Q2";
-                                objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
-
+                                objtimeCode.FORTIMECODE = GetYear + "07" + GetYear + "09";
                             }
-                            else if (i > 5)
-                            {
-                                if (i >= 6 && i < 9)
-                                    objtimeCode.DISPLAY_NAME = "H2-Q1";
-                                else if (i >= 9)
-                                    objtimeCode.DISPLAY_NAME = "H2-Q2";
-                                objtimeCode.FORTIMECODE = GetYear + "" + string.Format("{00:00}", GetMonth).Trim().TrimEnd().TrimStart();
-                                i++;
-                            }
-                            objContext.SPG_GETTIMECODE.Add(objtimeCode);
-                            objContext.SaveChanges();
-                            var TimeCodeId = objtimeCode.CONFIG_TIMECODE_ID;
 
-                            if (i == 5)
+                            else if (colname.DisplayName == "Q4")
                             {
-                                i++;
-                                break;
+                                objtimeCode.FORTIMECODE = GetYear + "10" + GetYear + "12";
+                            }
+
+                        }
+                        else
+                        {
+                            objtimeCode.DISPLAY_NAME = "H1-" + colname.DisplayName; ;
+                            if (colname.DisplayName == "Q1")
+                            {
+                                objtimeCode.FORTIMECODE = GetYear + "01" + GetYear + "03";
+                            }
+
+                            else if (colname.DisplayName == "Q2")
+                            {
+                                objtimeCode.FORTIMECODE = GetYear + "04" + GetYear + "06";
                             }
                         }
 
+                        objtimeCode.COLUMN_CODE = colname.DisplayName + "-" + colname.DataType;
 
+                        objContext.SPG_GETTIMECODE.Add(objtimeCode);
+
+                        objContext.SaveChanges();
+                        var TimeCodeId = objtimeCode.CONFIG_TIMECODE_ID;
+
+                        if (i == 5)
+                        {
+                            i++;
+                            break;
+                        }
                     }
+
+
                     IsGroupColumnNameExist = true;
                 }
                 else if (Frequency.ToUpper() == "HALF_YEARLY" && TimeLevel.ToUpper() == "MONTHLY" && GetColumnNames.Count > 0)
