@@ -57,19 +57,19 @@
                                             @{
                                                 if (@master.DATA_TYPE == "VC")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "N")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "DT")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
                                                 }
                                             }
 
@@ -119,6 +119,9 @@
                         </table>
                         <div id="customAlert" class="custom-alert" style="display: none;">
                             <p>New rows cannot be added for this subject area.</p>
+                        </div>
+                        <div id="tenRowsMessageID" class="custom-alert" style="display: none;">
+                            <p>Only 10 rows can be added for a subject area.</p>
                         </div>
                     </div>
                     <button type="button" id="cancel" class="btn btn-cancel">Cancel</button>
@@ -301,10 +304,14 @@
         var actualRowCount = rows.length - 1;
 
         var counter = 1;
-
+        var rowCounter = actualRowCount;
+        if (rowCounter >= 10) {
+            rows[actualRowCount].style.display = 'none';
+            $('#tenRowsMessageID').show();
+        }
         $("#addRow").click(function () {
 
-            if (counter >= 10) {
+            if (rowCounter >= 10) {
                 alert('You can only add 10 rows');
             }
             else {
@@ -319,7 +326,7 @@
                     + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
                     + '</tr>';
                 counter++;
-
+                rowCounter++;
                 $("#example tbody").append(newRowContents);
 
                 $(this).prop('disabled', true);
