@@ -41,27 +41,22 @@
                             ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>, 
                             new { @class = "form-control", onchange = "OnChangeOnTime();" })
                             </div>
-                            @if(@Model.Version != "Y"){
+                            @if(@Model.Version == "Y"){
                             <div class="col-sm-4 col-md-4">
-                                <label for="GranularTime">Granularity</label>
-                                @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control", @readonly = "readonly" })
-                                <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
-                                <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
-                                <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
-                                <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
+                                    <label for="GranularTime">Granularity</label>
+                                    @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control" })
+                                    <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
+                                    <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
+                                    <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
+                                    <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
                             </div>
                             }
-                            else
+                            @* else
                             {
                             <div class="col-sm-4 col-md-4">
-                                <label for="GranularTime">Granularity</label>
-                                @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control" })
-                                <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
-                                <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
-                                <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
-                                <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
+                                
                             </div>
-                            }
+                            } *@
                         </div>
                     <div class="form-group row">
                         <div class="col">

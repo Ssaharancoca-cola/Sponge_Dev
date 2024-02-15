@@ -370,7 +370,7 @@ namespace Sponge.Controllers
                             join U in context.SPG_USERS on UF.USER_ID equals U.USER_ID
 
                             join R in context.SPG_ROLE on UF.ROLE_ID equals R.ROLE_ID
-                            where S.SUBJECTAREA_ID == selectedSubjectArea
+                            where S.SUBJECTAREA_ID == selectedSubjectArea && U.ACTIVE_FLAG == "Y"
                             group new { U, UF, SF, R } by
                                 new { U.USER_ID, U.EMAIL_ID, U.Name, U.ACTIVE_FLAG }
            into g
@@ -382,7 +382,7 @@ namespace Sponge.Controllers
                        ;
 
             // UserInfo = query.ToList();
-            return Json(usernames);
+            return Json(usernames.ToList());
         }
         public IActionResult SaveUsersConfiguration(List<SaveUsers> selectedusers, IFormCollection formData)
         {

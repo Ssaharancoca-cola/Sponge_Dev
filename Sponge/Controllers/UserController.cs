@@ -162,6 +162,8 @@ namespace Sponge.Controllers
                     }
                     catch (Exception ex)
                     {
+                        ErrorLog lgerr = new ErrorLog();
+                        lgerr.LogErrorInTextFile(ex);
                     }
                 }
                 return userInfo;
@@ -212,6 +214,8 @@ namespace Sponge.Controllers
                 }
                 catch (Exception ex)
                 {
+                    ErrorLog lgerr = new ErrorLog();
+                    lgerr.LogErrorInTextFile(ex);
                 }
             }
             return userInfo;
@@ -338,7 +342,8 @@ namespace Sponge.Controllers
                         catch (Exception ex)
                         {
                             dbContextTransaction.Rollback();
-                            // log exception details here
+                            ErrorLog lgerr = new ErrorLog();
+                            lgerr.LogErrorInTextFile(ex);
                             return Json("Error Occurred: " + ex.Message);
                         }
                     }
@@ -346,8 +351,8 @@ namespace Sponge.Controllers
             }
             catch (Exception ex)
             {
-                // This catch block will handle exceptions that may occur when attempting to connect to the database and other potential issues outside the transaction block.
-                // log exception details here
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
                 return Json("Error Occurred: " + ex.Message);
             }
         }

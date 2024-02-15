@@ -342,7 +342,7 @@
                         // Add change event for newly added IsLookUp select
                         $("#example tbody tr:last .isLookUp").change(function () {
                             var lookupTypeField = $(this).closest('tr').find('.lookUpType');
-                            if ($(this).val() == "1") {
+                            if ($(this).val() == "Y") {
                                 $.ajax({
                                     url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
                                     type: 'GET',
@@ -351,17 +351,18 @@
                                         lookupTypeField.empty();
                                         $.each(data, function (i, item) {
                                             lookupTypeField.append($('<option>', {
-                                                value: item.columN_DISPLAY_NAME,
-                                                text: item.columN_DISPLAY_NAME
+                                                value: item.masteR_NAME,
+                                                text: item.masteR_DISPLAY_NAME
                                             }));
                                         });
                                         lookupTypeField.prop('disabled', false);
                                     },
                                     error: function () {
-                                        alert('Failed to retrieve Lookup Type.');
+                                        alert('Failed to retrieve master name.');
                                     }
                                 });
                             } else {
+                                lookupTypeField.empty();
                                 lookupTypeField.prop('disabled', true);
                             }
                         });
