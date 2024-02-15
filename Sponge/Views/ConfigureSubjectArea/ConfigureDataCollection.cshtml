@@ -296,12 +296,15 @@
             $('#customAlert').show(); // Show the custom alert message
         }
 
+        var table = document.getElementById('example');
+        var rows = table.getElementsByTagName('tr');
+        var actualRowCount = rows.length - 1;
+
         var counter = 1;
-        var limit = 10;
 
         $("#addRow").click(function () {
 
-            if (counter > 10) {
+            if (counter >= 10) {
                 alert('You can only add 10 rows');
             }
             else {
@@ -431,7 +434,7 @@
             var formIsValid = validateInputs(); // renamed to just validate inputs
 
             if (formIsValid) {
-                $('.prepopulated').prop('disabled', true);
+                $('.prepopulated').prop('readonly', true);
                 $('#ConfDataCollForm').submit();
             }
             else{
