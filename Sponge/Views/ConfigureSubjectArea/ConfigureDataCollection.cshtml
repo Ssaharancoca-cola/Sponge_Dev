@@ -117,8 +117,9 @@
                                 }
                             </tbody>
                         </table>
-                        <label style="display:none" id="periodValueTxtID"></label>
-
+                        <div id="customAlert" class="custom-alert" style="display: none;">
+                            <p>New rows cannot be added for this subject area.</p>
+                    </div>
                     </div>
                     <button type="button" id="cancel" class="btn btn-cancel">Cancel</button>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
@@ -132,6 +133,7 @@
 <script src="~/assists/js/hoverable-collapse.js"></script>
 
 <script>
+    var periodValue = @ViewBag.periodValue
     //To check the duplicates in Display Name and to enable and disable add row button
     $(document).on('blur', '.displayName', function () {
         var table = document.getElementById("example");
@@ -283,91 +285,71 @@
 
     });
 
-
+    $('#cancel').click(function () {
+        window.location.href = 'ConfigureSubjectArea';
+    });
     // Function to check period value to avoid user from adding any row if Period > 1
-    $(document).ready(function () {
-        // To fetch and set the vlue of Period on label
-        $.ajax({
-            url: '/ConfigureSubjectArea/CheckPeriodValue',
-            type: 'Get',
-            success: function (result) {
-                $('#periodValueTxtID').text(result);
-            }
-        });
+    $(document).ready(function () {        
 
-
-        $('#cancel').click(function () {
-            window.location.href = 'ConfigureSubjectArea';
-        });
+        if (periodValue > 1) {
+            $('#addRow').hide(); // Hide the Add Row button
+            $('#customAlert').show(); // Show the custom alert message
+        }
+       
         var counter = 1;
         var limit = 10;
 
         $("#addRow").click(function () {
 
-
-            // if (counter > 10) {
-            //     alert('You can only add 10 rows');
-            // }
-
-            $.ajax({
-                url: '/ConfigureSubjectArea/CheckPeriodValue',
-                type: 'Get',
-                success: function (result) {
-                    var pValue = result;
-
-                    if (pValue > 1) {
-                        alert('New rows cannot be added for this subject area');
-                        document.getElementsByClassName('displayName')[0].value = '';
-                        document.getElementsByClassName('fieldName')[0].value = '';
-                    }
-                    else {
+            if (counter > 10) {
+                alert('You can only add 10 rows');
+            }
+            else {
 
 
-                        var newRowContents = '<tr>'
-                            + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
-                            + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
-                            + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
-                            + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
-                            + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Perchent</option></select></td>'
-                            + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
-                            + '</tr>';
-                        counter++;
+                var newRowContents = '<tr>'
+                    + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
+                    + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
+                    + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
+                    + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
+                    + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Perchent</option></select></td>'
+                    + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
+                    + '</tr>';
+                counter++;
 
-                        $("#example tbody").append(newRowContents);
+                $("#example tbody").append(newRowContents);
 
-                        $(this).prop('disabled', true);
-                        // Populate UOM dropdown for newly added row
-                        populateUOM($("#example tbody tr:last .uOM"));
+                $(this).prop('disabled', true);
+                // Populate UOM dropdown for newly added row
+                populateUOM($("#example tbody tr:last .uOM"));
 
-                        // Add change event for newly added IsLookUp select
-                        $("#example tbody tr:last .isLookUp").change(function () {
-                            var lookupTypeField = $(this).closest('tr').find('.lookUpType');
-                            if ($(this).val() == "1") {
-                                $.ajax({
-                                    url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
-                                    type: 'GET',
-                                    dataType: 'json',
-                                    success: function (data) {
-                                        lookupTypeField.empty();
-                                        $.each(data, function (i, item) {
-                                            lookupTypeField.append($('<option>', {
-                                                value: item.columN_DISPLAY_NAME,
-                                                text: item.columN_DISPLAY_NAME
-                                            }));
-                                        });
-                                        lookupTypeField.prop('disabled', false);
-                                    },
-                                    error: function () {
-                                        alert('Failed to retrieve Lookup Type.');
-                                    }
+                // Add change event for newly added IsLookUp select
+                $("#example tbody tr:last .isLookUp").change(function () {
+                    var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+                    if ($(this).val() == "1") {
+                        $.ajax({
+                            url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (data) {
+                                lookupTypeField.empty();
+                                $.each(data, function (i, item) {
+                                    lookupTypeField.append($('<option>', {
+                                        value: item.columN_DISPLAY_NAME,
+                                        text: item.columN_DISPLAY_NAME
+                                    }));
                                 });
-                            } else {
-                                lookupTypeField.prop('disabled', true);
+                                lookupTypeField.prop('disabled', false);
+                            },
+                            error: function () {
+                                alert('Failed to retrieve Lookup Type.');
                             }
                         });
+                    } else {
+                        lookupTypeField.prop('disabled', true);
                     }
-                }
-            });
+                });
+            }          
 
         });
         // Make the LookupType readonly by default

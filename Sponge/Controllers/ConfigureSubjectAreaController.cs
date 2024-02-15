@@ -168,17 +168,7 @@ namespace Sponge.Controllers
             return Json(fieldName);
         }
         // Action to check period Value in spg_subjectarea table
-        public JsonResult CheckPeriodValue()
-        {
-            SPONGE_Context sPONGE_Context = new();
-            var selectedSubjectArea = TempData["selectedSubjectArea"] as int?;
-            TempData.Keep();
-            var periodValue = sPONGE_Context.SPG_SUBJECTAREA.Where(x => x.SUBJECTAREA_ID == selectedSubjectArea).Select(x => x.PERIOD).FirstOrDefault();
-            if (periodValue != null)
-                return Json(periodValue);
-            else
-                return Json("1");
-        }
+
         [HttpPost]
         public IActionResult SaveMasters(List<SaveMaster> data)
         {
