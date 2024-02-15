@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using DAL.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
@@ -40,7 +41,8 @@ namespace DAL
             //return context.Response.WriteAsync(payload);
             // Log the exception here
             System.Diagnostics.Debug.WriteLine(exception);
-
+            ErrorLog srsEx = new ErrorLog();
+            srsEx.LogErrorInTextFile(exception);
             context.Response.Redirect("/ErrorPage");
 
             return Task.CompletedTask;
