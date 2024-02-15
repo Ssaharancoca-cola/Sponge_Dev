@@ -162,6 +162,8 @@ namespace Sponge.Controllers
                     }
                     catch (Exception ex)
                     {
+                        ErrorLog lgerr = new ErrorLog();
+                        lgerr.LogErrorInTextFile(ex);
                     }
                 }
                 return userInfo;
@@ -212,6 +214,8 @@ namespace Sponge.Controllers
                 }
                 catch (Exception ex)
                 {
+                    ErrorLog lgerr = new ErrorLog();
+                    lgerr.LogErrorInTextFile(ex);
                 }
             }
             return userInfo;
@@ -280,59 +284,77 @@ namespace Sponge.Controllers
         }
         [HttpPost]
         public IActionResult UpdateUser(IFormCollection data)
-        {            
+        {
+            string userId = data["userId"].ToString();
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
+
             try
             {
-                SPONGE_Context sPONGE_Context = new SPONGE_Context();
-                var matchingRows = sPONGE_Context.SPG_USERS_FUNCTION.Where(u => u.USER_ID == data["userId"].ToString()).ToList();
-
-                // Remove each matching row
-                foreach (var row in matchingRows)
+                using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
                 {
-                    sPONGE_Context.SPG_USERS_FUNCTION.Remove(row);
+                    using (var dbContextTransaction = sPONGE_Context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var matchingRows = sPONGE_Context.SPG_USERS_FUNCTION.Where(u => u.USER_ID == userId).ToList();
+
+                            foreach (var row in matchingRows)
+                            {
+                                sPONGE_Context.SPG_USERS_FUNCTION.Remove(row);
+                            }
+
+                            sPONGE_Context.SaveChanges();
+
+                            string subFunctions = data["subFunction"];
+                            string[] subFunctionArr = subFunctions.Split(',');
+
+                            string Roles = data["Role"];
+                            string[] RolesArr = Roles.Split(',');
+
+                            foreach (var role in RolesArr)
+                            {
+                                foreach (var subFunction in subFunctionArr)
+                                {
+                                    SPG_USERS_FUNCTION newUserFunction = new SPG_USERS_FUNCTION
+                                    {
+                                        USER_ID = userId,
+                                        ROLE_ID = int.Parse(role),
+                                        SUB_FUNCTION_ID = int.Parse(subFunction),
+                                        ACTIVE_FLAG = data["status"]
+                                    };
+                                    sPONGE_Context.SPG_USERS_FUNCTION.Add(newUserFunction);
+                                }
+                            }
+
+                            sPONGE_Context.SaveChanges();
+
+                            var user = sPONGE_Context.SPG_USERS.FirstOrDefault(u => u.USER_ID == userId);
+                            if (user != null)
+                            {
+                                user.ACTIVE_FLAG = data["status"];
+                                sPONGE_Context.SaveChanges();
+                            }
+
+                            dbContextTransaction.Commit();
+
+                            return Json("User updated successfully");
+                        }
+                        catch (Exception ex)
+                        {
+                            dbContextTransaction.Rollback();
+                            ErrorLog lgerr = new ErrorLog();
+                            lgerr.LogErrorInTextFile(ex);
+                            return Json("Error Occurred: " + ex.Message);
+                        }
+                    }
                 }
-
-                sPONGE_Context.SaveChanges();
-
-                string subFunctions = data["subFunction"];
-                string[] subFunctionArr = subFunctions.Split(',');
-
-                string Roles = data["Role"];
-                string[] RolesArr = Roles.Split(',');
-                var newRows = from role in RolesArr
-                              from subFunction in subFunctionArr
-                              select new SPG_USERS_FUNCTION
-                              {
-                                  USER_ID = data["userId"].ToString(),
-                                  ROLE_ID = int.Parse(role),
-                                  SUB_FUNCTION_ID = int.Parse(subFunction),
-                                  ACTIVE_FLAG = data["status"]
-                              };
-
-                foreach (var newRow in newRows)
-                {
-                    sPONGE_Context.SPG_USERS_FUNCTION.Add(newRow);
-                }
-
-                // Save changes to the database
-                sPONGE_Context.SaveChanges();
-                // To set the active status in SPG_Users Function
-                var user = sPONGE_Context.SPG_USERS.FirstOrDefault(u => u.USER_ID == data["userId"].ToString());
-                if (user != null)
-                {
-                    user.ACTIVE_FLAG = data["status"];
-
-                    sPONGE_Context.SaveChanges();
-                }
-
-                return Json("User updated successfully");
             }
             catch (Exception ex)
             {
-                return Json("Error Occured: " + ex.Message);
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
+                return Json("Error Occurred: " + ex.Message);
             }
-
         }
 
         public IActionResult ManageUser()

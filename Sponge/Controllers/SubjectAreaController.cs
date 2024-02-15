@@ -128,7 +128,6 @@ namespace Sponge.Controllers
                     data.CREATED_BY = userName[1].ToString();
                     sPONGE_Context.SPG_SUBJECTAREA.Add(data);
                     sPONGE_Context.SaveChanges();
-                    TempData["SuccessMessage"] = "Data Saved Successfully";
 
                     return Json(new { success = true, message = "Data Saved Successfully" });
                 }

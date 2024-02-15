@@ -222,6 +222,7 @@
             });
         });
         $("#btnUpdate").click(function (event) {
+            event.preventDefault();
             var form = $('#Userform').serialize();
             if (!validateInputs()) {
                 event.preventDefault();

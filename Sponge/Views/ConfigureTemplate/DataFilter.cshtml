@@ -18,53 +18,79 @@
                                     <input hidden name="configID" value="@ViewBag.configID" />
                                     <label>Selected Dimensions:</label>
                                 </label>
-                                
+
+                                @* <div class="form-check-row">
+                                @if (ViewBag.CheckIfSaved != null)
+                                {
+                                if(ViewBag.CheckIfSaved == true)
+                                {
+                                @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
+                                {
+                                <div class="form-check form-check-flat form-check-primary">
+                                <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
+                                @item.Text
+                                <input disabled class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value checked>
+                                </label>
+                                </div>
+                                }
+                                }
+                                else
+                                {
+                                @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
+                                {
+                                <div class="form-check form-check-flat form-check-primary">
+                                <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
+                                @item.Text
+                                <input class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value >
+                                </label>
+                                </div>
+                                }
+                                }
+                                }
+
+                                </div> *@
                                 <div class="form-check-row">
-                                    @if (ViewBag.CheckIfSaved != null)
+
+                                    @if (ViewBag.SavedDimensions != null)
                                     {
-                                        if(ViewBag.CheckIfSaved == true)
+                                        @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.SavedDimensions))
                                         {
-                                            @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
-                                            {
-                                                <div class="form-check form-check-flat form-check-primary">
-                                                    <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
-                                                        @item.Text
-                                                        <input disabled class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value checked>
-                                                    </label>
-                                                </div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.Dimensions))
-                                            {
-                                                <div class="form-check form-check-flat form-check-primary">
-                                                    <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
-                                                        @item.Text
-                                                        <input class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value >
-                                                    </label>
-                                                </div>
-                                            }
+                                            <div class="form-check form-check-flat form-check-primary">
+                                                <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
+                                                    @item.Text
+                                                    <input disabled class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value checked>
+                                                </label>
+                                            </div>
                                         }
                                     }
-                                    
+                                    @if (ViewBag.UnsavedDimensions != null)
+                                    {
+                                        @foreach (var item in ((IEnumerable<SelectListItem>)ViewBag.UnsavedDimensions))
+                                        {
+                                            <div class="form-check form-check-flat form-check-primary">
+                                                <label class="form-check-label" id="@("S"+item.Value)" for=@item.Value>
+                                                    @item.Text
+                                                    <input class="form-check-input" type="checkbox" id="@item.Value" name="dimensionSelect" value=@item.Value>
+                                                </label>
+                                            </div>
+                                        }
+                                    }
                                 </div>
-                                <button style="margin-top:10px" type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
+                                <button style="margin-top:10px" disabled type="button" id="getSubDimensionsBTN" class="btn btn-primary float-left mb-3">
                                     Get Masters
                                 </button>
                             </div>
                         </div>
 
-                        
+
 
                         <div class="form-group row" id="dropdownsContainer">
                         </div>
                         <div class="form-group row" id="selectionContainerID">
-                        
                         </div>
-                        <button type="button" id="cancel" class="btn btn-cancel">Cancel</button>
+                        <button type="button" id="cancel" class="btn btn-light mr-2">Cancel</button>
 
-                        <button type="submit" asp-action="SaveDataFilterNext" style="visibility:hidden" id="submitSelectionsID" class="btn btn-primary float-right mb-3">
+                        <button type="submit" asp-action="SaveDataFilterNext" style="visibility:hidden" disabled id="submitSelectionsID" class="btn btn-primary float-right mb-3">
                             Next
                         </button>
 
@@ -80,6 +106,18 @@
 <script>
 
     $(document).ready(function () {
+        // function to check initial checkbox states of Masters
+        function updateMastersButtonState() {
+            var anyChecked = $('input[name="dimensionSelect"]:checked').length > 0;
+            $('#getSubDimensionsBTN').prop('disabled', !anyChecked);
+        }
+
+        // Event listener for changes in checkbox state
+        $('input[name="dimensionSelect"]').change(updateMastersButtonState);
+
+        updateMastersButtonState();
+
+
         $('#cancel').click(function () {
             window.location.href = '@Url.Action("ConfigureTemplate","ConfigureTemplate")';
         });
@@ -102,7 +140,7 @@
                         var templateArray = ['<div class="dropdown"><button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-boundary="viewport" data-display="dynamic" data-original-text="', dimension, '">', dimension, '</button><ul class="dropdown-menu dropdown-menu-bottom" style="height: 200px; overflow-y: auto;">'];
                         $.each(names, function (displayName, masterName) {
                             var id = dimension + '_name_' + displayName;
-                            templateArray.push('<li><input type="checkbox" id="', id, '" class="', masterName, '" value="', displayName, '"><label for="', id, '">', displayName, '</label></li>');
+                            templateArray.push('<li><input type="checkbox" name="subDimensions" id="', id, '" class="', masterName, '" value="', displayName, '"><label for="', id, '">', displayName, '</label></li>');
                         });
                         templateArray.push('</ul></div>');
                         $('#dropdownsContainer').append($(templateArray.join('')));
@@ -114,6 +152,15 @@
                         $('.' + masterName).prop('checked', true);
                         $('.' + masterName).prop('disabled', true);
                     });
+
+                    //function to check initial checkbox states of subdimensions
+                    function updateNextButtonState() {
+                        var anyChecked = $('input[name="subDimensions"]:checked').length > 0;
+                        $('#submitSelectionsID').prop('disabled', !anyChecked);
+                    }
+
+                    $('input[name="subDimensions"]').change(updateNextButtonState);
+                    updateNextButtonState();
                 }
             });
         });
@@ -122,8 +169,16 @@
             event.stopPropagation();
             var dropdown = $(this).closest('.dropdown');
             var count = dropdown.find('input[type="checkbox"]:checked').length;
-            var originalText = $(this).prevAll('button').data('original-text');
-            dropdown.find('button').text(count ? 'Selected count: ' + count : originalText);
+            var originalText = dropdown.find('button').data('original-text');
+            var submitButton = $('#submitSelectionsID');
+
+            if (count > 0) {
+                dropdown.find('button').text('Selected count: ' + count);
+                submitButton.prop('disabled', false);
+            } else {
+                dropdown.find('button').text(originalText);
+                submitButton.prop('disabled', true);
+            }
         });
 
         $('form').on('submit', function (e) {

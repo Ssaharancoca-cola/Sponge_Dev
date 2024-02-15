@@ -7,7 +7,7 @@
     <script src="~/assists/js/hoverable-collapse.js"></script>
     <script src="~/js/subjectarea/createsubjectarea.js"></script>
 </head>
-<form id="createSubjectFormID">
+<form id="createSubjectFormID" onsubmit="return saveSubjectArea(event)">
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
@@ -97,21 +97,15 @@
                                 <select class="form-control" id="OnTime" name="ONTIMELEVEL"></select>
                             </div>
                         </div>
-                        
+                        @* 
                         <div class="row">
                             <div>
                                 <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
                             </div>
-                        </div>
-                        @if (TempData["SuccessMessage"] != null)
-                        {
-                            <script type="text/javascript">
-                                alert("@TempData["SuccessMessage"]");
-                            </script>
-                        }
+                        </div> *@
                         <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
                         
-                        <button id="saveFormData" type="button" name="Command" value="Save" onclick="saveSubjectArea()" class="btn btn-primary">Save</button>
+                        <button id="saveFormData" type="submit" name="Command" value="Save"  class="btn btn-primary">Save</button>
                         
                     </form>
                 </div>

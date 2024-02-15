@@ -22,15 +22,15 @@
                                         <option value="@country">@country</option>
                                     }
                                 </select>
-                                <span id="CountryError" class="text-danger" style="display:none;"></span>
+                                <span id="CountryError" class="text-danger" style="display:none;font-size:10px"></span>
 
                             </div>
                             <div class="col">
                                 <label for="FunctionName">Function<span style="color:red">*</span></label>
                                 <input type="text" class="form-control" id="functionName"
                                        name="FUNCTION_NAME" value="@Model?.FUNCTION_NAME"
-                                       placeholder="Function Name" maxlength="30" onkeydown="return /[a-zA-Z]/i.test(event.key)">                                
-                                <span id="FunctionNameError" class="text-danger" style="display:none;"></span>
+                                       placeholder="Function Name" maxlength="30" onkeydown="return event.key === ' ' ? this.value.length > 0 && this.value[this.value.length - 1] !== ' ' : /[a-zA-Z]/i.test(event.key)">
+                                <span id="FunctionNameError" class="text-danger" style="display:none;font-size:10px"></span>
 
                             </div>
                             <div class="col">
@@ -41,8 +41,8 @@
                                 }
                                 <input type="text" class="form-control" id="subFunctionName"
                                        name="SUBFUNCTION_NAME" value="@Model?.SUBFUNCTION_NAME"
-                                       placeholder="Sub function name" onkeydown="return /[a-zA-Z]/i.test(event.key)">
-                                <span id="SubFunctionNameError" class="text-danger" style="display:none;"></span>
+                                       placeholder="Sub function name" maxlength="30" onkeydown="return event.key === ' ' ? this.value.length > 0 && this.value[this.value.length - 1] !== ' ' : /[a-zA-Z]/i.test(event.key)">
+                                <span id="SubFunctionNameError" class="text-danger" style="display:none;font-size:10px"></span>
 
                             </div>
                             <div class="col">

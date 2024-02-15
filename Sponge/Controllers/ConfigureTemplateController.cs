@@ -238,20 +238,39 @@ namespace Sponge.Controllers
             {
                 HttpContext.Session.SetString("thisSubjectAreaName", selectedSubjectAreaName);
             }
-            // TO check if the data is already saved in SPG_Config_filter for this config id
-            bool checkIfSaved = (from x in spONGE_Ctx.SPG_CONFIG_FILTERS
-                                 where x.CONFIG_ID == configId
-                                 select x).Any();
 
-            ViewBag.CheckIfSaved = checkIfSaved;
-            var dimensionList = (from x in spONGE_Ctx.SPG_SUBJECT_DIMENSION
+            // To get the dimensions name which are already saved
+            var savedDimensionsList = (from savedDim in spONGE_Ctx.SPG_CONFIG_FILTERS
+                          join subDim in spONGE_Ctx.SPG_SUBJECT_DIMENSION
+                          on savedDim.DIMENSION_TABLE equals subDim.DIMENSION_TABLE
+                          where savedDim.CONFIG_ID == configId
+                          select new
+                          {
+                              DIMENSION_NAME = subDim.MPP_DIMENSION_NAME,
+                              DIMENSIONTABLENAME = subDim.DIMENSION_TABLE
+                          }).Distinct().ToList();
+
+
+            //Getting all the dimensions for this subject area id here
+            var dimensionsList = (from x in spONGE_Ctx.SPG_SUBJECT_DIMENSION
                                  where x.SUBJECTAREA_ID == subjectAreaId
                                  select new
                                  {
                                      DIMENSION_NAME = x.MPP_DIMENSION_NAME,
                                      DIMENSIONTABLENAME = x.DIMENSION_TABLE
                                  }).Distinct().ToList();
-            ViewBag.Dimensions = new SelectList(dimensionList, "DIMENSIONTABLENAME", "DIMENSION_NAME");
+
+            // To get the dimensions which are not saved
+            var unsavedDimensionList = (from dimList in dimensionsList
+                                         join res in savedDimensionsList
+                                         on new { dimList.DIMENSION_NAME, dimList.DIMENSIONTABLENAME }
+                                         equals new { res.DIMENSION_NAME, res.DIMENSIONTABLENAME } into joinData
+                                         from leftJoin in joinData.DefaultIfEmpty()
+                                         where leftJoin == null
+                                         select dimList).ToList();
+
+            ViewBag.SavedDimensions = new SelectList(savedDimensionsList, "DIMENSIONTABLENAME", "DIMENSION_NAME");
+            ViewBag.UnSavedDimensions = new SelectList(unsavedDimensionList, "DIMENSIONTABLENAME", "DIMENSION_NAME");
 
             return View();
         }

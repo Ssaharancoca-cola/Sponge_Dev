@@ -70,7 +70,8 @@ $(document).ready(function () {
 
     });
 });
-function saveSubjectArea() {
+function saveSubjectArea(event) {
+    event.preventDefault();
     $.ajax({
         url: '/SubjectArea/SaveSubjectArea', 
         type: 'POST',
