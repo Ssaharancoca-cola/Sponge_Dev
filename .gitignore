@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /Sponge/Properties/launchSettings.json
 /Sponge/Views/SearchTemplate/Privacy.cshtml
 /Sponge/Views/Home/Privacy.cshtml
+/Sponge/ErrorLog/ErrorLog.txt
+/Sponge/ErrorLog/ErrorLog.txt
