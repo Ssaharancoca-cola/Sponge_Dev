@@ -215,7 +215,7 @@
             // Get number of options in the last select.master AFTER cloning
             var afterCloneCount = $('select.master:last option').length;
             if (afterCloneCount == 1) { 
-                $(selects[0].options).clone().appendTo('select.master:last');
+                $('select.master:first option:not(:first)').clone().appendTo('select.master:last');
                 $(this).prop('disabled', true);
             }
 

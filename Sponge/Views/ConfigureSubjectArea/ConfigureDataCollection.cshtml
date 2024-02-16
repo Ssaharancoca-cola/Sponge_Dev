@@ -307,6 +307,7 @@
         var rowCounter = actualRowCount;
         if (rowCounter >= 10) {
             rows[actualRowCount].style.display = 'none';
+            $('#addRow').hide();
             $('#tenRowsMessageID').show();
         }
         $("#addRow").click(function () {

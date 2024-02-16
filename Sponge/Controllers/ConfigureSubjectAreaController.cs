@@ -167,7 +167,6 @@ namespace Sponge.Controllers
             //ViewBag.FieldName = new SelectList(fieldName.ToList(), "COLUMN_NAME", "COLUMN_DISPLAY_NAME");
             return Json(fieldName);
         }
-        // Action to check period Value in spg_subjectarea table
 
         [HttpPost]
         public IActionResult SaveMasters(List<SaveMaster> data)

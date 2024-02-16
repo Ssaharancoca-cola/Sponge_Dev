@@ -14,6 +14,7 @@ using System.Globalization;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Http;
 using System.Data.Common;
+using System;
 
 namespace Sponge.Controllers
 {
@@ -458,74 +459,97 @@ namespace Sponge.Controllers
 
         public async Task<IActionResult> SaveDataFilter()
         {
-            var serializedData = TempData["Masters"];
-            var configID = TempData["ConfigId"];
-            var masterNames = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>((string)serializedData);
-            SPONGE_Context _Context = new();
-            var masterValuesDictionary = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
-
-            foreach (var dimension in masterNames)
+            try
             {
-                var dimensionDict = new Dictionary<string, List<Dictionary<string, string>>>();
+                var serializedData = TempData["Masters"];
+                var configID = TempData["ConfigId"];
+                var masterNames = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>((string)serializedData);
+                SPONGE_Context _Context = new();
+                var masterValuesDictionary = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
 
-                foreach (var mastervalue in dimension.Value)
+                foreach (var dimension in masterNames)
                 {
-                    using (var command = _Context.Database.GetDbConnection().CreateCommand())
+                    var dimensionDict = new Dictionary<string, List<Dictionary<string, string>>>();
+
+                    foreach (var mastervalue in dimension.Value)
                     {
-                        // Count rows stored procedure
-                        command.CommandText = "SP_GETFILTERATION_DATA_FINAL_COUNT";
-                        command.CommandType = CommandType.StoredProcedure;
-
-                        command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
-                        command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
-                        command.Parameters.Add(new SqlParameter("@v_configId", configID));
-
-                        _Context.Database.OpenConnection();
-
-                        var count = Convert.ToInt32(command.ExecuteScalar());
-
-                        var dataList = new List<Dictionary<string, string>>();
-
-                        if (count > 100)
+                        using (var command = _Context.Database.GetDbConnection().CreateCommand())
                         {
-                            // adding special row
-                            dataList.Add(new Dictionary<string, string> { { "SpecialRow", "Please type 5 characters to search..." } });
-                        }
-                        else
-                        {
-                            command.Parameters.Clear(); // clearing parameters for previous command
-
-                            command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
-                            command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
-                            command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
-                            command.Parameters.Add(new SqlParameter("@v_configId", configID));
-
-                            using (var result = command.ExecuteReader())
+                            try
                             {
-                                var dataTable = new DataTable();
-                                dataTable.Load(result);
+                                // Count rows stored procedure
+                                command.CommandText = "SP_GETFILTERATION_DATA_FINAL_COUNT";
+                                command.CommandType = CommandType.StoredProcedure;
 
+                                command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                                command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                                command.Parameters.Add(new SqlParameter("@v_configId", configID));
 
-                                foreach (DataRow row in dataTable.Rows)
+                                _Context.Database.OpenConnection();
+
+                                var count = Convert.ToInt32(command.ExecuteScalar());
+
+                                var dataList = new List<Dictionary<string, string>>();
+
+                                if (count > 100)
                                 {
-                                    var dict = new Dictionary<string, string>();
-                                    foreach (DataColumn column in dataTable.Columns)
-                                    {
-                                        dict[column.ColumnName] = row[column].ToString();
-                                    }
-                                    dataList.Add(dict);
+                                    // adding special row
+                                    dataList.Add(new Dictionary<string, string> { { "SpecialRow", "Please type 5 characters to search..." } });
                                 }
+                                else
+                                {
+                                    command.Parameters.Clear(); // clearing parameters for previous command
+
+                                    command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
+                                    command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                                    command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                                    command.Parameters.Add(new SqlParameter("@v_configId", configID));
+
+                                    using (var result = command.ExecuteReader())
+                                    {
+                                        var dataTable = new DataTable();
+                                        dataTable.Load(result);
+
+                                        foreach (DataRow row in dataTable.Rows)
+                                        {
+                                            var dict = new Dictionary<string, string>();
+                                            foreach (DataColumn column in dataTable.Columns)
+                                            {
+                                                dict[column.ColumnName] = row[column].ToString();
+                                            }
+                                            dataList.Add(dict);
+                                        }
+                                    }
+                                }
+
+                                dimensionDict.Add(mastervalue, dataList);
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorLog srsEx = new ErrorLog();
+                                srsEx.LogErrorInTextFile(ex);
+                                Console.WriteLine(ex.Message);
+                            }
+                            finally
+                            {
+                                _Context.Database.CloseConnection();
                             }
                         }
-
-                        dimensionDict.Add(mastervalue, dataList);
                     }
+                    // sort the master values dictionary here
+                    var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
+                    masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
                 }
-                // sort the master values dictionary here
-                var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
-                masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
+
+                return View(masterValuesDictionary);
             }
-            return View(masterValuesDictionary);
+            catch (Exception ex)
+            {
+                ErrorLog srsEx = new ErrorLog();
+                srsEx.LogErrorInTextFile(ex);
+                Console.WriteLine(ex.Message);
+                return View("Error");
+            }
         }
         [HttpPost]
         public async Task<JsonResult> SearchMasters(string DimensionName, string MasterKey, string SearchTerm)
