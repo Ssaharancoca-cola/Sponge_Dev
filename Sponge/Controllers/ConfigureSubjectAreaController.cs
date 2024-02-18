@@ -83,37 +83,7 @@ namespace Sponge.Controllers
             {
                 if (!Dimension.IsSelected)
                 {
-                    //Code to save Data in SPG_SUBJECT_GENERIC_MASTER table
-                    //for (int i = 1; i <= 3; i++)
-                    //{
-                    //    SPG_SUBJECT_GENERIC_MASTER sPG_SGM = new();
-                    //    {
-                    //        sPG_SGM.DIMENSION_TABLE = Dimension.Key;
-                    //        sPG_SGM.MASTER_NAME = null;
-                    //        switch (i)
-                    //        {
-                    //            case 1:
-                    //                sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Level";
-                    //                sPG_SGM.FIELD_NAME = Dimension.Value + "_Level";
-                    //                break;
-                    //            case 2:
-                    //                sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Code";
-                    //                sPG_SGM.FIELD_NAME = Dimension.Value + "_Code";
-                    //                break;
-                    //            case 3:
-                    //                sPG_SGM.DISPLAY_NAME = Dimension.Value + "_Description";
-                    //                sPG_SGM.FIELD_NAME = Dimension.Value + "_Description";
-                    //                break;
-                    //        }
-                    //        sPG_SGM.SUBJECTAREA_ID = selectedSubjectArea;
-                    //        sPG_SGM.IS_KEY = "Y";
-                    //        sPG_SGM.IS_SHOW = "Y";
-
-                    //    }
-                    //    sPONGE_Context.SPG_SUBJECT_GENERIC_MASTER.Add(sPG_SGM);
-                    //    sPONGE_Context.SaveChanges();
-                    //}
-
+                    
                     SPG_SUBJECT_DIMENSION sPG_1 = new();
                     {
                         sPG_1.MPP_DIMENSION_NAME = Dimension.Value;
