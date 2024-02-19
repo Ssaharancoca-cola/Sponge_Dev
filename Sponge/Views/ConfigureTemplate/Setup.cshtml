@@ -154,7 +154,10 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-
+        var errorMessage = '@TempData["SaveSetupErrorMessage"]';
+        if (errorMessage) {
+            alert(errorMessage);
+        }
 
         $("#Active").val('@ViewBag.Result.ACTIVE_FLAG');
         if ($("#Active").val() == 'N') {
@@ -243,21 +246,24 @@
 
             // Get the email
             var email = $("#approverEmailID").val();
-
+            var configid = $("#configID").val();
             // Make an AJAX request to your action
-            $.getJSON('/ConfigureTemplate/GetUserInfoByEmail', { email: email }, function (data) {
-                if (data.userName == null || data.userId == null) {
+            $.getJSON('/ConfigureTemplate/GetUserInfoByEmail', { email: email, configId: configid })
+                .done(function (data) {
+                    if (data.errorMsg) {
+                        document.getElementById('gettingDetailsLBL').style.display = 'none';
+                        alert(data.errorMsg);
+                    } else {
+                        // Fill the approver name and ID fields with the returned data
+                        document.getElementById('gettingDetailsLBL').style.display = 'none';
+                        $("#approverName").val(data.userName); 
+                        $("#approverID").val(data.userId);    
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
                     document.getElementById('gettingDetailsLBL').style.display = 'none';
-                    alert('Unable to get details, please enter correct email');
-                }
-                else {
-                    // Fill the approver name and ID fields with the returned data
-                    document.getElementById('gettingDetailsLBL').style.display = 'none';
-                    $("#approverName").val(data.userName);
-                    $("#approverID").val(data.userId);
-                }
-
-            });
+                    alert('Failed to get user info: ' + textStatus);
+                });
         });
     });
     //Email Autocomplete

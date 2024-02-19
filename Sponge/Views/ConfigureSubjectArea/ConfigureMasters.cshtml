@@ -5,7 +5,7 @@
     TempData.Keep();
     var selectedMasters = ViewBag.SelectedMaster as List<DAL.Models.SPG_SUBJECT_MASTER>;
 }
-@using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea", Model, FormMethod.Post))
+@using (Html.BeginForm("SaveMasters", "ConfigureSubjectArea", FormMethod.Post, new { id = "saveMastersFormID" }))
 {
 
     <div class="row">
@@ -27,7 +27,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <select class="form-control master prepopulated" readonly name="data[0].Master" >
+                                            <select class="form-control master prepopulated" readonly name="data[0].Master">
                                                 <option selected>@master.MASTER_NAME</option>
                                             </select>
                                         </td>
@@ -37,7 +37,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input required type="text" class="form-control displayNamePrepopulated" readonly id="displayName" name="data[0].DisplayName" value="@master.DISPLAY_NAME" readonly>
+                                            <input required type="text" class="form-control displayNamePrepopulated" readonly @* id="displayName" *@ @* name="data[0].DisplayName" *@ value="@master.DISPLAY_NAME" readonly>
                                         </td>
                                     </tr>
                                 }
@@ -61,9 +61,11 @@
                                 </tr>
                             </tbody>
                         </table>
-
+                        <div id="tenRowsMessageID" class="custom-alert" style="display: none;">
+                            <p>Only 10 rows can be added for a subject area.</p>
+                        </div>
                     </div>
-                    <button type="button" id="cancel" class="btn btn-cancel" >Cancel</button>
+                    <a href="/ConfigureSubjectArea/ConfigureSubjectArea" class="btn btn-cancel">Cancel</a>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="submit" style="float:right" class="btn btn-primary" id="saveMastersBtnID">Next</button>
                 </div>
@@ -76,152 +78,87 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#cancel').click(function () {
-            window.location.href = 'ConfigureSubjectArea';
-        });
+        // $('#cancel').click(function () {
+        //     window.location.href = 'ConfigureSubjectArea';
+        // });
         var rowIndex = 1;
 
+
+
         
+        $('#addRow').prop('disabled', true);
 
-        $(document).on('change', '.master', function () {
-            debugger;
-            var table = document.getElementById("example");
+        // Event listener for the master select
+        $('.master').change(function () {
+            if ($(this).val() == '') {
+                $(this).closest('tr').find('.lastDisplayName').val('');
+            }
 
-            // Get the last row
-            var lastRow = table.rows[table.rows.length - 1];
+            validateFields();
+        });
 
-            // Get the text type input elements
-            var inputs = lastRow.querySelectorAll("input[type='text']");
-            var selects = lastRow.getElementsByTagName('select');
-            var lastDisplayNameValue = inputs[0].value;
-            var lastMasterValue = selects[0].value;
+        // Event listener for the lastDisplayName input
+        $(document).on('input', '.lastDisplayName', validateFields);
 
-            if ($(this).val() !== "" && lastDisplayNameValue !== "") {
+        // Function to validate the form
+        function validateFields() {
+            // Get the selected value from the master select
+            var masterValue = $('.master').val();
+
+            // Get the input text from the lastDisplayName input
+            var displayNameValue = $('.lastDisplayName').last().val();
+
+            // Enable addRow button if conditions are met
+            if (masterValue !== '' && displayNameValue !== '') {
                 $('#addRow').prop('disabled', false);
-            }
-            else {
+            } else {
                 $('#addRow').prop('disabled', true);
-                inputs[0].value = '';
             }
-        });
-        $(document).on('blur', '.lastDisplayName', function () {
-            debugger;
-            var table = document.getElementById("example");
+        }
 
-            // Get the last row
-            var lastRow = table.rows[table.rows.length - 1];
+        var table = document.getElementById('example');
+        var rows = table.getElementsByTagName('tr');
+        var actualRowCount = rows.length - 1;
 
-            // Get the text type input elements
-            var inputs = lastRow.querySelectorAll("input[type='text']");
-            var selects = lastRow.getElementsByTagName('select');
-            var lastDisplayNameValue = inputs[0].value;
-            var lastMasterValue = selects[0].value;
-
-            var currentInput = $(this);
-            var currentValue = currentInput.val().toLowerCase();
-            var isDuplicate = false;
-
-            // If value is blank, don't proceed with duplicate check
-            if (currentValue.trim() === '') {
-                
-            }
-            if (currentValue !== '' && currentValue.trim() === '') {
-                alert('Input cannot be only whitespace.');
-                // Clear the input field
-                $(this).val('');
-            }
-            else { 
-                $('.lastDisplayName').each(function () {
-
-                    // Skip checking against its own value
-                    if (this === currentInput[0]) {
-                        return true;
-                    }
-
-                    if ($(this).val().toLowerCase() === currentValue) {
-                        isDuplicate = true;
-                        return false; // exit from each loop
-                    }
-
-                });
-                $('.displayNamePrepopulated').each(function () {
-
-                    // Skip checking against its own value
-                    if (this === currentInput[0]) {
-                        return true;
-                    }
-
-                    if ($(this).val().toLowerCase() === currentValue) {
-                        isDuplicate = true;
-                        return false; // exit from each loop
-                    }
-
-                });
-            }
-            
-
-            // If value exists in other inputs clear the value
-            if (isDuplicate) {
-                currentInput.val('');
-                alert('Duplicates are not allowed in Display Name');
-            }
-
-            else { 
-                debugger;
-                if ($(this).val() !== "") {
-                    if (lastMasterValue == "") {
-                        alert('Please select Masters first');
-                        $(this).val('');
-                        $('#addRow').prop('disabled', true);
-                    }
-                    else {
-                        $('#addRow').prop('disabled', false);
-                    }
-                }
-                else if ($(this).val() == "") {
-                    $('#addRow').prop('disabled', true);
-                }
-                else {
-                    $('#addRow').prop('disabled', true);
-                }
-            }
-            
-
-        });
-        
+        var rowCounter = actualRowCount;
+        if (rowCounter >= 10) {
+            rows[actualRowCount].style.display = 'none';
+            $('#addRow').hide();
+            $('#tenRowsMessageID').show();
+        }
 
         $('#addRow').click(function () {
-            var table = document.getElementById("example");
-
-            // Get the last row
-            var lastRow = table.rows[table.rows.length - 1];
-
-            // Get the text type input elements
-            var inputs = lastRow.querySelectorAll("input[type='text']");
-
-            var selects = lastRow.getElementsByTagName('select');
-            var lastDisplayNameValue = inputs[0].value;
-            var lastMasterValue = selects[0].value;
-
-            var newRow = '<tr><td><select class="form-control master" name="data[' + rowIndex + '].Master"><option value = "" selected>Select Master</option></select></td><td><select class="form-control fieldName" id="fieldName' + rowIndex + '" name="data[' + rowIndex + '].fieldName"></select></td><td><input required type="text" class="form-control lastDisplayName" id="displayName' + rowIndex + '" name="data[' + rowIndex + '].DisplayName" placeholder="Display Name"></td></tr>'; 
-            $('#example tbody').append(newRow); // Append the new row to the table's body, not the non-existing 'tableBody'
-            debugger;
-
-            var beforeCloneCount = $('select.master:last option').length;
             
-            // Clone options from the original dropdown to the new one
-            $('select.master:first option:not(:first)').clone().appendTo('select.master:last');
-            
-            // Get number of options in the last select.master AFTER cloning
-            var afterCloneCount = $('select.master:last option').length;
-            if (afterCloneCount == 1) { 
-                $(selects[0].options).clone().appendTo('select.master:last');
-                $(this).prop('disabled', true);
+            if (rowCounter >= 10) {
+                alert('You can only add 10 rows');
             }
+            else{
 
-            $(this).prop('disabled', true); // disable "Add Row" button again
 
-            rowIndex++;
+                var newRow = '<tr><td><select class="form-control master" name="data[' + rowIndex + '].Master"><option value = "" selected>Select Master</option></select></td><td><select class="form-control fieldName" id="fieldName' + rowIndex + '" name="data[' + rowIndex + '].fieldName"></select></td><td><input required type="text" class="form-control lastDisplayName" id="displayName' + rowIndex + '" name="data[' + rowIndex + '].DisplayName" placeholder="Display Name"></td></tr>';
+                $('#example tbody').append(newRow); // Append the new row to the table's body, not the non-existing 'tableBody'
+
+                // $('select.master:first option:not(:first)').clone().appendTo('select.master:last');
+                $('select[name="data[0].Master"]:not([readonly]) option:not(:first)').clone().appendTo('select.master:last');            // Get number of options in the last select.master AFTER cloning
+
+                $('#example').on('change', '.master', function () {
+                    if ($(this).val() == '') {
+                        $(this).closest('tr').find('.lastDisplayName').val('');
+                    }
+                    validateFields();
+                });
+
+                // Event delegation for lastDisplayName input
+                $('#example').on('input', '.lastDisplayName', function () {
+                    validateFields();
+                });
+
+                $(this).prop('disabled', true); // disable "Add Row" button again
+
+                rowIndex++;
+                rowCounter++;
+            }
+            
         });
 
         function dropdownChangeHandler() {
@@ -247,52 +184,94 @@
 
         // Attach the handler to the all dropdowns
         $(document).on('change', 'select.master', dropdownChangeHandler);
+
+
+        function checkForDuplicatesAndHighlight() {
+            var isDuplicate = false;
+            var inputValues = {};
+
+            // Clear previous error styles
+            $('.displayNamePrepopulated, .lastDisplayName').removeClass('error');
+
+            // Combine input classes for iteration
+            var allInputs = $('.displayNamePrepopulated, .lastDisplayName');
+
+            // Build an object of lowercased values to arrays of inputs with that value
+            allInputs.each(function () {
+                var lowerVal = $(this).val().toLowerCase();
+                if (lowerVal === '') return true; // Skip empty values
+
+                if (!inputValues[lowerVal]) {
+                    inputValues[lowerVal] = [$(this)];
+                } else {
+                    inputValues[lowerVal].push($(this));
+                }
+            });
+
+            // Check for duplicates in the object and apply error styles
+            $.each(inputValues, function (value, inputs) {
+                if (inputs.length > 1) { // Duplicate found
+                    isDuplicate = true;
+                    $.each(inputs, function () {
+                        $(this).addClass('error');
+                    });
+                }
+            });
+
+            if (isDuplicate) {
+                // Highlight duplicates
+                $('.error').css('border', '1px solid red');
+
+                // Alert the user
+                alert('Duplicate values detected. Please revise the highlighted fields.');
+
+                // Scroll to the first error field
+                $('html, body').animate({
+                    scrollTop: $('.error:first').offset().top
+                }, 1000);
+            }
+
+            return !isDuplicate;
+        }
+
         $('#saveMastersBtnID').click(function (e) {
+            e.preventDefault(); 
 
-            var table = document.getElementById('example');
-            var rows = table.getElementsByTagName('tr');
-
-            var actualRowCount = rows.length - 1; // subtracting 1 for header row
-
-            if (actualRowCount === 1) {
-                debugger;
-                var row = rows[1];
-                for (var i = 0; i < row.cells.length; i++) {
-                    var inputs = row.cells[i].querySelectorAll('input[type=text]');
-                    var selects = row.cells[i].getElementsByTagName('select');
-
-                    for (var j = 0; j < inputs.length; j++) {
-                        inputs[j].required = true;
-                        inputs[j].style.borderColor = 'red'; // set border color to red
-                    }
-
-                    for (var j = 0; j < selects.length; j++) {
-                        selects[j].required = true;
-                        selects[j].style.borderColor = 'red'; // set border color to red
-                    }
-                }
-            }
-            else {
-                debugger;
-                var lastRow = rows[rows.length - 1];
-                var firstSelectInLastRow = lastRow.querySelector('select');
-                var inputsInLastRow = lastRow.querySelectorAll('input[type=text]');
-
-                if (firstSelectInLastRow.value !== "") {
-                    for (var i = 0, len = inputsInLastRow.length; i < len; i++) {
-                        inputsInLastRow[i].required = true;
-                        inputsInLastRow[i].style.borderColor = 'red';
-                    }
-                }
-                else {
-                    for (var i = 0, len = inputsInLastRow.length; i < len; i++) {
-                        inputsInLastRow[i].required = false;
-                        inputsInLastRow[i].style.borderColor = '';
-                    }
-                }
+            var canSave = checkForDuplicatesAndHighlight();
+            
+            if (!canSave) {
+                return;
             }
 
+            var allValid = true;
+            $('.lastDisplayName, .displayNamePrepopulated').each(function () {
+                // Find the associated select element with class .master that's in the same 'row' as the input
+                var masterSelectValue = $(this).closest('tr, .row, .form-section').find('.master').val();
+
+                // Check if .master select is not blank
+                if (masterSelectValue.trim() !== '') {
+                    // Now check if the input field is blank
+                    if ($(this).val().trim() === '') {
+                        allValid = false; // Set validation flag to false if any input is empty
+                        $(this).css('border', '1px solid red'); // Directly add border to the input
+                    } else {
+                        $(this).css('border', ''); // Reset border for filled inputs
+                    }
+                }
+            });
+
+            if (!allValid) {
+                e.preventDefault(); // Stop the form submission
+                alert('Please fill in all fields where Masters is selected.');
+                $('.error:first').focus(); // Focus on the first input with an error
+                return;
+            }
+
+
+            // Disable prepopulated inputs
             $('.prepopulated').prop('disabled', true);
+
+            $('#saveMastersFormID').submit();
         });
 
     });

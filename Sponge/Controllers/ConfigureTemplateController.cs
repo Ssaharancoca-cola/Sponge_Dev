@@ -14,6 +14,7 @@ using System.Globalization;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Http;
 using System.Data.Common;
+using System;
 
 namespace Sponge.Controllers
 {
@@ -112,67 +113,92 @@ namespace Sponge.Controllers
             // TO set the default effective to date
             var defaultEffectiveToDate = _configuration.GetSection("AppSettings:DefaultEffectiveToDate").Value;
 
-            if (configRecord != null)
-            {
-                // Update the fields
-                configRecord.ACTIVE_FLAG = data.ACTIVE_FLAG;
-                configRecord.Config_Name = data.CONFIG_NAME;
-                configRecord.SCHEDULED = data.SCHEDULED;
-                configRecord.LOCK_DATE = data.LOCK_DATE;
-                configRecord.PATTERN = data.PATTERN;
-                configRecord.DATA_COLLECTION = "OFFLINE";
-                configRecord.PATTERN_MONTH = data.PATTERN_MONTH;
-                configRecord.REMMINDER_DATE = data.REMMINDER_DATE;
-                configRecord.ESCALATION_DATE = data.ESCALATION_DATE;
-                configRecord.APPROVER_NAME = data.APPROVER_NAME;
-                configRecord.APPROVER_EMAILD = data.APPROVER_EMAILID;
-                configRecord.APPROVER_ID = data.APPROVER_ID;
-                configRecord.MODIFIED_BY = userName[1];
-                configRecord.MODIFIED_DATE = DateTime.Now;
-                if (data.ACTIVE_FLAG == "Y")
-                {
-                    configRecord.EFFECTIVE_TO = Convert.ToDateTime(defaultEffectiveToDate);
-                }
-                else
-                {
-                    configRecord.EFFECTIVE_TO = data.EFFECTIVE_TO;
-                }
-                // Save the changes
-                spONGE_Context.SaveChanges();
-            }
-            // Redirect to ConfigureTemplate action
-            return RedirectToAction("ConfigureTemplate");
-        }
-        public JsonResult GetUserInfoByEmail(string email)
-        {
-            UserInfo userInfo = new UserInfo();
-
             try
             {
-                using (var context = new PrincipalContext(ContextType.Domain, "USAWS1ESI56.apac.ko.com"))
+                if (configRecord != null)
                 {
-                    UserPrincipal userPrincipal = new UserPrincipal(context);
-                    userPrincipal.EmailAddress = email;
-
-                    PrincipalSearcher search = new PrincipalSearcher(userPrincipal);
-
-                    var user = (UserPrincipal)search.FindOne();
-
-                    if (user != null)
+                    // Update the fields
+                    configRecord.ACTIVE_FLAG = data.ACTIVE_FLAG;
+                    configRecord.Config_Name = data.CONFIG_NAME;
+                    configRecord.SCHEDULED = data.SCHEDULED;
+                    configRecord.LOCK_DATE = data.LOCK_DATE;
+                    configRecord.PATTERN = data.PATTERN;
+                    configRecord.DATA_COLLECTION = "OFFLINE";
+                    configRecord.PATTERN_MONTH = data.PATTERN_MONTH;
+                    configRecord.REMMINDER_DATE = data.REMMINDER_DATE;
+                    configRecord.ESCALATION_DATE = data.ESCALATION_DATE;
+                    configRecord.APPROVER_NAME = data.APPROVER_NAME;
+                    configRecord.APPROVER_EMAILD = data.APPROVER_EMAILID;
+                    configRecord.APPROVER_ID = data.APPROVER_ID;
+                    configRecord.MODIFIED_BY = userName[1];
+                    configRecord.MODIFIED_DATE = DateTime.Now;
+                    if (data.ACTIVE_FLAG == "Y")
                     {
-                        userInfo.UserId = user.SamAccountName;
-                        userInfo.UserName = user.DisplayName;
-                        userInfo.UserEmail = user.EmailAddress;
-                        userInfo.ErrorMsg = "";
+                        configRecord.EFFECTIVE_TO = Convert.ToDateTime(defaultEffectiveToDate);
                     }
+                    else
+                    {
+                        configRecord.EFFECTIVE_TO = data.EFFECTIVE_TO;
+                    }
+                    // Save the changes
+                    spONGE_Context.SaveChanges();
                 }
+                // Redirect to ConfigureTemplate action
+                return RedirectToAction("ConfigureTemplate");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                ErrorLog srsEx = new ErrorLog();
+                srsEx.LogErrorInTextFile(dbEx);
+                TempData["SaveSetupErrorMessage"] = "An error occurred in database while saving the setup values." ;
+                return View();
             }
             catch (Exception ex)
             {
-
+                ErrorLog srsEx = new ErrorLog();
+                srsEx.LogErrorInTextFile(ex);
+                TempData["SaveSetupErrorMessage"] = "An error occurred while saving the setup values." ;
+                return View();
+            }
+        }
+        public JsonResult GetUserInfoByEmail(string email,int configId)
+        {
+            UserInfo userInfo = new UserInfo();
+            SPONGE_Context sPONGE_Context = new();
+            try
+            {
+                var userDetails = (from u in sPONGE_Context.SPG_USERS
+                                    join o in sPONGE_Context.SPG_USERS_FUNCTION on u.USER_ID equals o.USER_ID
+                                    join c in sPONGE_Context.SPG_CONFIGURATION on configId equals c.CONFIG_ID
+                                    join s in sPONGE_Context.SPG_SUBJECTAREA on c.SUBJECTAREA_ID equals s.SUBJECTAREA_ID
+                                    where u.EMAIL_ID.Contains(email)
+                                   && (o.ROLE_ID == 4 || o.ROLE_ID == 5) && o.SUB_FUNCTION_ID == s.SUBFUNCTION_ID
+                                   select new UserInfo
+                                   {
+                                       UserId = u.USER_ID,
+                                       UserName = u.Name, 
+                                       //UserEmail = u.EMAIL_ID,
+                                       ErrorMsg = "",
+                                   }).FirstOrDefault();
+                if (userDetails != null)
+                {
+                    userInfo = userDetails;
+                }
+                else
+                {
+                    userInfo.ErrorMsg = "Invalid Approver Email ID.";
+                }
+            }
+            
+            catch (Exception ex)
+            {
+                ErrorLog srsEx = new ErrorLog();
+                srsEx.LogErrorInTextFile(ex);
+                userInfo.ErrorMsg = "An error occurred while fetching user details.";
             }
             return Json(userInfo);
         }
+        
         [HttpGet]
         public IActionResult GetUserList(int subjectAreaId)
         {
@@ -458,74 +484,97 @@ namespace Sponge.Controllers
 
         public async Task<IActionResult> SaveDataFilter()
         {
-            var serializedData = TempData["Masters"];
-            var configID = TempData["ConfigId"];
-            var masterNames = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>((string)serializedData);
-            SPONGE_Context _Context = new();
-            var masterValuesDictionary = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
-
-            foreach (var dimension in masterNames)
+            try
             {
-                var dimensionDict = new Dictionary<string, List<Dictionary<string, string>>>();
+                var serializedData = TempData["Masters"];
+                var configID = TempData["ConfigId"];
+                var masterNames = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>((string)serializedData);
+                SPONGE_Context _Context = new();
+                var masterValuesDictionary = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
 
-                foreach (var mastervalue in dimension.Value)
+                foreach (var dimension in masterNames)
                 {
-                    using (var command = _Context.Database.GetDbConnection().CreateCommand())
+                    var dimensionDict = new Dictionary<string, List<Dictionary<string, string>>>();
+
+                    foreach (var mastervalue in dimension.Value)
                     {
-                        // Count rows stored procedure
-                        command.CommandText = "SP_GETFILTERATION_DATA_FINAL_COUNT";
-                        command.CommandType = CommandType.StoredProcedure;
-
-                        command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
-                        command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
-                        command.Parameters.Add(new SqlParameter("@v_configId", configID));
-
-                        _Context.Database.OpenConnection();
-
-                        var count = Convert.ToInt32(command.ExecuteScalar());
-
-                        var dataList = new List<Dictionary<string, string>>();
-
-                        if (count > 100)
+                        using (var command = _Context.Database.GetDbConnection().CreateCommand())
                         {
-                            // adding special row
-                            dataList.Add(new Dictionary<string, string> { { "SpecialRow", "Please type 5 characters to search..." } });
-                        }
-                        else
-                        {
-                            command.Parameters.Clear(); // clearing parameters for previous command
-
-                            command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
-                            command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
-                            command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
-                            command.Parameters.Add(new SqlParameter("@v_configId", configID));
-
-                            using (var result = command.ExecuteReader())
+                            try
                             {
-                                var dataTable = new DataTable();
-                                dataTable.Load(result);
+                                // Count rows stored procedure
+                                command.CommandText = "SP_GETFILTERATION_DATA_FINAL_COUNT";
+                                command.CommandType = CommandType.StoredProcedure;
 
+                                command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                                command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                                command.Parameters.Add(new SqlParameter("@v_configId", configID));
 
-                                foreach (DataRow row in dataTable.Rows)
+                                _Context.Database.OpenConnection();
+
+                                var count = Convert.ToInt32(command.ExecuteScalar());
+
+                                var dataList = new List<Dictionary<string, string>>();
+
+                                if (count > 100)
                                 {
-                                    var dict = new Dictionary<string, string>();
-                                    foreach (DataColumn column in dataTable.Columns)
-                                    {
-                                        dict[column.ColumnName] = row[column].ToString();
-                                    }
-                                    dataList.Add(dict);
+                                    // adding special row
+                                    dataList.Add(new Dictionary<string, string> { { "SpecialRow", "Please type 5 characters to search..." } });
                                 }
+                                else
+                                {
+                                    command.Parameters.Clear(); // clearing parameters for previous command
+
+                                    command.CommandText = "SP_GETFILTERATION_DATA_FINAL";
+                                    command.Parameters.Add(new SqlParameter("@p_DimensionName", dimension.Key));
+                                    command.Parameters.Add(new SqlParameter("@p_MasterName", mastervalue));
+                                    command.Parameters.Add(new SqlParameter("@v_configId", configID));
+
+                                    using (var result = command.ExecuteReader())
+                                    {
+                                        var dataTable = new DataTable();
+                                        dataTable.Load(result);
+
+                                        foreach (DataRow row in dataTable.Rows)
+                                        {
+                                            var dict = new Dictionary<string, string>();
+                                            foreach (DataColumn column in dataTable.Columns)
+                                            {
+                                                dict[column.ColumnName] = row[column].ToString();
+                                            }
+                                            dataList.Add(dict);
+                                        }
+                                    }
+                                }
+
+                                dimensionDict.Add(mastervalue, dataList);
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorLog srsEx = new ErrorLog();
+                                srsEx.LogErrorInTextFile(ex);
+                                Console.WriteLine(ex.Message);
+                            }
+                            finally
+                            {
+                                _Context.Database.CloseConnection();
                             }
                         }
-
-                        dimensionDict.Add(mastervalue, dataList);
                     }
+                    // sort the master values dictionary here
+                    var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
+                    masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
                 }
-                // sort the master values dictionary here
-                var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
-                masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
+
+                return View(masterValuesDictionary);
             }
-            return View(masterValuesDictionary);
+            catch (Exception ex)
+            {
+                ErrorLog srsEx = new ErrorLog();
+                srsEx.LogErrorInTextFile(ex);
+                Console.WriteLine(ex.Message);
+                return View("Error");
+            }
         }
         [HttpPost]
         public async Task<JsonResult> SearchMasters(string DimensionName, string MasterKey, string SearchTerm)

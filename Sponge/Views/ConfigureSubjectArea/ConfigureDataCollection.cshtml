@@ -35,9 +35,11 @@
                                             <input type="text" class="form-control displayNamePrepopulated" id="displayName" name="data[0].DISPLAY_NAME" value="@master.DISPLAY_NAME" readonly>
                                         </td>
                                         <td>
-                                            <select class="form-control fieldNamePrepopulated" id="fieldName" name="data[0].FIELD_NAME" readonly>
-                                                <option selected>@master.FIELD_NAME</option>
-                                            </select>
+                                            <input type="text" class="form-control fieldNamePrepopulated" id="fieldName" name="data[0].FIELD_NAME" value="@master.FIELD_NAME" readonly>
+
+                                            @* <select class="form-control fieldNamePrepopulated" id="fieldName" name="data[0].FIELD_NAME" readonly>
+                                        <option selected>@master.FIELD_NAME</option>
+                                        </select> *@
                                         </td>
                                         <td>
                                             @if (@master.IS_LOOKUP == "Y")
@@ -120,8 +122,12 @@
                         <div id="customAlert" class="custom-alert" style="display: none;">
                             <p>New rows cannot be added for this subject area.</p>
                         </div>
+                        <div id="tenRowsMessageID" class="custom-alert" style="display: none;">
+                            <p>Only 10 rows can be added for a subject area.</p>
+                        </div>
                     </div>
-                    <button type="button" id="cancel" class="btn btn-cancel">Cancel</button>
+                    @* <button type="button" id="cancel" class="btn btn-cancel">Cancel</button> *@
+                    <a class="btn btn-cancel" href="/ConfigureSubjectArea/ConfigureSubjectArea">Cancel</a>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="button" id="saveData" class="btn btn-primary " style="float:right">Next</button>
                 </div>
@@ -134,174 +140,43 @@
 
 <script>
     var periodValue = @ViewBag.periodValue
-        //To check the duplicates in Display Name and to enable and disable add row button
-        $(document).on('blur', '.displayName', function () {
-            var table = document.getElementById("example");
+        
+        function validateFields() {
+            var displayNameValue = $('.displayName').last().val();
 
-            // Get the last row
-            var lastRow = table.rows[table.rows.length - 1];
+            var fieldNameValue = $('.fieldName').last().val();
 
-            // Get the text type input elements
-            var inputs = lastRow.querySelectorAll("input[type='text']");
-            var selects = lastRow.getElementsByTagName('select');
-            var lastDisplayNameValue = inputs[0].value;
-            var lastMasterValue = selects[0].value;
-
-            var currentInput = $(this);
-            var currentValue = currentInput.val().toLowerCase();
-            var isDuplicate = false;
-
-            // If value is blank, don't proceed with duplicate check
-            if (currentValue.trim() === '') {
-
-            }
-            if (currentValue !== '' && currentValue.trim() === '') {
-                alert('Input cannot be only whitespace.');
-                // Clear the input field
-                $(this).val('');
-            }
-            else {
-                $('.displayName').each(function () {
-
-                    // Skip checking against its own value
-                    if (this === currentInput[0]) {
-                        return true;
-                    }
-
-                    if ($(this).val().toLowerCase() === currentValue) {
-                        isDuplicate = true;
-                        return false; // exit from each loop
-                    }
-
-                });
-                $('.displayNamePrepopulated').each(function () {
-
-                    // Skip checking against its own value
-                    if (this === currentInput[0]) {
-                        return true;
-                    }
-
-                    if ($(this).val().toLowerCase() === currentValue) {
-                        isDuplicate = true;
-                        return false; // exit from each loop
-                    }
-
-                });
-            }
-
-
-            // If value exists in other inputs clear the value
-            if (isDuplicate) {
-                currentInput.val('');
-                alert('Duplicates are not allowed in Display Name');
-            }
-            else {
-
-                var input1 = $(lastRow).find('.displayName');
-                var input2 = $(lastRow).find('.fieldName');
-
-                if (input1.val() && input2.val()) {
-                    $('#addRow').prop('disabled', false);
-                }
-                else {
-                    $('#addRow').prop('disabled', true);
-                }
-            }
-
-        });
-    // To check duplicates in Field Name and to enable and disable add row button
-    $(document).on('blur', '.fieldName', function () {
-        var table = document.getElementById("example");
-
-        // Get the last row
-        var lastRow = table.rows[table.rows.length - 1];
-
-        // Get the text type input elements
-        var inputs = lastRow.querySelectorAll("input[type='text']");
-        var selects = lastRow.getElementsByTagName('select');
-        var lastDisplayNameValue = inputs[0].value;
-        var lastMasterValue = selects[0].value;
-
-        var currentInput = $(this);
-        var currentValue = currentInput.val().toLowerCase();
-        var isDuplicate = false;
-
-        // If value is blank, don't proceed with duplicate check
-        if (currentValue.trim() === '') {
-
-        }
-        if (currentValue !== '' && currentValue.trim() === '') {
-            alert('Input cannot be only whitespace.');
-            // Clear the input field
-            $(this).val('');
-        }
-        else {
-            $('.fieldName').each(function () {
-
-                // Skip checking against its own value
-                if (this === currentInput[0]) {
-                    return true;
-                }
-
-                if ($(this).val().toLowerCase() === currentValue) {
-                    isDuplicate = true;
-                    return false; // exit from each loop
-                }
-
-            });
-            $('.fieldNamePrepopulated').each(function () {
-
-                // Skip checking against its own value
-                if (this === currentInput[0]) {
-                    return true;
-                }
-
-                if ($(this).val().toLowerCase() === currentValue) {
-                    isDuplicate = true;
-                    return false; // exit from each loop
-                }
-
-            });
-        }
-
-
-        // If value exists in other inputs clear the value
-        if (isDuplicate) {
-            currentInput.val('');
-            alert('Duplicates are not allowed in Field Name');
-        }
-        else {
-
-            var input1 = $(lastRow).find('.displayName');
-            var input2 = $(lastRow).find('.fieldName');
-
-            if (input1.val() && input2.val()) {
+            // Enable addRow button if conditions are met
+            if (displayNameValue !== '' && fieldNameValue !== '') {
                 $('#addRow').prop('disabled', false);
-            }
-            else {
+            } else {
                 $('#addRow').prop('disabled', true);
             }
         }
-
-    });
-
-    $('#cancel').click(function () {
-        window.location.href = 'ConfigureSubjectArea';
-    });
-    // Function to check period value to avoid user from adding any row if Period > 1
     $(document).ready(function () {
+
+        $(document).on('input', '.displayName', validateFields);
+        $(document).on('input', '.fieldName', validateFields);
 
         if (periodValue > 1) {
             $('#addRow').hide(); // Hide the Add Row button
             $('#customAlert').show(); // Show the custom alert message
         }
 
-        var counter = 1;
-        var limit = 10;
+        var table = document.getElementById('example');
+        var rows = table.getElementsByTagName('tr');
+        var actualRowCount = rows.length - 1;
 
+        var counter = 1;
+        var rowCounter = actualRowCount;
+        if (rowCounter >= 10) {
+            rows[actualRowCount].style.display = 'none';
+            $('#addRow').hide();
+            $('#tenRowsMessageID').show();
+        }
         $("#addRow").click(function () {
 
-            if (counter > 10) {
+            if (rowCounter >= 10) {
                 alert('You can only add 10 rows');
             }
             else {
@@ -316,7 +191,7 @@
                     + '<td><select class="form-control uOM" name="data[' + counter + '].UOM"><option selected>Select</option></select></td>'
                     + '</tr>';
                 counter++;
-
+                rowCounter++;
                 $("#example tbody").append(newRowContents);
 
                 $(this).prop('disabled', true);
@@ -350,6 +225,8 @@
                         lookupTypeField.prop('disabled', true);
                     }
                 });
+
+                $(this).prop('disabled', true);
             }
 
         });
@@ -390,53 +267,161 @@
             }
         });
 
-        function validateInputs() {
-            var isValid = true;
-            var table = document.getElementById('example');
-            var rows = table.getElementsByTagName('tr');
-            var actualRowCount = rows.length - 1; // subtracting 1 for the header row
+        // function validateInputs() {
+        //     var isValid = true;
+        //     var table = document.getElementById('example');
+        //     var rows = table.getElementsByTagName('tr');
+        //     var actualRowCount = rows.length - 1; // subtracting 1 for the header row
 
-            if (actualRowCount === 1) {
-                var inputs = rows[1].querySelectorAll('input[type=text]:not([readonly])');
-                inputs.forEach(function (input) {
-                    if (!input.value.trim()) {
-                        input.setAttribute('required', '');
-                        isValid = false;
-                    } else {
-                        input.removeAttribute('required');
-                    }
-                });
-            } else {
-                var lastRow = rows[actualRowCount];
-                var input1 = $(lastRow).find('.displayName');
-                var input2 = $(lastRow).find('.fieldName');
+        //     if (actualRowCount === 1) {
+        //         var inputs = rows[1].querySelectorAll('input[type=text]:not([readonly])');
+        //         inputs.forEach(function (input) {
+        //             if (!input.value.trim()) {
+        //                 input.setAttribute('required', '');
+        //                 isValid = false;
+        //             } else {
+        //                 input.removeAttribute('required');
+        //             }
+        //         });
+        //     } else {
+        //         var lastRow = rows[actualRowCount];
+        //         var input1 = $(lastRow).find('.displayName');
+        //         var input2 = $(lastRow).find('.fieldName');
 
-                if (input1.val().trim() && !input2.val().trim()) {  // Check for non-whitespace characters
-                    input2.attr('required', '');
-                    isValid = false;
-                } else if (input2.val().trim() && !input1.val().trim()) {
-                    input1.attr('required', '');
-                    isValid = false;
+        //         if (input1.val().trim() && !input2.val().trim()) {  // Check for non-whitespace characters
+        //             input2.attr('required', '');
+        //             isValid = false;
+        //         } else if (input2.val().trim() && !input1.val().trim()) {
+        //             input1.attr('required', '');
+        //             isValid = false;
+        //         } else {
+        //             input1.removeAttr('required');
+        //             input2.removeAttr('required');
+        //         }
+        //     }
+
+        //     return isValid;
+        // }
+
+        function checkForDuplicatesDisplayName() {
+            var isDuplicate = false;
+            var inputValues = {};
+
+            // Clear previous error styles
+                
+            $('.displayName, .displayNamePrepopulated').css('border', '');
+
+            var allInputs = $('.displayName, .displayNamePrepopulated');
+
+            // Build an object of lowercased values to arrays of inputs with that value
+            allInputs.each(function () {
+                var lowerVal = $(this).val().toLowerCase();
+                if (lowerVal === '') return true; // Skip empty values
+
+                if (!inputValues[lowerVal]) {
+                    inputValues[lowerVal] = [$(this)];
                 } else {
-                    input1.removeAttr('required');
-                    input2.removeAttr('required');
+                    inputValues[lowerVal].push($(this));
                 }
+            });
+
+            // Check for duplicates in the object and apply error styles
+            $.each(inputValues, function (value, inputs) {
+                if (inputs.length > 1) { // Duplicate found
+                    isDuplicate = true;
+                    $.each(inputs, function () {
+                        $(this).addClass('error');
+                    });
+                }
+            });
+
+            if (isDuplicate) {
+                // Highlight duplicates
+                $('.error').css('border', '1px solid red');
+
+                // Alert the user
+                alert('Duplicates are not allowed in Display Name Fields.');
+
             }
 
-            return isValid;
+            return !isDuplicate;
         }
+        function checkForDuplicatesFieldName() {
+            var isDuplicate = false;
+            var inputValues = {};
 
+            $('.fieldName, .fieldNamePrepopulated').css('border', '');
+
+            var allInputs = $('.fieldName, .fieldNamePrepopulated');
+
+            // Build an object of lowercased values to arrays of inputs with that value
+            allInputs.each(function () {
+                var lowerVal = $(this).val().toLowerCase();
+                if (lowerVal === '') return true; // Skip empty values
+
+                if (!inputValues[lowerVal]) {
+                    inputValues[lowerVal] = [$(this)];
+                } else {
+                    inputValues[lowerVal].push($(this));
+                }
+            });
+
+            // Check for duplicates in the object and apply error styles
+            $.each(inputValues, function (value, inputs) {
+                if (inputs.length > 1) { // Duplicate found
+                    isDuplicate = true;
+                    $.each(inputs, function () {
+                        $(this).addClass('error');
+                    });
+                }
+            });
+
+            if (isDuplicate) {
+                // Highlight duplicates
+                $('.error').css('border', '1px solid red');
+
+                alert('Duplicates are not allowed in Field Names field.');
+            }
+
+            return !isDuplicate;
+        }
         $('#saveData').click(function (e) {
             e.preventDefault();
-            var formIsValid = validateInputs(); // renamed to just validate inputs
 
-            if (formIsValid) {
-                $('.prepopulated').prop('disabled', true);
-                $('#ConfDataCollForm').submit();
+            //var formIsValid = validateInputs(); // renamed to just validate inputs
+            var displayDuplicate = checkForDuplicatesDisplayName();
+            var fieldDuplicates = checkForDuplicatesFieldName();
+            if (!displayDuplicate) {
+                return;
             }
-            else{
-                $('#ConfDataCollForm')[0].reportValidity();
+            if (!fieldDuplicates) {
+                return;
             }
+            var allValid = true;
+
+            $('.displayName').each(function () {
+                var $thisDisplayName = $(this); 
+                var $correspondingFieldName = $thisDisplayName.closest('tr, .row, .form-section').find('.fieldName'); 
+                
+                if ($thisDisplayName.val().trim() !== '' && $correspondingFieldName.val().trim() === '' ||
+                    $thisDisplayName.val().trim() === '' && $correspondingFieldName.val().trim() !== '') {
+                    allValid = false; 
+                    $thisDisplayName.css('border', '1px solid red'); 
+                    $correspondingFieldName.css('border', '1px solid red'); 
+                } else {
+                    $thisDisplayName.css('border', ''); 
+                    $correspondingFieldName.css('border', ''); 
+                }
+            });
+
+            if (!allValid) {
+                e.preventDefault(); 
+                alert('If you fill in the field in either Display Name or Field Name, you must fill in the corresponding field as well.');
+                return false;
+            }
+            $('.prepopulated').prop('readonly', true);
+            $('#ConfDataCollForm').submit();
+            
         });
 
         function populateUOM($element) {
