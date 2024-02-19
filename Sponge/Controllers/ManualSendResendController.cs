@@ -38,7 +38,7 @@ namespace Sponge.Controllers
                     model.EscalationAlertDate = DateTime.Now.AddDays(Convert.ToDouble(scg.ESCALATION_DATE));
                     model.IsPopulated = scg.IS_POPULATED;
                 }
-                if(scg.SCHEDULED == "N" && scg.IS_POPULATED != null)
+                if(scg.SCHEDULED == "N")
                 {
                     model.IsPopulated = scg.IS_POPULATED;
                 }
@@ -48,7 +48,7 @@ namespace Sponge.Controllers
                 model.LockDate = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s =>s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.LOCKDATE).FirstOrDefault();
                 model.EscalationAlertDate = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.ESCALATIONDATE).FirstOrDefault();
                 model.UploadReminderDate = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.UPLOADREMINDERDATE).FirstOrDefault();
-                model.IsPopulated = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.IS_POPULATED).FirstOrDefault();
+                //model.IsPopulated = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.IS_POPULATED).FirstOrDefault();
 
             }
             model.DataCollection = sPONGE_Context.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configId && s.ONTIMECODE == currentOnTimeForTime && s.FORTIMECODE == currentOnTimeForTime).OrderByDescending(s => s.ID).Select(s => s.DATA_COLLECTION).FirstOrDefault();
@@ -252,39 +252,37 @@ namespace Sponge.Controllers
         public JsonResult LoadLockDetails(int configid, string fortime, string ontimecode)
         {
             SPONGE_Context objFunction = new ();
-            SPG_SENDORRESENDTASK ESRT = objFunction.SPG_SENDORRESENDTASK.Where(x => x.CONFIG_ID == configid).FirstOrDefault();
-            var v1 = (from esrt in objFunction.SPG_SENDORRESENDTASK
-                      where (esrt.FORTIMECODE == fortime && esrt.ONTIMECODE == ontimecode && esrt.CONFIG_ID == configid)
-                      select new SendResendExcel { ID = esrt.ID, LockDate = esrt.LOCKDATE, UploadReminderDate = esrt.UPLOADREMINDERDATE, EsclationDate = esrt.ESCALATIONDATE }).OrderByDescending(s => s.ID).FirstOrDefault();
-
+            SPG_SENDORRESENDTASK ESRT = objFunction.SPG_SENDORRESENDTASK
+                                        .Where(s => s.CONFIG_ID == configid
+                                                 && s.ONTIMECODE == ontimecode
+                                                 && s.FORTIMECODE == fortime)
+                                        .OrderByDescending(s => s.ID) // Specify the field you want to sort by.
+                                        .FirstOrDefault();
+            SendResendExcel v1 = new SendResendExcel();
             if (ESRT == null)
             {
                 SPG_CONFIGURATION EPM = objFunction.SPG_CONFIGURATION.Where(x => x.CONFIG_ID == configid).FirstOrDefault();
-                if (EPM.SCHEDULED == "Y" && EPM.IS_POPULATED != null)
+                if (EPM.SCHEDULED == "Y")
                 {
                     v1.LockDate = DateTime.Now.AddDays(Convert.ToDouble(EPM.LOCK_DATE));
                     v1.UploadReminderDate = DateTime.Now.AddDays(Convert.ToDouble(EPM.REMMINDER_DATE));
                     v1.EsclationDate = DateTime.Now.AddDays(Convert.ToDouble(EPM.ESCALATION_DATE));
-                    v1.IsPopluated = EPM.IS_POPULATED;
+                    //v1.IsPopluated = EPM.IS_POPULATED;
                 }
-                if (EPM.SCHEDULED == "N" && EPM.IS_POPULATED != null)
+                if (EPM.SCHEDULED == "N")
                 {
                     v1 = new SendResendExcel();
-                    v1.IsPopluated = EPM.IS_POPULATED;
+                    //v1.IsPopluated = EPM.IS_POPULATED;
                     v1.Error = 1;
                 }
 
             }
             else
             {
-                v1 = new SendResendExcel();
-                v1.LockDate = objFunction.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configid && s.ONTIMECODE == ontimecode && s.FORTIMECODE == fortime).OrderByDescending(s => s.ID).Select(s => s.LOCKDATE).FirstOrDefault();
-                v1.LockDate = v1.LockDate == Convert.ToDateTime("1/1/0001 12:00:00 AM") ? null : v1.LockDate;
-                v1.UploadReminderDate = objFunction.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configid && s.ONTIMECODE == ontimecode && s.FORTIMECODE == fortime).OrderByDescending(s => s.ID).Select(s => s.UPLOADREMINDERDATE).FirstOrDefault() == Convert.ToDateTime("1/1/0001 12:00:00 AM") ? Convert.ToDateTime(null) : objFunction.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configid && s.ONTIMECODE == ontimecode && s.FORTIMECODE == fortime).OrderByDescending(s => s.ID).Select(s => s.UPLOADREMINDERDATE).FirstOrDefault();
-                v1.UploadReminderDate = v1.UploadReminderDate == Convert.ToDateTime("1/1/0001 12:00:00 AM") ? null : v1.UploadReminderDate;
-                v1.EsclationDate = objFunction.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configid && s.ONTIMECODE == ontimecode && s.FORTIMECODE == fortime).OrderByDescending(s => s.ID).Select(s => s.ESCALATIONDATE).FirstOrDefault() == Convert.ToDateTime("1/1/0001 12:00:00 AM") ? Convert.ToDateTime(null) : objFunction.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configid && s.ONTIMECODE == ontimecode && s.FORTIMECODE == fortime).OrderByDescending(s => s.ID).Select(s => s.ESCALATIONDATE).FirstOrDefault();
-                v1.EsclationDate = v1.EsclationDate == Convert.ToDateTime("1/1/0001 12:00:00 AM") ? null : v1.EsclationDate;
-                v1.IsPopluated = objFunction.SPG_SENDORRESENDTASK.Where(s => s.CONFIG_ID == configid && s.ONTIMECODE == ontimecode && s.FORTIMECODE == fortime).OrderByDescending(s => s.ID).Select(s => s.IS_POPULATED).FirstOrDefault();
+                // v1 = new SendResendExcel();
+                v1.LockDate = ESRT.LOCKDATE;
+                v1.EsclationDate = ESRT.ESCALATIONDATE;
+                v1.UploadReminderDate = ESRT.UPLOADREMINDERDATE;
             }
 
             return Json(v1);
@@ -297,7 +295,7 @@ namespace Sponge.Controllers
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             if (!ModelState.IsValid)
             {
-                SPG_SENDORRESENDTASK sendresendtask = new SPG_SENDORRESENDTASK();
+                    SPG_SENDORRESENDTASK sendresendtask = new SPG_SENDORRESENDTASK();
                 sendresendtask.ATTEMPTS = 0;
                 sendresendtask.CONFIG_ID = model.ConfigId;
                 sendresendtask.SENT = 0;
