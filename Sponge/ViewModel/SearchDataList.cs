@@ -6,6 +6,7 @@
         public int SubjectAreaId { get; set; }
         public string SubjectAreaName { get; set; }
         public DateTime? EffectiveDate { get; set;}
+        public DateTime? EffectiveFrom { get; set;}
         public string AssignedUser { get; set;}
         public string Active { get; set;}
         public string ManualSendResendUrl { get; set;}

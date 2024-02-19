@@ -107,6 +107,11 @@ namespace Sponge.Controllers
             var role = sponge_context.SPG_USERS_FUNCTION.FirstOrDefault(x => x.USER_ID == userName[1] && (x.ROLE_ID ==5 || x.ROLE_ID==3));
             var AdminRoleId = System.Configuration.ConfigurationManager.AppSettings["AdminRoleId"];
 
+            // Check if the user has selected a date (other than the default date)
+            bool isDateFromSelected = dateFrom != DateTime.MinValue;
+            bool isDateToSelected = dateTo != DateTime.MinValue;
+
+
             int RoleID = 0;
             if (role != null)
             {
@@ -131,9 +136,29 @@ namespace Sponge.Controllers
                                        SubjectAreaName = sa.SUBJECTAREA_NAME,
                                        AssignedUser = u.Name,
                                        Active = (conf.ACTIVE_FLAG == null) ? "" : (conf.ACTIVE_FLAG == "Y" ? "Yes" : "No"),
-                                       EffectiveDate = conf.Created_On,
+                                       EffectiveDate = conf.EFFECTIVE_TO,
+                                       EffectiveFrom = conf.Created_On,
                                        ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
-            }).Distinct().ToList();
+                                    }).Distinct().ToList();
+                if (isDateFromSelected && !isDateToSelected)
+                {
+                    // Only dateFrom is selected
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveFrom >= dateFrom).ToList();
+                }
+                else if (!isDateFromSelected && isDateToSelected)
+                {
+                    // Only dateTo is selected
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveDate <= dateTo).ToList();
+                }
+                else if (isDateFromSelected && isDateToSelected)
+                {
+                    // Both dateFrom and dateTo are selected
+                    SearchConfgData = SearchConfgData.Where(x =>
+                        (x.EffectiveFrom >= dateFrom || x.EffectiveFrom == null) &&
+                        (x.EffectiveDate <= dateTo || x.EffectiveDate == null)).ToList();
+                }
+
+
             }
             else
             {
@@ -156,6 +181,23 @@ namespace Sponge.Controllers
                                        EffectiveDate = conf.Created_On,
                                        ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
                                    }).Distinct().ToList();
+                if (isDateFromSelected && !isDateToSelected)
+                {
+                    // Only dateFrom is selected
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveFrom >= dateFrom).ToList();
+                }
+                else if (!isDateFromSelected && isDateToSelected)
+                {
+                    // Only dateTo is selected
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveDate <= dateTo).ToList();
+                }
+                else if (isDateFromSelected && isDateToSelected)
+                {
+                    // Both dateFrom and dateTo are selected
+                    SearchConfgData = SearchConfgData.Where(x =>
+                        (x.EffectiveFrom >= dateFrom || x.EffectiveFrom == null) &&
+                        (x.EffectiveDate <= dateTo || x.EffectiveDate == null)).ToList();
+                }
             }
             return Json(SearchConfgData);
         }
