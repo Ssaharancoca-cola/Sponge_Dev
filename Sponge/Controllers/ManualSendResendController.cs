@@ -7,6 +7,8 @@ using Sponge.ViewModel;
 
 namespace Sponge.Controllers
 {
+    [AccessFilters]
+    [SessionTimeOut]
     public class ManualSendResendController : Controller
     {
         [Route("ManualSendResend/ManualSendResendExcel/{configId:int}/{subjectAreaId:int}")]

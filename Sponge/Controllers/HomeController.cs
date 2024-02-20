@@ -1,11 +1,11 @@
 ﻿using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Sponge.Common;
 using Sponge.Models;
 using System.Diagnostics;
 
 namespace Sponge.Controllers
 {
-
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
