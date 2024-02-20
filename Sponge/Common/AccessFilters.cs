@@ -1,7 +1,9 @@
 ﻿using DAL.Models;
+using LinqToExcel.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Data;
+using System.Security.Claims;
 
 namespace Sponge.Common
 {
@@ -32,6 +34,20 @@ namespace Sponge.Common
             {
                 context.Result = new RedirectResult("~/Home/AccessDenied");
             }
+            context.HttpContext.Session.SetString("ROLE", roleDetails.ROLE);
+            context.HttpContext.Session.SetString("NAME", roleDetails.NAME);
+//            var claims = new List<Claim>
+//{
+//    new Claim(ClaimTypes.Name, "User Name"),
+//    new Claim(ClaimTypes.Role, "Admin") // Add a role claim
+//};
+
+//            var claimsIdentity = new ClaimsIdentity(claims, "YourAuthTypeName");
+//            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+//            // Sign in the user
+//            await HttpContext.SignInAsync("YourCookieAuthScheme", claimsPrincipal);
+
             base.OnActionExecuting(context);
         }
         public override void OnActionExecuted(ActionExecutedContext context)
@@ -53,7 +69,8 @@ namespace Sponge.Common
             {
                 context.Result = new RedirectResult("~/Home/AccessDenied");
             }
-            
+            context.HttpContext.Session.SetString("ROLE", roleDetails.ROLE);
+            context.HttpContext.Session.SetString("NAME", roleDetails.NAME);
             base.OnActionExecuted(context);
         }      
     }

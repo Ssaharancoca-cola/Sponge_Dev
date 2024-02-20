@@ -323,40 +323,39 @@
     })
 
     // To check the value of lock date with respect to Escalation and upload Reminder
-    $('#lockDate').on('blur', function () {
-        if (new Date($('#lockDate').val()) > new Date().setDate(new Date().getDate() + 30)) {
-            alert('Lock date cannot be greater than 30 days');
-            $('#lockDate').val('');
-        }
-        else {
-            if (new Date($('#EscalationAlertDate').val()) > new Date($('#lockDate').val())) {
-                alert('Escalation date cannot be greater than lock date');
-                $('#EscalationAlertDate').val('');
-            }
-            if (new Date($('#UploadReminderDate').val()) > new Date($('#lockDate').val())) {
-                alert('Upload reminder date cannot be greater than lock date');
-                $('#UploadReminderDate').val('');
-            }
-        }
-    });
+    function validateDates() {
+    const lockDate = new Date($('#lockDate').val());
+    const escalationDate = new Date($('#EscalationAlertDate').val());
+    const uploadReminderDate = new Date($('#UploadReminderDate').val());
 
-    $('#EscalationAlertDate').on('blur', function () {
-        if (new Date($('#EscalationAlertDate').val()) > new Date($('#lockDate').val())) {
+    if (lockDate > new Date().setDate(new Date().getDate() + 30)) 
+    {
+        alert('Lock date cannot be greater than 30 days');
+        $('#lockDate').val('');
+        return;
+    } 
+    else 
+    {
+        if (escalationDate >= lockDate) {
             alert('Escalation date cannot be greater than lock date');
-            $('#EscalationAlertDate').val('');
+            $('#lockDate').val('');
+            return;
         }
-        if (new Date($('#EscalationAlertDate').val()) < new Date($('#UploadReminderDate').val())) {
-            alert('Escalation date should be greater than upload reminder');
-            $('#EscalationAlertDate').val('');
-        }
-    });
-
-    $('#UploadReminderDate').on('blur', function () {
-        if (new Date($('#UploadReminderDate').val()) > new Date($('#lockDate').val()) || new Date($('#EscalationAlertDate').val()) < new Date($('#UploadReminderDate').val())) {
-            alert('Upload reminder date cannot be greater than lock date or Escalation date');
+        if (uploadReminderDate >= lockDate) {
+            alert('Upload reminder date cannot be greater than lock date');
             $('#UploadReminderDate').val('');
+            return;
         }
-    });
+    }
+
+    if (escalationDate <= uploadReminderDate) {
+        alert('Escalation date should be greater than upload reminder');
+        $('#EscalationAlertDate').val('');
+        return;
+    }
+}
+
+$('#lockDate, #EscalationAlertDate, #UploadReminderDate').on('change', validateDates);
 
 </script>
 

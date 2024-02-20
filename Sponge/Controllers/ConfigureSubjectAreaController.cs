@@ -128,14 +128,27 @@ namespace Sponge.Controllers
             return View("Views\\ConfigureSubjectArea\\ConfigureMasters.cshtml");
 
         }
-        public IActionResult GetFieldName(string? masterName)
+        public async Task<IActionResult> GetFieldName(string? masterName)
         {
+            try
+            {
+                using (SPONGE_Context spongeContext = new SPONGE_Context())
+                {
+                    var fieldName = await spongeContext.SPG_MPP_MASTER
+                        .Where(o => o.MASTER_NAME == masterName && o.IS_KEY != "Y")
+                        .Select(o => new { o.COLUMN_DISPLAY_NAME, o.COLUMN_NAME })
+                        .Distinct()
+                        .ToListAsync(); 
 
-            SPONGE_Context sPONGE_Context = new();
-            var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(o => o.MASTER_NAME == masterName && o.IS_KEY != "Y")
-                .Select(o => new { o.COLUMN_DISPLAY_NAME, o.COLUMN_NAME }).Distinct();
-            //ViewBag.FieldName = new SelectList(fieldName.ToList(), "COLUMN_NAME", "COLUMN_DISPLAY_NAME");
-            return Json(fieldName);
+                    return Json(fieldName);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
+                return Json(new { success = false, message = "An error occurred. Please try again later." });
+            }
         }
 
         [HttpPost]
@@ -174,7 +187,7 @@ namespace Sponge.Controllers
                         SUBJECTAREA_ID = selectedSubjectArea,
                         IS_KEY = "N",
                         IS_SHOW = "Y",
-                        DISPLAY_NAME = master.DisplayName,
+                        DISPLAY_NAME = master.DisplayName.Trim(),
                         MASTER_NAME = master.Master
                     };
 
@@ -253,8 +266,8 @@ namespace Sponge.Controllers
                     SPG_SUBJECT_DATACOLLECTION sPG_1 = new();
                     {
                         sPG_1.SUBJECTAREA_ID = selectedSubjectArea;
-                        sPG_1.DISPLAY_NAME = collection.DisplayName;
-                        sPG_1.FIELD_NAME = collection.FieldName;
+                        sPG_1.DISPLAY_NAME = (collection.DisplayName).Trim();
+                        sPG_1.FIELD_NAME = (collection.FieldName).Trim();
                         sPG_1.DATA_TYPE = collection.DataType;
                         sPG_1.UOM = collection.UOM;
                         sPG_1.IS_LOOKUP = collection?.IsLookUp;
@@ -589,7 +602,8 @@ namespace Sponge.Controllers
                     SUBJECTAREA_ID = subjectAreaId,
                     USER_ID = userId,
                     Created_By = userName[1],
-                    Created_On = DateTime.Now
+                    Created_On = DateTime.Now,
+                    EFFECTIVE_FROM = DateTime.Now
                 };
                 objModel.SPG_CONFIGURATION.Add(config);
                 objModel.SaveChanges();

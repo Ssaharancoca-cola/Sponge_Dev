@@ -565,6 +565,17 @@ namespace Sponge.Controllers
                     var sortedDimensionDict = dimensionDict.OrderBy(x => x.Value.Any(y => y.ContainsKey("SpecialRow"))).ToDictionary(x => x.Key, x => x.Value);
                     masterValuesDictionary.Add(dimension.Key, sortedDimensionDict);
                 }
+                if(masterValuesDictionary.ContainsKey("Product"))
+                {
+                    var productValue = masterValuesDictionary["Product"];
+
+                    if (productValue.ContainsKey("Container Volume"))
+                    {
+                        productValue.Remove("Container Volume");
+                        masterValuesDictionary["Product"] = productValue;
+                    }
+
+                }
 
                 return View(masterValuesDictionary);
             }

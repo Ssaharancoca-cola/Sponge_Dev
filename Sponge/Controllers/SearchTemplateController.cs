@@ -136,8 +136,8 @@ namespace Sponge.Controllers
                                        SubjectAreaName = sa.SUBJECTAREA_NAME,
                                        AssignedUser = u.Name,
                                        Active = (conf.ACTIVE_FLAG == null) ? "" : (conf.ACTIVE_FLAG == "Y" ? "Yes" : "No"),
-                                       EffectiveDate = conf.EFFECTIVE_TO,
-                                       EffectiveFrom = conf.Created_On,
+                                       EffectiveFrom = conf.EFFECTIVE_FROM,
+                                       EffectiveTo = conf.EFFECTIVE_TO,
                                        ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
                                     }).Distinct().ToList();
                 if (isDateFromSelected && !isDateToSelected)
@@ -148,14 +148,14 @@ namespace Sponge.Controllers
                 else if (!isDateFromSelected && isDateToSelected)
                 {
                     // Only dateTo is selected
-                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveDate <= dateTo).ToList();
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveTo <= dateTo).ToList();
                 }
                 else if (isDateFromSelected && isDateToSelected)
                 {
                     // Both dateFrom and dateTo are selected
                     SearchConfgData = SearchConfgData.Where(x =>
-                        (x.EffectiveFrom >= dateFrom || x.EffectiveFrom == null) &&
-                        (x.EffectiveDate <= dateTo || x.EffectiveDate == null)).ToList();
+                        (x.EffectiveFrom == null || x.EffectiveFrom >= dateFrom) &&
+                        ( x.EffectiveTo <= dateTo)).ToList();
                 }
 
 
@@ -178,7 +178,8 @@ namespace Sponge.Controllers
                                        SubjectAreaName = sa.SUBJECTAREA_NAME,
                                        AssignedUser = u.Name,
                                        Active = (conf.ACTIVE_FLAG == null) ? "" : (conf.ACTIVE_FLAG == "Y" ? "Yes" : "No"),
-                                       EffectiveDate = conf.Created_On,
+                                       EffectiveTo = conf.EFFECTIVE_TO,
+                                       EffectiveFrom = conf.EFFECTIVE_FROM,
                                        ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
                                    }).Distinct().ToList();
                 if (isDateFromSelected && !isDateToSelected)
@@ -189,14 +190,14 @@ namespace Sponge.Controllers
                 else if (!isDateFromSelected && isDateToSelected)
                 {
                     // Only dateTo is selected
-                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveDate <= dateTo).ToList();
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveTo <= dateTo).ToList();
                 }
                 else if (isDateFromSelected && isDateToSelected)
                 {
                     // Both dateFrom and dateTo are selected
                     SearchConfgData = SearchConfgData.Where(x =>
-                        (x.EffectiveFrom >= dateFrom || x.EffectiveFrom == null) &&
-                        (x.EffectiveDate <= dateTo || x.EffectiveDate == null)).ToList();
+                        (x.EffectiveFrom == null || x.EffectiveFrom <= dateTo) &&
+                        (x.EffectiveTo == null || x.EffectiveTo >= dateFrom)).ToList();
                 }
             }
             return Json(SearchConfgData);
