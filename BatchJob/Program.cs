@@ -1317,8 +1317,8 @@ namespace BatchJob
             dataValidation.ShowErrorMessage = true;
             dataValidation.AllowBlank = true;
 
-            //  objWorksheet.Cells[resultchar].Style.Numberformat.Format = "#.00";
-            objWorksheet.Cells[resultchar].Style.Numberformat.Format = "####";
+            objWorksheet.Cells[resultchar].Style.Numberformat.Format = "#.00";
+           // objWorksheet.Cells[resultchar].Style.Numberformat.Format = "####";
 
         }
         private void DateNumeric(ExcelWorksheet objWorksheet, char nextcharacter, int number)
