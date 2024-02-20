@@ -127,7 +127,7 @@
                         </div>
                     </div>
                     @* <button type="button" id="cancel" class="btn btn-cancel">Cancel</button> *@
-                    <a class="btn btn-cancel" href="/ConfigureSubjectArea/ConfigureSubjectArea">Cancel</a>
+                    <a class="btn btn-light" href="/ConfigureSubjectArea/ConfigureSubjectArea">Cancel</a>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="button" id="saveData" class="btn btn-primary " style="float:right">Next</button>
                 </div>
@@ -266,43 +266,7 @@
                 lookupTypeField.prop('disabled', true);
             }
         });
-
-        // function validateInputs() {
-        //     var isValid = true;
-        //     var table = document.getElementById('example');
-        //     var rows = table.getElementsByTagName('tr');
-        //     var actualRowCount = rows.length - 1; // subtracting 1 for the header row
-
-        //     if (actualRowCount === 1) {
-        //         var inputs = rows[1].querySelectorAll('input[type=text]:not([readonly])');
-        //         inputs.forEach(function (input) {
-        //             if (!input.value.trim()) {
-        //                 input.setAttribute('required', '');
-        //                 isValid = false;
-        //             } else {
-        //                 input.removeAttribute('required');
-        //             }
-        //         });
-        //     } else {
-        //         var lastRow = rows[actualRowCount];
-        //         var input1 = $(lastRow).find('.displayName');
-        //         var input2 = $(lastRow).find('.fieldName');
-
-        //         if (input1.val().trim() && !input2.val().trim()) {  // Check for non-whitespace characters
-        //             input2.attr('required', '');
-        //             isValid = false;
-        //         } else if (input2.val().trim() && !input1.val().trim()) {
-        //             input1.attr('required', '');
-        //             isValid = false;
-        //         } else {
-        //             input1.removeAttr('required');
-        //             input2.removeAttr('required');
-        //         }
-        //     }
-
-        //     return isValid;
-        // }
-
+        
         function checkForDuplicatesDisplayName() {
             var isDuplicate = false;
             var inputValues = {};
@@ -387,7 +351,20 @@
         }
         $('#saveData').click(function (e) {
             e.preventDefault();
+            // Validations if the subject area is new and there is only one row
+            var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+            var actualRowCount = rows.length - 1;
 
+            if (actualRowCount === 1) {
+                var displayNameValue = $('.displayName').val();
+                var fieldNameValue = $('.fieldName').val();
+
+                if (displayNameValue === '' || fieldNameValue === '') {
+                    alert('Please fill data in at least one row');
+                    return;
+                }
+            }
             //var formIsValid = validateInputs(); // renamed to just validate inputs
             var displayDuplicate = checkForDuplicatesDisplayName();
             var fieldDuplicates = checkForDuplicatesFieldName();

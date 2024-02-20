@@ -36,13 +36,13 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <div class="col-md-4">
+                        <div class="col">
                             <label for="dateFrom">Date From</label>
                             <input type="date" class="form-control" id="dateFrom"
                                    placeholder="DD/MM>/YY">
 
                         </div>
-                        <div class="col-md-4">
+                        <div class="col">
                             <label for="dateTo">Date To</label>
                             <input type="date" class="form-control" id="dateTo"
                                    placeholder="DD/MM>/YY">
@@ -96,9 +96,29 @@
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+    .hidden {
+        visibility: hidden;
+    }
+</style>
 <script>
+    
     $(document).ready(function () {
+
+        // $('#subFunction').change(function () {
+        //     // If a specific option is selected
+        //     if ($(this).val()) {
+        //         // Remove 'hidden' class to make divs visible
+        //         $('.col').has('select:not(#subFunction), input').removeClass('hidden');
+        //     } else {
+        //         // Add 'hidden' class to hide divs
+        //         $('.col').has('select:not(#subFunction), input').addClass('hidden');
+        //     }
+        // });
+
         $('#subFunction').change(function () {
+            
+
             var subFunctionId = $(this).val();
 
             $.ajax({
@@ -169,7 +189,7 @@
                             columns: [
                                 { data: 'subjectAreaName' },
                                 {
-                                    data: 'effectiveDate',
+                                    data: 'effectiveFrom',
                                     render: function (data, type, row) {
                                         if (data) {
                                             var date = new Date(data);

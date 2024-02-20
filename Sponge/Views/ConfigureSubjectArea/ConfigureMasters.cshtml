@@ -65,7 +65,7 @@
                             <p>Only 10 rows can be added for a subject area.</p>
                         </div>
                     </div>
-                    <a href="/ConfigureSubjectArea/ConfigureSubjectArea" class="btn btn-cancel">Cancel</a>
+                    <a href="/ConfigureSubjectArea/ConfigureSubjectArea" class="btn btn-light">Cancel</a>
                     <button type="button" id="addRow" class="btn btn-success" disabled>Add Row</button>
                     <button type="submit" style="float:right" class="btn btn-primary" id="saveMastersBtnID">Next</button>
                 </div>
@@ -78,13 +78,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        // $('#cancel').click(function () {
-        //     window.location.href = 'ConfigureSubjectArea';
-        // });
         var rowIndex = 1;
-
-
-
         
         $('#addRow').prop('disabled', true);
 
@@ -176,8 +170,9 @@
                         $(fieldNameDropdown).append('<option value="' + item.columN_NAME + '">' + item.columN_DISPLAY_NAME + '</option>');
                     });
                 },
-                error: function (ex) {
-                    alert('Failed to retrieve field names.' + ex);
+                error: function (xhr, textStatus, errorThrown) {
+                    // It's better to use textStatus and errorThrown for a more accurate message
+                    alert('Failed to retrieve field names. ' + textStatus + ': ' + errorThrown);
                 }
             });
         }
@@ -236,6 +231,20 @@
 
         $('#saveMastersBtnID').click(function (e) {
             e.preventDefault(); 
+            // Validations if the subject area is new and there is only one row
+            var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+            var actualRowCount = rows.length - 1;
+
+            if (actualRowCount === 1) { 
+                var masterValue = $('.master').val();
+                var displayNameValue = $('.lastDisplayName').val();
+
+                if (masterValue === '' || displayNameValue === '') {
+                    alert('Please fill data in at least one row');
+                    return;
+                } 
+            }
 
             var canSave = checkForDuplicatesAndHighlight();
             
