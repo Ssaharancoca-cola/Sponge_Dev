@@ -96,28 +96,21 @@
 <script src="~/assists/js/hoverable-collapse.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<style>
-    .hidden {
-        visibility: hidden;
-    }
-</style>
+
 <script>
     
     $(document).ready(function () {
-
-        // $('#subFunction').change(function () {
-        //     // If a specific option is selected
-        //     if ($(this).val()) {
-        //         // Remove 'hidden' class to make divs visible
-        //         $('.col').has('select:not(#subFunction), input').removeClass('hidden');
-        //     } else {
-        //         // Add 'hidden' class to hide divs
-        //         $('.col').has('select:not(#subFunction), input').addClass('hidden');
-        //     }
-        // });
+        $('.col').has('select:not(#subFunction), input').find('select, input').attr('disabled', 'disabled');        //To disable other fields on page load
+        $('#searchButton').attr('disabled', 'disabled');
 
         $('#subFunction').change(function () {
-            
+            if ($(this).val()) {
+                $('.col').has('select:not(#subFunction), input').find('select, input').removeAttr('disabled');
+                $('#searchButton').removeAttr('disabled');
+            } else {
+                $('.col').has('select:not(#subFunction), input').find('select, input').attr('disabled', 'disabled');
+                $('#searchButton').attr('disabled', 'disabled');
+            }
 
             var subFunctionId = $(this).val();
 
