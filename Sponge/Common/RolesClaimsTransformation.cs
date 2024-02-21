@@ -6,10 +6,12 @@ using System.Security.Claims;
 public class RolesClaimsTransformation : IClaimsTransformation
 {
     private readonly SPONGE_Context _dbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public RolesClaimsTransformation(SPONGE_Context dbContext)
+    public RolesClaimsTransformation(SPONGE_Context dbContext, IHttpContextAccessor httpContextAccessor)
     {
         _dbContext = dbContext;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
@@ -29,7 +31,10 @@ public class RolesClaimsTransformation : IClaimsTransformation
         // Add role claims to the identity
        
             identity.AddClaim(new Claim(ClaimTypes.Role, userRoles.ROLE));
-
+        // Set the session values
+        var session = _httpContextAccessor.HttpContext.Session;
+        session.SetString("UserName", userRoles.NAME);
+        session.SetString("UserRole", userRoles.ROLE);
         return principal;
     }
 }
