@@ -487,33 +487,6 @@ namespace Sponge.Controllers
                                        DimensionTable = p.DIMENSION_TABLE
                                    }).ToList();
                     var UserConfigurations = Masters.Concat(DataCollection).ToList();
-
-                    //Code to save Masters at Assign users page
-                    //var formDataValues = formData.Keys.Select(k => formData[k].ToString()).ToList();
-                    //var matchingData = sPONGE_Ctx.SPG_MPP_MASTER
-                    //                    .Where(o => formDataValues.Contains(o.MASTER_DISPLAY_NAME))
-                    //                    .Select(o => o.COLUMN_NAME)
-                    //                    .ToList();
-                    //// TO get the values with only SHORT_NAME and CODE
-                    //var shortNameAndCode = matchingData.Where(s => s.Contains("_SHORT_NAME") || s.Contains("_CODE")).ToList();
-
-                    //var Masters2 = (from p in sPONGE_Ctx.SPG_SUBJECT_MASTER
-                    //               where p.SUBJECTAREA_ID == selectedSubjectArea
-                    //               select new UserConfiguration
-                    //               {
-                    //                   //FieldName = ShortName from spg_mpp_master
-                    //                   DisplayName = null,
-                    //                   UOM = "",
-                    //                   DisplayType = "",
-                    //                   CollectionType = "Master",
-                    //                   LookUpType = "",
-                    //                   IsLookUp = "N",
-                    //                   DataType = "",
-                    //                   IsShow = "Y",       //Enter 2 rows When ENT_COUNTRY_CODE then isShow will be "N" if shortname then "Y" 
-                    //                   MasterName = p.MASTER_NAME,
-                    //                   DimensionTable = p.DIMENSION_TABLE
-                    //               }).ToList();
-
                     
 
                     SaveConfigStructure(selectedusers, sPONGE_Ctx, selectedSubjectArea, UserConfigurations, headerList, headerlist_definer, grpcolumnname_definer);
