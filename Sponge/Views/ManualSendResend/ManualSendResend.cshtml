@@ -41,14 +41,17 @@
                             ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>, 
                             new { @class = "form-control", onchange = "OnChangeOnTime();" })
                             </div>
+                            <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
+                            <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
+
+                            <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
                             @if(@Model.Version == "Y"){
                             <div class="col-sm-4 col-md-4">
                                     <label for="GranularTime">Granularity</label>
                                     @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control" })
-                                    <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
+
                                     <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
-                                    <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
-                                    <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
+                                   
                             </div>
                             }
                             @* else
@@ -110,12 +113,13 @@
         e.preventDefault();
     });
     var FillReportingStartEndDate = function () {        
-        debugger;
+        
         var frequency = $('#hdnFrequency').val();
         var reportingStartDate, reportingEndDate, pattern, date;
         pattern = $('#hdnOnTimeText').val();
         var granularityText = $("#GranularTime option:selected").text();
         $('#hdnGranularTime').val($("#GranularTime option:selected").val());
+       
         if (frequency == 'YEARLY') {
             var obj = pattern.split('-');
             reportingStartDate = new Date(obj[0], Common.MonthEnum.JANUARY, 1);
@@ -124,7 +128,7 @@
 
         }
         if (frequency == 'HALF_YEARLY') {
-            debugger;
+           
             var obj = GetHalfYearlyStartEndDate(pattern);
             reportingStartDate = obj.periodicStartDate;
             reportingEndDate = obj.periodicEndDate;
@@ -208,7 +212,7 @@
         Common.selectedStartYear = arrayVal[0];
         arrayVal = arrayVal[1].split(',');
         Common.selectedEndYear = arrayVal[0];
-        debugger;
+      
         if (arrayVal[1] == 'H1') {
             var H1 = Common.HalfYearlyEnum.H1();
             return {
@@ -302,13 +306,12 @@
                 }
             }
         });
-
         FillReportingStartEndDate();
         FillGranularDropdown();
     }
 
     $('#GranularTime').change(function () {
-        debugger;
+       
         FillReportingStartEndDate();
         FillGranularDropdown();
         var hdnGranularity = $('#hdnGranularTime');
