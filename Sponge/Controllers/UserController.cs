@@ -1,5 +1,6 @@
 ﻿using DAL.Common;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Sponge.Controllers
 {
-    [AccessFilters]
+    //[AccessFilters]
     [SessionTimeOut]
     public class UserController : Controller
     {
@@ -283,6 +284,7 @@ namespace Sponge.Controllers
             return Json("Some error occured");
         }
         [HttpPost]
+       //[Authorize(Policy = "RequireAdminRole")]
         public IActionResult UpdateUser(IFormCollection data)
         {
             string userId = data["userId"].ToString();
