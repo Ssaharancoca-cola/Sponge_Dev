@@ -284,7 +284,7 @@ namespace Sponge.Controllers
             return Json("Some error occured");
         }
         [HttpPost]
-       [Authorize(Policy = "RequireAdminRole")]
+       //[Authorize(Policy = "RequireAdminRole")]
         public IActionResult UpdateUser(IFormCollection data)
         {
             string userId = data["userId"].ToString();

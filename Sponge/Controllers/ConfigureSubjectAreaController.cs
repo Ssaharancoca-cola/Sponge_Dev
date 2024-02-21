@@ -1,23 +1,14 @@
-﻿using DAL;
-using DAL.Common;
+﻿using DAL.Common;
 using DAL.Models;
-using LinqToExcel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
-using NuGet.Packaging;
 using Sponge.Common;
 using Sponge.Models;
-using Sponge.ViewModel;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
-using System.Reflection.Metadata;
 
 namespace Sponge.Controllers
 {
@@ -119,7 +110,20 @@ namespace Sponge.Controllers
                 selectedMasters.AddRange(selectedMaster);
 
             }
-              ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
+            foreach (var Masterdesc in selectedMasters)
+            {
+                        var masterdisplayname = sPONGE_Context.SPG_MPP_MASTER
+                 .Where(x => x.MASTER_NAME == Masterdesc.MASTER_NAME)
+                 .Select(o => o.MASTER_DISPLAY_NAME)
+                 .FirstOrDefault(); 
+
+                if (masterdisplayname != null)
+                {
+                    Masterdesc.MASTER_NAME = masterdisplayname;
+                }
+
+            }
+            ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
             ViewBag.SelectedMaster = selectedMasters.ToList();
 
             ViewBag.SubjectAreaName = subjectAreaName;

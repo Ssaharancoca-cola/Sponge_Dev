@@ -33,8 +33,8 @@ public class RolesClaimsTransformation : IClaimsTransformation
             identity.AddClaim(new Claim(ClaimTypes.Role, userRoles.ROLE));
         // Set the session values
         var session = _httpContextAccessor.HttpContext.Session;
-        session.SetString("UserName", userRoles.NAME);
-        session.SetString("UserRole", userRoles.ROLE);
+        session.SetString("NAME", userRoles.NAME);
+        session.SetString("ROLE", userRoles.ROLE);
         return principal;
     }
 }

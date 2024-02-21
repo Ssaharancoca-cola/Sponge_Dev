@@ -98,6 +98,36 @@ namespace DAL.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.N1).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N10).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N11).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N12).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N13).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N14).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N15).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N2).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N3).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N4).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N5).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N6).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N7).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N8).HasColumnType("numeric(28, 13)");
+
+                entity.Property(e => e.N9).HasColumnType("numeric(28, 13)");
+
                 entity.Property(e => e.SOURCE_SYSTEM_NAME)
                     .HasMaxLength(50)
                     .IsUnicode(false);
