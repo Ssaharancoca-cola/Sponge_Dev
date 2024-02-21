@@ -57,7 +57,7 @@
                         if (!data || !data.length) {
                             data = @Html.Raw(Json.Serialize(dimensionsJson));
                             $.each(data, function (i, dimension) {
-                                debugger;
+                                //debugger;
                                 content += `
                                                    <div class="form-check form-check-flat form-check-primary">
                                                        <label class="form-check-label">
@@ -73,7 +73,7 @@
                         }
                         else {
                             $.each(data, function (i, dimension) {
-                                debugger;
+                                //debugger;
                                 content += `
                                                                                   <div class="form-check form-check-flat form-check-primary">
                                                                                       <label class="form-check-label">
@@ -106,11 +106,11 @@
             }
             // Get the selected subjectArea value
             var selectedSubjectArea = $('#subjectArea').val();
-            debugger;
+            //debugger;
             // Create a key-value pair array of dimensions
             var dimensionsKeyValuePair = [];
             selectedDimensions.each(function () {
-                debugger;
+                //debugger;
                 var dimensionName = $(this).parent().find('input[type="hidden"]').val();
                 var dimensionValue = $(this).val();
                 var isSelected = $(this).prop('disabled'); // Here we check if the checkbox is disabled, which means this dimension is already selected

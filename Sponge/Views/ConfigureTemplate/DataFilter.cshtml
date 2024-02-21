@@ -123,7 +123,7 @@
         });
         $('#getSubDimensionsBTN').click(function () {
             var dimensions = [];
-            debugger;
+            //debugger;
             $('input[name="dimensionSelect"]:checked').each(function () {
                 var dimensionText = $("label[for=" + $(this).attr('id') + "]").text().trim();
                 dimensions.push(dimensionText);

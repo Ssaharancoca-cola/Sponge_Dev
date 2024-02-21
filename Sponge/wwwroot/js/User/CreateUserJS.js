@@ -178,7 +178,7 @@ $(document).on('click', '.suggestion', function () {
 $(document).ready(function () {
     handleCB();
     handleRoleCB();
-    debugger;
+    //debugger;
     $("#btnSearch").on("click", function (e) {
         e.preventDefault();
         // get inputs

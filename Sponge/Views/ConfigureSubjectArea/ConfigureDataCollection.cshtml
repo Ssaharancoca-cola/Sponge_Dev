@@ -88,7 +88,7 @@
                                             <input type="text" class="form-control displayName" name="data[0].DisplayName">
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control fieldName" name="data[0].FieldName">
+                                            <input type="text" class="form-control fieldName" name="data[0].FieldName" onkeydown="return /[a-z0-9_]/i.test(event.key)">
                                         </td>
                                         <td>
                                             <select class="form-control isLookUp" name="data[0].IsLookUp">

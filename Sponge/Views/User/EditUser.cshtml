@@ -152,7 +152,7 @@
         let mySelectedListItemsText = '';
 
         chBoxes.forEach((checkbox) => {
-            debugger;
+            //debugger;
             if (checkbox.checked) {
                 let checkboxvalue = "S" + checkbox.value;
                 let checkboxText = $(`label[id="${checkboxvalue}"]`).text();
@@ -168,9 +168,9 @@
     function handleRoleCB() {
         mySelectedListItemsRole = [];
         let mySelectedListItemsTextRole = '';
-        debugger;
+        //debugger;
         chRoleBoxes.forEach((checkbox) => {
-            debugger;
+            //debugger;
             if (checkbox.checked) {
                 let checkboxText = $(`label[for="${checkbox.value}"]`).text();
                 mySelectedListItemsRole.push(checkbox.value);
@@ -208,7 +208,7 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    debugger;
+                    //debugger;
                     $('#email').val(data.userEmail);
                     $('#UserName').val(data.userName);
                     if (data.errorMsg != "" && data.errorMsg != null) {

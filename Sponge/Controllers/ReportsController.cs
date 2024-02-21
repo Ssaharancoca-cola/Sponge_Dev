@@ -16,7 +16,7 @@ namespace Sponge.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> UploadedTemplate()
+        public async Task<IActionResult> SubmittedTemplate()
         {
             string[] userId = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
             SPONGE_Context _context = new();

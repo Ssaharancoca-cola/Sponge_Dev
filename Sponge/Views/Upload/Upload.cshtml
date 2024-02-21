@@ -47,7 +47,7 @@
 <!--Start Upload js Function-->
 <script type="text/javascript">
     var Filelist = new Array;
-    debugger;
+    //debugger;
     $(function () {
         $('#BtnCancel').click(function () {
             window.location.href = '/';
@@ -181,7 +181,7 @@
                                 $Warningcontainer.append(TR);
                             }
                             if (UploadListValues.length > 0) {
-                                debugger;
+                                //debugger;
                                 var n = 1;
                                 var str = '<br/><font color="green">Following files are successfully uploaded.</font><br/><table border="1" width="100%"><tr style="font-weight:bold;background-color:#D7DBDD;"><td>Sno</td><td>FileName</td><td>Message</td><tr>';
                                 var TRTD = "";
@@ -281,7 +281,7 @@
     }
 
     function YesWarningFun(obj) {
-        debugger;
+        //debugger;
         var id = obj.id;
         var FileName = $(obj).attr('name');
         var Message = $(obj).attr('message');
@@ -302,7 +302,7 @@
         }
     }
     function NoWarningFun(obj) {
-        debugger;
+        //debugger;
         $(obj).closest('tr').remove();
         var rowCount = $('#tblwarning >tbody >tr').length;
         console.log("Count Warning Rows for function NoWarningFun() val :" + rowCount);

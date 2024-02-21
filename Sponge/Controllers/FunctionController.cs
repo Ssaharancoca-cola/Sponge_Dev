@@ -107,8 +107,8 @@ namespace Sponge.Controllers
                                                   select new SearchFunctionList
                                                   {
                                                       CountryName = func.COUNTRY_NAME,
-                                                      FunctionName = func.FUNCTION_NAME,
-                                                      SubFunctionName = func.SUBFUNCTION_NAME
+                                                      FunctionName = func.FUNCTION_NAME.Trim(),
+                                                      SubFunctionName = func.SUBFUNCTION_NAME.Trim()
                                                   }).ToList();
                         SearchFunctionData = SearchFunctionData.Where(s => s.CountryName == data.COUNTRY_NAME).ToList();
                         SearchFunctionData = SearchFunctionData.Where(s => s.FunctionName == data.FUNCTION_NAME).ToList();

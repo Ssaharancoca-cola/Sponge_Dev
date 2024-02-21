@@ -22,7 +22,7 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<IClaimsTransformation, RolesClaimsTransformation>();
+//builder.Services.AddScoped<IClaimsTransformation, RolesClaimsTransformation>();
 builder.Services.AddTransient<Email>();
 
 
@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     // By default, all incoming requests will be authorized according to the default policy.
-    options.FallbackPolicy = options.DefaultPolicy;
+    //options.FallbackPolicy = options.DefaultPolicy;
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
 
 });
