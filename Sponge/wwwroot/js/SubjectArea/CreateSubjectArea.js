@@ -9,7 +9,7 @@ $(document).ready(function () {
                 type: 'GET',
                 data: { frequency: selectedFrequency },
                 success: function (data) {
-                    debugger;
+                    //debugger;
                     var options = '';
                     $.each(data, function (i, item) {
                         options += '<option value="' + item.value + '">' + item.text + '</option>';

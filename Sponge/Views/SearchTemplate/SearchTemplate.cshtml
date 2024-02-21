@@ -139,7 +139,7 @@
                 type: 'GET',
                 data: { subjectAreaId: subjectAreaId },
                 success: function (data) {
-                    debugger;
+                    //debugger;
                     var userDropdown = $('#assignToUser');
                     userDropdown.empty();
                     userDropdown.append($('<option>').text("Select").attr('value', '0'));
@@ -175,7 +175,7 @@
                     },
                     success: function (data) {
                         // Here I get DataTable instance
-                        debugger;
+                        //debugger;
                         var table = $('#example').DataTable({
                             destroy: true,
                             data: data,

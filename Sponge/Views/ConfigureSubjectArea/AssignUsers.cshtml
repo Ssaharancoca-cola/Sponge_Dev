@@ -77,7 +77,7 @@
             }
         });
         $.get('@Url.Action("GetUserList", "ConfigureSubjectArea")', function (usernames) {
-            debugger;
+            //debugger;
             var tableBody = $("#usersTableID tbody");
             usernames.forEach(function (username) {
                 var isChecked = selectedUser.some(function (selected) {
@@ -104,11 +104,11 @@
             }
             // Get the selected subjectArea value
             var selectedSubjectArea = $('#subjectArea').val();
-            debugger;
+            //debugger;
 
             var userkeyvaluepair = [];
             selectedusers.each(function () {
-                debugger;
+                //debugger;
                 var userid = $(this).parent().find('input[type="hidden"]').val();
                 var username = $(this).val();
                 var isSelected = $(this).prop('disabled'); // Here we check if the checkbox is disabled, which means this dimension is already selected
