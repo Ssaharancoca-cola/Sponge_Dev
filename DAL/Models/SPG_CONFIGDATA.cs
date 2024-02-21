@@ -28,21 +28,21 @@ namespace DAL.Models
         public string VC13 { get; set; }
         public string VC14 { get; set; }
         public string VC15 { get; set; }
-        public int? N1 { get; set; }
-        public int? N2 { get; set; }
-        public int? N3 { get; set; }
-        public int? N4 { get; set; }
-        public int? N5 { get; set; }
-        public int? N6 { get; set; }
-        public int? N7 { get; set; }
-        public int? N8 { get; set; }
-        public int? N9 { get; set; }
-        public int? N10 { get; set; }
-        public int? N11 { get; set; }
-        public int? N12 { get; set; }
-        public int? N13 { get; set; }
-        public int? N14 { get; set; }
-        public int? N15 { get; set; }
+        public decimal? N1 { get; set; }
+        public decimal? N2 { get; set; }
+        public decimal? N3 { get; set; }
+        public decimal? N4 { get; set; }
+        public decimal? N5 { get; set; }
+        public decimal? N6 { get; set; }
+        public decimal? N7 { get; set; }
+        public decimal? N8 { get; set; }
+        public decimal? N9 { get; set; }
+        public decimal? N10 { get; set; }
+        public decimal? N11 { get; set; }
+        public decimal? N12 { get; set; }
+        public decimal? N13 { get; set; }
+        public decimal? N14 { get; set; }
+        public decimal? N15 { get; set; }
         public DateTime? DT1 { get; set; }
         public DateTime? DT2 { get; set; }
         public DateTime? DT3 { get; set; }
