@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Sponge.Controllers
 {
-    //[AccessFilters]
+    [AccessFilters]
     [SessionTimeOut]
     public class UserController : Controller
     {
