@@ -189,11 +189,7 @@ namespace Sponge.Controllers
                                        ManualSendResendUrl = conf.ACTIVE_FLAG == null ? "In Progress" : conf.ACTIVE_FLAG == "N" ? "Inactive" : "Generate Template"
                                    }).Distinct().ToList();
 
-                // To send data based on active status
-                if (active != null)
-                {
-                    SearchConfgData = SearchDataOnStatus(subjectAreaId, subFunctionId, active);
-                }
+                
                 if (isDateFromSelected && !isDateToSelected)
                 {
                     // Only dateFrom is selected
