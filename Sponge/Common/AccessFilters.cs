@@ -36,17 +36,6 @@ namespace Sponge.Common
             }
             context.HttpContext.Session.SetString("ROLE", roleDetails.ROLE);
             context.HttpContext.Session.SetString("NAME", roleDetails.NAME);
-//            var claims = new List<Claim>
-//{
-//    new Claim(ClaimTypes.Name, "User Name"),
-//    new Claim(ClaimTypes.Role, "Admin") // Add a role claim
-//};
-
-//            var claimsIdentity = new ClaimsIdentity(claims, "YourAuthTypeName");
-//            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-//            // Sign in the user
-//            await HttpContext.SignInAsync("YourCookieAuthScheme", claimsPrincipal);
 
             base.OnActionExecuting(context);
         }

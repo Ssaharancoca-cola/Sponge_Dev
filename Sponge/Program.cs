@@ -1,5 +1,6 @@
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -21,6 +22,7 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IClaimsTransformation, RolesClaimsTransformation>();
 builder.Services.AddTransient<Email>();
 
 
@@ -30,11 +32,14 @@ builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     // By default, all incoming requests will be authorized according to the default policy.
-    options.FallbackPolicy = options.DefaultPolicy;
+    //options.FallbackPolicy = options.DefaultPolicy;
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+
 });
 
 builder.Services.AddDbContext<SPONGE_Context>(
-         options => options.UseSqlServer(builder.Configuration.GetConnectionString("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA_APP;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True")));
+    //options => options.UseSqlServer(builder.Configuration.GetConnectionString("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA_APP;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True")));
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStrings")));
 
 builder.Services.AddRazorPages();
 
