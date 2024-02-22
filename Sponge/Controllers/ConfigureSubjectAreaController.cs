@@ -273,7 +273,7 @@ namespace Sponge.Controllers
                         sPG_1.DISPLAY_NAME = (collection.DisplayName).Trim();
                         sPG_1.FIELD_NAME = (collection.FieldName).Trim();
                         sPG_1.DATA_TYPE = collection.DataType;
-                        sPG_1.UOM = collection.UOM;
+                        sPG_1.UOM = collection.UoM;
                         sPG_1.IS_LOOKUP = collection?.IsLookUp;
                         if (collection?.IsLookUp == "Y")
                             sPG_1.DISPLAY_TYPE = "DROPDOWN";

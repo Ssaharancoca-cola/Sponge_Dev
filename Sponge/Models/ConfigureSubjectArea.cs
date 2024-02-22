@@ -23,7 +23,7 @@ namespace Sponge.Models
         public string IsLookUp { get; set; }
         public string LookUpType { get; set; }
         public string DataType { get; set; }
-        public string UOM { get; set; }
+        public string UoM { get; set; }
     }
     public class SaveUsers
     {
