@@ -45,14 +45,17 @@
                             <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
 
                             <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
-                            @if(@Model.Version == "Y"){
-                            <div class="col-sm-4 col-md-4">
-                                    <label for="GranularTime">Granularity</label>
-                                    @Html.DropDownList("GranularTime", new SelectList(new List<SelectListItem>()), "--SELECT--", new { @class = "form-control" })
+                            @if (@Model.Version == "Y")
+                            {
+                                <div class="col-sm-4 col-md-4">
+                                    <label for="GranularTime">Granularity <span class="text-danger">*</span></label>
+                                    @Html.DropDownList("GranularTime",
+                                             new SelectList(new List<SelectListItem>()),
+                                             "--SELECT--",
+                                             new { @class = "form-control", required = "required" })
 
                                     <input type="hidden" value="@ViewBag.GranularTimeCode" id="hdnGranularTime" />
-                                   
-                            </div>
+                                </div>
                             }
                             @* else
                             {
