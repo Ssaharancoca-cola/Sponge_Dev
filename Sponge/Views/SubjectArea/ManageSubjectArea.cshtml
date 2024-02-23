@@ -3,7 +3,14 @@
      var textInfo = new System.Globalization.CultureInfo("en-US", false).TextInfo;
     Layout = "~/Views/Shared/_Layout.cshtml";
     var errorMsg = TempData["SuccessMessage"] as string;
+    
 }
+<style>
+    .wrapped-header {
+        white-space: normal !important; /* Prevent text from wrapping */
+        
+    }
+</style>
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
         <div class="card">
@@ -25,13 +32,13 @@
                     <table id="example" class="display expandable-table" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Sub Function Name</th>
-                                <th>SubjectArea Name</th>
-                                <th>Reporting Period </th>
-                                <th>Frequency</th>
-                                <th>ForTime</th>
-                                <th>Active Flag</th>
-                                <th>Action</th>
+                                <th class="wrapped-header">Sub Function</th>
+                                <th class="wrapped-header">SubjectArea</th>
+                                <th class="wrapped-header">Reporting Period</th>
+                                <th class="wrapped-header">Frequency</th>
+                                <th class="wrapped-header">ForTime</th>
+                                <th class="wrapped-header">Active Flag</th>
+                                <th class="wrapped-header">Action</th>
                             </tr>
                         </thead>
                         <tbody>

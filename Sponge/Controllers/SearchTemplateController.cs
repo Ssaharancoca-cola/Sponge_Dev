@@ -154,14 +154,13 @@ namespace Sponge.Controllers
                 else if (!isDateFromSelected && isDateToSelected)
                 {
                     // Only dateTo is selected
-                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveTo <= dateTo).ToList();
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveFrom <= dateTo).ToList();
                 }
                 else if (isDateFromSelected && isDateToSelected)
                 {
                     // Both dateFrom and dateTo are selected
                     SearchConfgData = SearchConfgData.Where(x =>
-                        (x.EffectiveFrom == null || x.EffectiveFrom >= dateFrom) &&
-                        (x.EffectiveTo <= dateTo)).ToList();
+                                        x.EffectiveFrom >= dateFrom && x.EffectiveFrom <= dateTo).ToList();
                 }
 
 
@@ -198,14 +197,13 @@ namespace Sponge.Controllers
                 else if (!isDateFromSelected && isDateToSelected)
                 {
                     // Only dateTo is selected
-                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveTo <= dateTo).ToList();
+                    SearchConfgData = SearchConfgData.Where(x => x.EffectiveFrom <= dateTo).ToList();
                 }
                 else if (isDateFromSelected && isDateToSelected)
                 {
                     // Both dateFrom and dateTo are selected
                     SearchConfgData = SearchConfgData.Where(x =>
-                        (x.EffectiveFrom == null || x.EffectiveFrom <= dateTo) &&
-                        (x.EffectiveTo == null || x.EffectiveTo >= dateFrom)).ToList();
+                                        x.EffectiveFrom >= dateFrom && x.EffectiveFrom <= dateTo).ToList();
                 }
             }
             return Json(SearchConfgData);

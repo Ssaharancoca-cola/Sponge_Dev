@@ -1,5 +1,6 @@
 ﻿using DAL.Common;
 using DAL.Models;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -277,14 +278,15 @@ namespace Sponge.Controllers
                 sPONGE_Context.SaveChanges();
                 return Json("User added successfully");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 ErrorLog lgerr = new ErrorLog();
                 lgerr.LogErrorInTextFile(ex);
             }
             return Json("Some error occured");
         }
         [HttpPost]
-       //[Authorize(Policy = "RequireAdminRole")]
+        //[Authorize(Policy = "RequireAdminRole")]
         public IActionResult UpdateUser(IFormCollection data)
         {
             string userId = data["userId"].ToString();
@@ -358,9 +360,10 @@ namespace Sponge.Controllers
                 return Json("Error Occurred: " + ex.Message);
             }
         }
-
+        //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme, Roles = "Admin")]
         public IActionResult ManageUser()
         {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
             SPONGE_Context context = new SPONGE_Context();
             List<GetUserinfo> UserInfo = new List<GetUserinfo>();
             var query = from U in context.SPG_USERS

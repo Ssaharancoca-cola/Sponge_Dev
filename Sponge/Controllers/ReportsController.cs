@@ -35,6 +35,13 @@ namespace Sponge.Controllers
                 result.CONFIG_ID = item.CONFIG_ID;
                 result.DOCUMENT_ID = item.DOCUMENT_ID;
                 result.UPLOADDATE = item.UPLOADDATE;
+
+                // Add and trim the FILE_NAME for the second occurrence of '_[' to get TRIMMED_FILENAME
+                int firstIndex = item.FILE_NAME.IndexOf("_[");
+                int secondIndex = firstIndex >= 0 ? item.FILE_NAME.IndexOf("_[", firstIndex + 2) : -1; // +2 to skip the current '_['
+                result.TRIMMED_FILENAME = (secondIndex > -1) ? item.FILE_NAME.Substring(0, secondIndex) : item.FILE_NAME;
+
+
                 results.Add(result);
             }
 
