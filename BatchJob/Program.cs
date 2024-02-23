@@ -1131,7 +1131,7 @@ namespace BatchJob
                                       select new { UserName = us.Name, ReportingPeriod = pd.REPORTING_PERIOD, UserEMail = us.EMAIL_ID, ApproverEmail = ap.APPROVER_EMAILD, ManagerEmail = us.EMAIL_ID }).FirstOrDefault();
                     NameValueCollection mailBodyplaceHolders = new NameValueCollection();
                     mailBodyplaceHolders.Add("<FileName>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[9]));
-                    mailBodyplaceHolders.Add("<UserName>", ot_details.UserName);
+                    mailBodyplaceHolders.Add("<UserName>", ot_details?.UserName);
                     mailBodyplaceHolders.Add("<SubjectArea>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[3]));
                     mailBodyplaceHolders.Add("<ForTimeCode>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[1]));
                     mailBodyplaceHolders.Add("<OnTimeCode>", Convert.ToString(ds.Tables[0].Rows[i].ItemArray[2]));
