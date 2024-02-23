@@ -29,7 +29,7 @@
                             </thead>
                             <tbody>
                                 @{
-                                    int masterIndex = 0; // Initialize a variable to track the index
+                                    int masterIndex = 0; 
                                 }
                                 @foreach (var master in selectedDataCollection)
                                 {
@@ -200,6 +200,8 @@
                 // Add change event for newly added IsLookUp select
                 $("#example tbody tr:last .isLookUp").change(function () {
                     var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+                    var dataTypeField = $(this).closest('tr').find('.dataType');
+                    var uomField = $(this).closest('tr').find('.uOm');
                     if ($(this).val() == "Y") {
                         $.ajax({
                             url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
@@ -219,9 +221,17 @@
                                 alert('Failed to retrieve master name.');
                             }
                         });
+                        dataTypeField.val('VC');
+                        dataTypeField.prop('disabled', true);
+
+                        uomField.val('Unknown');
+                        uomField.prop('disabled', true);
                     } else {
                         lookupTypeField.empty();
                         lookupTypeField.prop('disabled', true);
+
+                        dataTypeField.prop('disabled', false);
+                        uomField.prop('disabled', false);
                     }
                 });
 
@@ -241,6 +251,8 @@
         // Toggle readonly status of LookupType based on IsLookUp selection
         $(".isLookUp").change(function () {
             var lookupTypeField = $(this).closest('tr').find('.lookUpType');
+            var dataTypeField = $(this).closest('tr').find('.dataType');
+            var uomField = $(this).closest('tr').find('.uOm');
             if ($(this).val() == "Y") {
                 $.ajax({
                     url: '@Url.Action("GetMasterName", "ConfigureSubjectArea")',
@@ -260,9 +272,17 @@
                         alert('Failed to retrieve master name.');
                     }
                 });
-            } else {
+                dataTypeField.val('VC');
+                dataTypeField.prop('disabled', true);
+
+                uomField.val('Unknown');
+                uomField.prop('disabled', true);
+            } else {                
                 lookupTypeField.empty();
                 lookupTypeField.prop('disabled', true);
+
+                dataTypeField.prop('disabled', false);                
+                uomField.prop('disabled', false);
             }
         });
         

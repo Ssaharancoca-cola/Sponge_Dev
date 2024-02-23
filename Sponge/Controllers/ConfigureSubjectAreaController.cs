@@ -203,16 +203,20 @@ namespace Sponge.Controllers
 
             var selectedMaster = sPONGE_Context.SPG_SUBJECT_DATACOLLECTION
                 .Where(x => x.SUBJECTAREA_ID == selectedSubjectArea)
-                .Select(o => new SPG_SUBJECT_DATACOLLECTION
+                .Join(sPONGE_Context.SPG_MPP_MASTER,
+                  o => o.LOOKUP_TYPE,
+                  mpp => mpp.MASTER_NAME,
+                  (o, mpp) => new { o, mpp })
+                .Select(r => new SPG_SUBJECT_DATACOLLECTION
                 {
-                    DISPLAY_NAME = o.DISPLAY_NAME,
-                    FIELD_NAME = o.FIELD_NAME,
-                    IS_LOOKUP = o.IS_LOOKUP,
-                    LOOKUP_TYPE = o.LOOKUP_TYPE,
-                    DATA_TYPE = o.DATA_TYPE,
-                    UOM = o.UOM
-                })
-                    .Distinct().ToList();
+                    DISPLAY_NAME = r.o.DISPLAY_NAME,
+                    FIELD_NAME = r.o.FIELD_NAME,
+                    IS_LOOKUP = r.o.IS_LOOKUP,
+                    LOOKUP_TYPE = r.mpp.MASTER_DISPLAY_NAME,
+                    DATA_TYPE = r.o.DATA_TYPE,
+                    UOM = r.o.UOM
+                }).Distinct().ToList();
+
             selectedDataCollection.AddRange(selectedMaster);
 
             ViewBag.SelectedDataCollection = selectedDataCollection.ToList();

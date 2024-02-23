@@ -1,9 +1,7 @@
 ﻿using DAL.Models;
-using LinqToExcel.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Data;
-using System.Security.Claims;
 
 namespace Sponge.Common
 {
