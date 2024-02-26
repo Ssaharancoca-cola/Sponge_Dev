@@ -7,12 +7,14 @@ namespace DAL.Models
 {
     public partial class SPG_MPP_HIERARCHY
     {
-        public int? ID { get; set; }
-        public int? PARENT_ID { get; set; }
-        public string DIMENSION_NAME { get; set; }
-        public string MASTER_NAME { get; set; }
+        public int ID { get; set; }
+        public int PARENT_ID { get; set; }
+        public string PARENT_CODE { get; set; }
+        public string PARENT_NAME { get; set; }
+        public string LEVEL_CODE { get; set; }
         public string LEVEL_NAME { get; set; }
-        public int? level { get; set; }
+        public string DIMENSION_NAME { get; set; }
+        public int level { get; set; }
         public string ATTR_DISPLAY_NAME { get; set; }
         public string ATTR_NAME { get; set; }
     }
