@@ -1,5 +1,6 @@
 ﻿using DAL.Common;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Sponge.Common;
@@ -9,6 +10,7 @@ using System.Data;
 
 namespace Sponge.Controllers
 {
+    [Authorize(Roles = "Data Approver")]
     [AccessFilters]
     [SessionTimeOut]
     public class ApprovalController : Controller

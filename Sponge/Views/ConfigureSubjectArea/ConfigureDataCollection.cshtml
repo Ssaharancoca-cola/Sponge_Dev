@@ -15,6 +15,7 @@
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">Setup Data Collection - @ViewBag.SubjectAreaName</p>
+                    <input type="hidden" id="selectedSubjectAreaID" value="@selectedSubjectArea" />
                     <div class="table-responsive">
                         <table id="example" class="display expandable-table" style="width:100%">
                             <thead>
@@ -62,19 +63,19 @@
                                             @{
                                                 if (@master.DATA_TYPE == "VC")
                                                 {
-                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="String" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "N")
                                                 {
-                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Number" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "DT")
                                                 {
-                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Date" readonly>
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                        <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
+                                                            <input type="text" class="form-control prepopulated" id="DataType" name="data[0].DATA_TYPE" value="Perchent" readonly>
                                                 }
                                             }
 
@@ -286,6 +287,30 @@
             }
         });
         
+        $(document).on('blur', '.displayName', function (event) {
+            var inputValue = $(this).val().trim(); 
+            var subjectAreaID = $('#selectedSubjectAreaID').val(); 
+            var currentInput = $(this);
+            if (inputValue && subjectAreaID) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/ConfigureSubjectArea/CheckDuplicateDisplayName', 
+                    data: {
+                        inputValue: inputValue,  
+                        subjectAreaID: subjectAreaID
+                    },
+                    success: function (response) {
+                        if (response.isDuplicate) {
+                            alert('Display name "' + inputValue + '" already exists for this subject Area!');
+                            currentInput.val('');
+                        } 
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error checking duplicates:', status, error);
+                    }
+                });
+            }
+        });
         function checkForDuplicatesDisplayName() {
             var isDuplicate = false;
             var inputValues = {};

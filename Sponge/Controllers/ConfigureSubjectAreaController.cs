@@ -750,7 +750,17 @@ namespace Sponge.Controllers
             objModel.SPG_CONFIG_STRUCTURE.Add(o);
             objModel.SaveChanges();
         }
+        [HttpPost]
+        public JsonResult CheckDuplicateDisplayName(string inputValue, int subjectAreaID)
+        {
+            SPONGE_Context _context = new();
+            bool isDuplicate = _context.SPG_SUBJECT_MASTER
+                             .Any(sa => sa.SUBJECTAREA_ID == subjectAreaID &&
+                                        sa.DISPLAY_NAME.ToLower() == inputValue.ToLower() &&
+                                        sa.IS_SHOW == "Y");
 
+            return Json(new { isDuplicate = isDuplicate });
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

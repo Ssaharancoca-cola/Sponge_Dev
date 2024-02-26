@@ -16,14 +16,15 @@ namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IMemoryCache _cache;
-        private readonly PrincipalContext _context;
+        //private readonly PrincipalContext _context;
         public UserController(IMemoryCache cache)
         {
             _cache = cache;
-            _context = new PrincipalContext(ContextType.Domain);
+            //_context = new PrincipalContext(ContextType.Domain);
         }
         public IActionResult CreateUser()
         {
@@ -42,7 +43,7 @@ namespace Sponge.Controllers
             List<string> emailList = new List<string>();
 
             // Search for all UserPrincipal
-            using (var searcher = new PrincipalSearcher(new UserPrincipal(_context)))
+            using (var searcher = new PrincipalSearcher(new UserPrincipal(new PrincipalContext(ContextType.Domain))))
             {
                 foreach (var result in searcher.FindAll())
                 {
@@ -286,7 +287,6 @@ namespace Sponge.Controllers
             return Json("Some error occured");
         }
         [HttpPost]
-        //[Authorize(Policy = "RequireAdminRole")]
         public IActionResult UpdateUser(IFormCollection data)
         {
             string userId = data["userId"].ToString();
@@ -360,7 +360,7 @@ namespace Sponge.Controllers
                 return Json("Error Occurred: " + ex.Message);
             }
         }
-        //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme, Roles = "Admin")]
+        
         public IActionResult ManageUser()
         {
             var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
@@ -404,7 +404,6 @@ namespace Sponge.Controllers
             return View(UserInfo);
 
         }
-
         public IActionResult EditUser(string id)
         {
             GetUserinfo userInfo = new GetUserinfo();
