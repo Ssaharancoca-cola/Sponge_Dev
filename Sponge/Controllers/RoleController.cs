@@ -8,6 +8,8 @@ namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
+    [Authorize(Roles = "Admin")]
+
     public class RoleController : Controller
     {
         public IActionResult CreateRole()

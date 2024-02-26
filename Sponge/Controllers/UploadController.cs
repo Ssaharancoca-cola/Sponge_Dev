@@ -13,12 +13,14 @@ using System.Text;
 using OfficeOpenXml;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
+    [Authorize(Roles = "Admin,Data Uploader")]
+
     public class UploadController : Controller
     {
         public const string HiddenSheetName = "SPG_HIDDENSHEETCODE";

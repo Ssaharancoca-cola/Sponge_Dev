@@ -11,11 +11,14 @@ using System.Diagnostics.Metrics;
 using System.Dynamic;
 using System.Collections.Generic;
 using DAL.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
+    [Authorize(Roles = "Admin")]
+
     public class FunctionController : Controller
     {
         private readonly IHttpContextAccessor _httpSession;

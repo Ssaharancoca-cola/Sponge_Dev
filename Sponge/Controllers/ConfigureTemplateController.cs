@@ -15,11 +15,14 @@ using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Http;
 using System.Data.Common;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sponge.Controllers
 {
     [AccessFilters]
     [SessionTimeOut]
+    [Authorize(Roles = "Admin,Data Configure")]
+
     public class ConfigureTemplateController : Controller
     {
         private readonly ILogger<HomeController> _logger;

@@ -52,31 +52,4 @@ public class CustomClaimsTransformation : IClaimsTransformation
         return newPrincipal;
     }
 
-    private string MapExternalToInternalRole(string externalRole)
-    {
-        // Implement the mapping logic here, perhaps looking up in the database
-        // For example:
-        switch (externalRole)
-        {
-            case "ExternalAdmin":
-                return "Admin";
-            case "ExternalUploader":
-                return "Data Uploader";
-            // ... additional mappings as needed ...
-            default:
-                return "User"; // or handle unknown roles appropriately
-        }
-    }
-    public async Task<List<string>> GetRolesFromDB(ClaimsPrincipal principal)
-    {
-        var identity = (ClaimsIdentity)principal.Identity;
-        var userName = principal.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-        var userRoles = await (from user in _dbContext.SPG_USERS
-                               join userFunc in _dbContext.SPG_USERS_FUNCTION on user.USER_ID equals userFunc.USER_ID
-                               join role in _dbContext.SPG_ROLE on userFunc.ROLE_ID equals role.ROLE_ID
-                               where user.USER_ID == userName[1]
-                               orderby role.ROLE_ID descending
-                               select role.ROLE_NAME).ToListAsync();
-        return userRoles;
-    }
 }
