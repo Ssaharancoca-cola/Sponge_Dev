@@ -48,7 +48,7 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer("Data Source=zwdmyad0001;Initial Catalog=SPONGE_DEV;Persist Security Info=True;User ID=SPONGE_DEV_APP;Password=SJX)^8nVYfQ#3D;TrustServerCertificate=True");
-               // optionsBuilder.UseSqlServer("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True");
+                // optionsBuilder.UseSqlServer("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True");
             }
         }
 
@@ -64,7 +64,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_CONFIGDATA>(entity =>
             {
                 entity.HasKey(e => e.CONFIGDATA_ID)
-                    .HasName("PK__SPG_CONF__7FCEAA71D7833E04");
+                    .HasName("PK__SPG_CONF__7FCEAA71EDFD26BB");
 
                 entity.Property(e => e.DATE_FROM).HasColumnType("date");
 
@@ -407,7 +407,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_CONFIG_FILTERS>(entity =>
             {
                 entity.HasKey(e => e.CONFIG_FILTER_ID)
-                    .HasName("PK__SPG_CONF__43E734DD419CD91E");
+                    .HasName("PK__SPG_CONF__43E734DD0DA9B17F");
 
                 entity.Property(e => e.ACTIVE_FLAG)
                     .HasMaxLength(1)
@@ -428,6 +428,10 @@ namespace DAL.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.MASTER_DISPLAY_NAME)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.MODIFIED_BY)
                     .HasMaxLength(30)
                     .IsUnicode(false);
@@ -438,7 +442,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_CONFIG_FILTERS_VALUE>(entity =>
             {
                 entity.HasKey(e => e.CONFIG_FILTER_VAL_ID)
-                    .HasName("PK__SPG_CONF__AD2233F933C5A424");
+                    .HasName("PK__SPG_CONF__AD2233F9983D3FDF");
 
                 entity.Property(e => e.ACTIVE_FLAG)
                     .HasMaxLength(1)
@@ -585,7 +589,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_DOCUMENT>(entity =>
             {
                 entity.HasKey(e => e.DocumentID)
-                    .HasName("PK__SPG_DOCU__1ABEEF6F1DB55835");
+                    .HasName("PK__SPG_DOCU__1ABEEF6F4384A35C");
 
                 entity.Property(e => e.APPROVEDON).HasColumnType("date");
 
@@ -624,7 +628,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_GETTIMECODE>(entity =>
             {
                 entity.HasKey(e => e.CONFIG_TIMECODE_ID)
-                    .HasName("PK__SPG_GETT__E87481AB2410AF1D");
+                    .HasName("PK__SPG_GETT__E87481AB1A06B514");
 
                 entity.Property(e => e.COLUMN_CODE)
                     .HasMaxLength(20)
@@ -650,7 +654,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_GET_PERIOD>(entity =>
             {
                 entity.HasKey(e => e.PERIOD_ID)
-                    .HasName("PK__SPG_GET___B513F7BB698347D1");
+                    .HasName("PK__SPG_GET___B513F7BB5141BCB5");
 
                 entity.Property(e => e.COLUMN_TEXT)
                     .HasMaxLength(10)
@@ -682,24 +686,27 @@ namespace DAL.Models
                 entity.HasNoKey();
 
                 entity.Property(e => e.ATTR_DISPLAY_NAME)
-                    .HasMaxLength(255)
+                    .IsRequired()
+                    .HasMaxLength(500)
                     .IsUnicode(false);
 
                 entity.Property(e => e.ATTR_NAME)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                    .IsRequired()
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.DIMENSION_NAME)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.DIMENSION_NAME).IsRequired();
 
-                entity.Property(e => e.LEVEL_NAME)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.LEVEL_CODE)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
-                entity.Property(e => e.MASTER_NAME)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.LEVEL_NAME).IsRequired();
+
+                entity.Property(e => e.PARENT_CODE)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.PARENT_NAME).IsRequired();
             });
 
             modelBuilder.Entity<SPG_MPP_MASTER>(entity =>
@@ -805,7 +812,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_SUBFUNCTION>(entity =>
             {
                 entity.HasKey(e => e.SUBFUNCTION_ID)
-                    .HasName("PK__SPG_SUBF__9E87AF8FC5FAF0A8");
+                    .HasName("PK__SPG_SUBF__9E87AF8F673847D6");
 
                 entity.Property(e => e.ACTIVE_FLAG)
                     .HasMaxLength(1)
@@ -947,7 +954,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_SUBJECT_DIMENSION>(entity =>
             {
                 entity.HasKey(e => e.SUBJECT_DIMENSION_ID)
-                    .HasName("PK__SPG_SUBJ__8E18E6073D07352C");
+                    .HasName("PK__SPG_SUBJ__8E18E607C25AA470");
 
                 entity.Property(e => e.ACTIVE_FLAG)
                     .HasMaxLength(1)
@@ -977,7 +984,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_SUBJECT_MASTER>(entity =>
             {
                 entity.HasKey(e => e.SUBJECT_MASTER_ID)
-                    .HasName("PK__SPG_SUBJ__919B773E07CB043E");
+                    .HasName("PK__SPG_SUBJ__919B773E6E8AF83B");
 
                 entity.Property(e => e.DIMENSION_TABLE)
                     .HasMaxLength(100)
@@ -1162,7 +1169,7 @@ namespace DAL.Models
             modelBuilder.Entity<SPG_USERS_FUNCTION>(entity =>
             {
                 entity.HasKey(e => e.USER_FUNCTIONID)
-                    .HasName("PK__SPG_USER__2B6F6C27412C40A2");
+                    .HasName("PK__SPG_USER__2B6F6C27D8D7115B");
 
                 entity.Property(e => e.ACTIVE_FLAG)
                     .HasMaxLength(1)

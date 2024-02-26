@@ -605,7 +605,7 @@ namespace Sponge.Controllers
                             if (listOfColumnnames[j].Contains("DT"))
                             {
                                 if (!string.IsNullOrEmpty(dt.Rows[i].ItemArray[j].ToString()))
-                                    StrInsertQuery.Append("'" + Convert.ToDateTime(dt.Rows[i].ItemArray[j]).ToString("dd-MMM-yy") + "',");
+                                    StrInsertQuery.Append("'" + Convert.ToDateTime(dt.Rows[i].ItemArray[j]).ToString("yyyy-MM-dd") + "',");
                                 else
                                     StrInsertQuery.Append(nullvalue + ",");
                             }
@@ -753,28 +753,38 @@ namespace Sponge.Controllers
         public DataTable GetUploadedExcelData(string pathToExcelFile)
         {
             var table = new DataTable();
-            var fi = new FileInfo(pathToExcelFile);
-
+            FileInfo fileInfo = new FileInfo(pathToExcelFile);
             try
             {
-                using (var package = new ExcelPackage(fi))
+                using (ExcelPackage package = new ExcelPackage(fileInfo))
                 {
-                    var sheet = package.Workbook.Worksheets["DataCollectionSheet"];
-                    if (sheet == null) return null;
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets["DataCollectionSheet"];
+                    if (worksheet == null) return null;
 
-                    for (int col = 1; col <= sheet.Dimension.Columns; col++)
+                    int totalCols = worksheet.Dimension.End.Column;
+                    int totalRows = worksheet.Dimension.End.Row;
+
+                    for (int col = 1; col <= totalCols; col++)
                     {
-                        table.Columns.Add("Col" + col);
+                        table.Columns.Add($"Col{col}");
                     }
 
-                    for (int row = 1; row <= sheet.Dimension.Rows; row++)
+                    for (int rowNum = 1; rowNum <= totalRows; rowNum++)
                     {
-                        var newRow = table.NewRow();
-                        for (int col = 1; col <= sheet.Dimension.Columns; col++)
+                        DataRow row = table.NewRow();
+                        for (int colNum = 1; colNum <= totalCols; colNum++)
                         {
-                            newRow[col - 1] = sheet.Cells[row, col].Value;
+                            var cell = worksheet.Cells[rowNum, colNum];
+                            if (cell.Value is DateTime)
+                            {
+                                row[colNum - 1] = ((DateTime)cell.Value).ToString("yyyy-MM-dd");
+                            }
+                            else
+                            {
+                                row[colNum - 1] = cell.Text;
+                            }
                         }
-                        table.Rows.Add(newRow);
+                        table.Rows.Add(row);
                     }
                 }
 

@@ -270,10 +270,8 @@
                         }
 
                 })
-                .error(function (error) {
-
-                    alert(error.responseText);
-                    console.log(error.statusCode);
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("Request failed: " + textStatus + ", " + errorThrown);
                 });
         } else {
             return false;

@@ -17,5 +17,6 @@ namespace DAL.Models
         public string MODIFIED_BY { get; set; }
         public DateTime? MODIFIED_ON { get; set; }
         public int? MASTER_COLUMN_LEVEL { get; set; }
+        public string MASTER_DISPLAY_NAME { get; set; }
     }
 }
