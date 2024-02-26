@@ -202,21 +202,22 @@ namespace Sponge.Controllers
             List<SPG_SUBJECT_DATACOLLECTION> selectedDataCollection = new();
 
             var selectedMaster = sPONGE_Context.SPG_SUBJECT_DATACOLLECTION
-                .Where(x => x.SUBJECTAREA_ID == selectedSubjectArea)
-                .Join(sPONGE_Context.SPG_MPP_MASTER,
-                  o => o.LOOKUP_TYPE,
-                  mpp => mpp.MASTER_NAME,
-                  (o, mpp) => new { o, mpp })
-                .Select(r => new SPG_SUBJECT_DATACOLLECTION
-                {
-                    DISPLAY_NAME = r.o.DISPLAY_NAME,
-                    FIELD_NAME = r.o.FIELD_NAME,
-                    IS_LOOKUP = r.o.IS_LOOKUP,
-                    LOOKUP_TYPE = r.mpp.MASTER_DISPLAY_NAME,
-                    DATA_TYPE = r.o.DATA_TYPE,
-                    UOM = r.o.UOM
-                }).Distinct().ToList();
-
+            .Where(x => x.SUBJECTAREA_ID == selectedSubjectArea)
+            .GroupJoin(sPONGE_Context.SPG_MPP_MASTER, 
+                o => o.LOOKUP_TYPE,
+                mpp => mpp.MASTER_NAME,
+                (o, mppGroup) => new { o, mppGroup })
+            .SelectMany(temp => temp.mppGroup.DefaultIfEmpty(),
+                (temp, mpp) => new { temp.o, mpp })
+            .Select(r => new SPG_SUBJECT_DATACOLLECTION
+            {
+                DISPLAY_NAME = r.o.DISPLAY_NAME,
+                FIELD_NAME = r.o.FIELD_NAME,
+                IS_LOOKUP = r.o.IS_LOOKUP,
+                LOOKUP_TYPE = r.mpp != null ? r.mpp.MASTER_DISPLAY_NAME : null,
+                DATA_TYPE = r.o.DATA_TYPE,
+                UOM = r.o.UOM
+            }).Distinct().ToList();
             selectedDataCollection.AddRange(selectedMaster);
 
             ViewBag.SelectedDataCollection = selectedDataCollection.ToList();
