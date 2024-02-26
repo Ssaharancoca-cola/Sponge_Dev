@@ -47,7 +47,6 @@
 <!--Start Upload js Function-->
 <script type="text/javascript">
     var Filelist = new Array;
-    //debugger;
     $(function () {
         $('#BtnCancel').click(function () {
             window.location.href = '/';
@@ -56,7 +55,6 @@
             //alert($(this).val());
             $("#dvErrorDetails").html('');
             $("#dvFilesDetails").html('');
-
             var NumberofFile1 = $(this).val().split(',');
             var NumberofFile = NumberofFile1.length;
             if (NumberofFile > 10) {
@@ -237,44 +235,44 @@
             }
         });
     }
+
     function RemoveFile(obj) {
-
         if (confirm("Are you sure you want to remove this file!")) {
-            $(obj).closest('tr').remove();
             var FileName = $(obj).attr('name');
-            var id = $(obj).attr('id');
-            var index = id.replace("btnremove", "");
+            var fileInput = document.getElementById('fileUpload');
+            var fileList = Array.from(fileInput.files);
 
-            document.getElementById('filesToDelete').value += (FileName + ",");
-            $.getJSON("../Upload/DeleteFileFromFolder", { FileName: FileName },
-                function (result) {
-                    if (result.msgerror == "Success") {
+            var fileIndex = fileList.findIndex(function (file) {
+                return file.name === FileName;
+            });
 
-                        Filelist.push(result.SelectedFileName);
-                        $(obj).closest('tr').remove();
-                        $("#filesToDelete").val(Filelist);
+            if (fileIndex > -1) {
+                fileList.splice(fileIndex, 1);
+            }
 
-                            var rowCount = $('#tblRemoveFilesDetails >tbody >tr').length;
-                         
-                            if (rowCount == 1) {
-                                $("#BtnUpload").hide();
-                                $("#dvFilesDetails").empty();
-                            }
-                            else {
-                                $("#BtnUpload").show();
-                            }
-                        }
-                        else {
-                            alert(result.msgerror);
-                            return false;
-                        }
+            var dataTransfer = new DataTransfer();
+            fileList.forEach(function (file) {
+                dataTransfer.items.add(file); 
+            });
 
-                })
-                .fail(function (jqXHR, textStatus, errorThrown) {
-                    alert("Request failed: " + textStatus + ", " + errorThrown);
-                });
+            fileInput.files = dataTransfer.files;
+
+            $(obj).closest('tr').remove();
+
+            UpdateFileCountDisplay();
         } else {
             return false;
+        }
+    }
+
+    function UpdateFileCountDisplay() {
+        var fileCount = document.getElementById('fileUpload').files.length;
+        if (fileCount === 0) {
+            $("#BtnUpload").hide();
+            $("#dvFilesDetails").empty();
+        }
+        else {
+            $("#BtnUpload").show();
         }
     }
 
