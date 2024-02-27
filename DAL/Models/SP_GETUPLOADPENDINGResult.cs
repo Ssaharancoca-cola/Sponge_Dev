@@ -8,7 +8,10 @@ namespace DAL.Models
     public partial class SP_GETUPLOADPENDINGResult
     {
         public string SUBFUNCTION_NAME { get; set; }
+        public string NAME { get; set; }
         public string LOCK_DATE { get; set; }
         public string FILE_NAME { get; set; }
+        public int CONFIG_ID { get; set; }
+        public string FILE_CODE { get; set; }
     }
 }

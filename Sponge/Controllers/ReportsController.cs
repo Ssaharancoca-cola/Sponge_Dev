@@ -35,11 +35,8 @@ namespace Sponge.Controllers
                 result.CONFIG_ID = item.CONFIG_ID;
                 result.DOCUMENT_ID = item.DOCUMENT_ID;
                 result.UPLOADDATE = item.UPLOADDATE;
-
-                // Add and trim the FILE_NAME for the second occurrence of '_[' to get TRIMMED_FILENAME
-                int firstIndex = item.FILE_NAME.IndexOf("_[");
-                int secondIndex = firstIndex >= 0 ? item.FILE_NAME.IndexOf("_[", firstIndex + 2) : -1; // +2 to skip the current '_['
-                result.TRIMMED_FILENAME = (secondIndex > -1) ? item.FILE_NAME.Substring(0, secondIndex) : item.FILE_NAME;
+                result.UPLOADED_BY = item.NAME;
+                result.TRIMMED_FILENAME = TrimFileName(item.FILE_NAME);
 
 
                 results.Add(result);
@@ -61,7 +58,11 @@ namespace Sponge.Controllers
                 PendingTemplateReport result = new();
                 result.LOCK_DATE = item.LOCK_DATE;
                 result.FILE_NAME = item.FILE_NAME;
-                result.SUBFUNCTION_NAME = item.SUBFUNCTION_NAME;          
+                result.SUBFUNCTION_NAME = item.SUBFUNCTION_NAME;
+                result.PENDING_BY = item.NAME;
+                result.TRIMMED_FILE_NAME = TrimFileName(item.FILE_NAME);
+                result.CONFIG_ID = item.CONFIG_ID;
+                result.FILE_CODE = item.FILE_CODE;
                 results.Add(result);
             }
 
@@ -88,9 +89,41 @@ namespace Sponge.Controllers
                 result.DOCUMENT_ID = item.DOCUMENT_ID;
                 result.APPROVER_NAME = item.APPROVER_NAME;
                 result.LOCK_DATE = item.LOCK_DATE;
+                result.UPLOADED_BY = item.NAME;
+                result.TRIMMED_FILE_NAME = TrimFileName(item.FILE_NAME);
                 results.Add(result);
             }
             return View("Views\\Reports\\PendingApproval.cshtml", results);
+        }
+        private string TrimFileName(string fileName)
+        {
+            int firstIndex = fileName.IndexOf("_[");
+            int secondIndex = firstIndex >= 0 ? fileName.IndexOf("_[", firstIndex + 2) : -1;
+            return (secondIndex > -1) ? fileName.Substring(0, secondIndex) : fileName;
+        }
+        [HttpPost]
+        public IActionResult Download(string FILE_CODE, int CONFIG_ID)
+        {
+            SPONGE_Context objFunction = new();
+            ApprovalModel model = new ApprovalModel();
+
+            string fileName = FILE_CODE + ".xlsx";
+            var fileURI =
+                (from doc in objFunction.SPG_DOCUMENT
+                 join temp in objFunction.SPG_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
+                 join conf in objFunction.SPG_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
+                 where conf.CONFIG_ID == CONFIG_ID && doc.ID == FILE_CODE
+                 select new { doc.FILE_PATH, doc.ID, temp.FILE_NAME }).First();
+            string filepath = Path.Combine("E:\\Sponge\\Excel", fileName);
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filepath, FileMode.Open))
+            {
+                stream.CopyTo(memory);
+            }
+            memory.Position = 0;
+
+            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileURI.FILE_NAME);
         }
     }
 }

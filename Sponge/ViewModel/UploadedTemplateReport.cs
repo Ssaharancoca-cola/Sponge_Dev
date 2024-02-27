@@ -11,5 +11,6 @@
         public string PERIOD_TO { get; set; }
         public string FILE_PATH { get; set; }
         public string DOCUMENT_ID { get; set; }
+        public string UPLOADED_BY { get; set; }
     }
 }

@@ -15,8 +15,9 @@
                         <thead>
                             <tr>
                                 <th>SubFunction Name</th>
-                                <th>Upload Date</th>
                                 <th>File Name</th>
+                                <th>Uploaded By</th>
+                                <th>Upload Date</th>
                                 <th>Approver Name</th>
                             </tr>
                         </thead>
@@ -25,8 +26,9 @@
                             {
                                 <tr>
                                     <td>@item.SUBFUNCTION_NAME</td>
+                                    <td title="@item.FILE_NAME">@item.TRIMMED_FILE_NAME</td>
+                                    <td>@item.UPLOADED_BY</td>
                                     <td>@item.LOCK_DATE</td>
-                                    <td>@item.FILE_NAME</td>
                                     <td>@item.APPROVER_NAME</td>
                                 </tr>
                             }

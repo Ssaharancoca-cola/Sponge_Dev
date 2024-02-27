@@ -11,5 +11,7 @@
         public string FILE_PATH { get; set; }
         public string DOCUMENT_ID { get; set; }
         public string APPROVER_NAME { get; set;}
+        public string UPLOADED_BY { get; set; }
+        public string TRIMMED_FILE_NAME { get; set; }
     }
 }

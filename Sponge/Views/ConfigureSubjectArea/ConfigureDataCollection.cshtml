@@ -75,7 +75,7 @@
                                                 }
                                                 else if (@master.DATA_TYPE == "P")
                                                 {
-                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[@masterIndex].DATA_TYPE" value="Perchent" readonly>
+                                                    <input type="text" class="form-control prepopulated" id="DataType" name="data[@masterIndex].DATA_TYPE" value="Percent" readonly>
                                                 }
                                             }
 
@@ -184,10 +184,10 @@
 
                 var newRowContents = '<tr>'
                     + '<td><input type="text" class="form-control displayName" name="data[' + counter + '].DisplayName"></td>'
-                    + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName"></td>'
+                    + '<td><input type="text" class="form-control fieldName" name="data[' + counter + '].FieldName" onkeydown="return /[a-z0-9_]/i.test(event.key)"></td>'
                     + '<td><select class="form-control isLookUp" name="data[' + counter + '].IsLookUp"><option value="N" selected>No</option><option value="Y">Yes</option></select></td>'
                     + '<td><select class="form-control lookUpType" name="data[' + counter + '].LookUpType"></select></td>'
-                    + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Perchent</option></select></td>'
+                    + '<td><select class="form-control dataType" name="data[' + counter + '].DataType"><option value="VC" selected>String</option><option value="N">Number</option><option value="DT">Date</option><option value="P">Percent</option></select></td>'
                     + '<td><select class="form-control uOm" name="data[' + counter + '].UOM"></td>'
                     + '</tr>';
                 counter++;

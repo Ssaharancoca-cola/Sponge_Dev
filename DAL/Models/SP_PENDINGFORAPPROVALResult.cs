@@ -8,6 +8,7 @@ namespace DAL.Models
     public partial class SP_PENDINGFORAPPROVALResult
     {
         public string SUBFUNCTION_NAME { get; set; }
+        public string NAME { get; set; }
         public string LOCK_DATE { get; set; }
         public string APPROVER_NAME { get; set; }
         public string FILE_NAME { get; set; }

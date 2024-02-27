@@ -8,6 +8,7 @@ namespace DAL.Models
     public partial class SP_UPLOADEDTEMPLATEResult
     {
         public string SUBFUNCTION_NAME { get; set; }
+        public string NAME { get; set; }
         public string UPLOADDATE { get; set; }
         public string FILE_NAME { get; set; }
         public string DatA_COLLECTION { get; set; }
