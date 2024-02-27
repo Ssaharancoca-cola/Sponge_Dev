@@ -14,10 +14,10 @@
                     <table id="example" class="display expandable-table" style="width:100%">
                         <thead>
                             <tr>
-                                <th>SubFunction Name</th>
+                                <th>SubFunction</th>
                                 <th>Lock Date</th>
                                 <th>File Name</th>
-                                <th>Pending By</th>
+                                <th>Uploaded By</th>
                                 <th>Download</th>
                             </tr>
                         </thead>
@@ -28,10 +28,8 @@
                                     <td>@item.SUBFUNCTION_NAME</td>
                                     <td>@item.LOCK_DATE</td>
                                     <td title="@item.FILE_NAME">@item.TRIMMED_FILE_NAME</td>
-                                    <td>@item.PENDING_BY</td>
-                                    <td>
-                                        <button id="downloadFileBTN" data-config-id="@item.CONFIG_ID" data-file-code="@item.FILE_CODE">Download</button>
-                                    </td>
+                                    <td>@item.PENDING_BY</td>                                    
+                                    <td>@Html.ActionLink("Download", "Download", new {fileName = item.FILE_NAME}, new { @class = "btn btn-primary" })</td>                                    
                                 </tr>
                             }
                         </tbody>
@@ -75,28 +73,12 @@
         checkbox.addEventListener('change', handleCB);
     });
 
+    function DownLoadTemplate(fileName) {
 
-    $(document).ready(function () {
-        $(document).on('click', '#downloadFileBTN', function () {
-
-            var configId = $(this).data("config-id");
-            var fileCode = $(this).data("file-code");
-            $.ajax({
-                url: '/Reports/Download',
-                method: 'POST',
-                dataType: 'json', 
-                data: {
-                    CONFIG_ID: configId,
-                    FILE_CODE: fileCode
-                },
-                success: function (response) {
-                    // Handle the successful response
-                },
-                error: function (xhr, status, error) {
-                    // Handle errors
-                }
-            });
-        });
-    });
+        var application = window.location.pathname.substr(1, window.location.pathname.lastIndexOf('/'));
+        var url = "http://" + window.location.host + "/" + application + '/Download?fileName=' + fileName;
+        window.location.href = url;
+    }
+    
 </script>
 <!-- End plugin js for this page -->

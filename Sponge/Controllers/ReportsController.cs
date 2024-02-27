@@ -101,21 +101,9 @@ namespace Sponge.Controllers
             int secondIndex = firstIndex >= 0 ? fileName.IndexOf("_[", firstIndex + 2) : -1;
             return (secondIndex > -1) ? fileName.Substring(0, secondIndex) : fileName;
         }
-        [HttpPost]
-        public IActionResult Download(string FILE_CODE, int CONFIG_ID)
+        public IActionResult Download(string fileName)
         {
-            SPONGE_Context objFunction = new();
-            ApprovalModel model = new ApprovalModel();
-
-            string fileName = FILE_CODE + ".xlsx";
-            var fileURI =
-                (from doc in objFunction.SPG_DOCUMENT
-                 join temp in objFunction.SPG_TEMPLATE on doc.TEMPLATEID equals temp.TEMPLATE_ID
-                 join conf in objFunction.SPG_CONFIGURATION on temp.CONFIG_ID equals conf.CONFIG_ID
-                 where conf.CONFIG_ID == CONFIG_ID && doc.ID == FILE_CODE
-                 select new { doc.FILE_PATH, doc.ID, temp.FILE_NAME }).First();
             string filepath = Path.Combine("E:\\Sponge\\Excel", fileName);
-
             var memory = new MemoryStream();
             using (var stream = new FileStream(filepath, FileMode.Open))
             {
@@ -123,7 +111,7 @@ namespace Sponge.Controllers
             }
             memory.Position = 0;
 
-            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileURI.FILE_NAME);
+            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
     }
 }
