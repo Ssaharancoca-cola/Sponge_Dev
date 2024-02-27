@@ -10,7 +10,7 @@ using System.Data;
 
 namespace Sponge.Controllers
 {
-    [Authorize(Roles = "Data Approver")]
+    [Authorize(Roles = "Admin,Data Approver, Data Configure")]
     [AccessFilters]
     [SessionTimeOut]
     public class ApprovalController : Controller

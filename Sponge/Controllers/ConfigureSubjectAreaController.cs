@@ -212,6 +212,10 @@ namespace Sponge.Controllers
                 (o, mppGroup) => new { o, mppGroup })
             .SelectMany(temp => temp.mppGroup.DefaultIfEmpty(),
                 (temp, mpp) => new { temp.o, mpp })
+            .Join(sPONGE_Context.SPG_UOM,
+                r => r.o.UOM,
+                uom => uom.UOM_CODE,
+                (r, uom) => new { r.o, r.mpp, uom })
             .Select(r => new SPG_SUBJECT_DATACOLLECTION
             {
                 DISPLAY_NAME = r.o.DISPLAY_NAME,
@@ -219,7 +223,7 @@ namespace Sponge.Controllers
                 IS_LOOKUP = r.o.IS_LOOKUP,
                 LOOKUP_TYPE = r.mpp != null ? r.mpp.MASTER_DISPLAY_NAME : null,
                 DATA_TYPE = r.o.DATA_TYPE,
-                UOM = r.o.UOM
+                UOM = r.uom.UOM_DESC
             }).Distinct().ToList();
             selectedDataCollection.AddRange(selectedMaster);
 
@@ -284,7 +288,11 @@ namespace Sponge.Controllers
                         sPG_1.UOM = collection.UoM;
                         sPG_1.IS_LOOKUP = collection?.IsLookUp;
                         if (collection?.IsLookUp == "Y")
+                        {
                             sPG_1.DISPLAY_TYPE = "DROPDOWN";
+                            sPG_1.DATA_TYPE = "VC";
+                            sPG_1.UOM = "Unknown";
+                        }
                         else sPG_1.DISPLAY_TYPE = "TEXTBOX";
                         sPG_1.LOOKUP_TYPE = collection?.LookUpType;
                         sPG_1.ACTIVE_FLAG = "Y";
