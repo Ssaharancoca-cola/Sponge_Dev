@@ -10,6 +10,7 @@
         white-space: normal !important; /* Prevent text from wrapping */
         
     }
+
 </style>
 <div class="row">
     <div class="col-md-12 stretch-card grid-margin">
@@ -34,7 +35,7 @@
                             <tr>
                                 <th class="wrapped-header">Sub Function</th>
                                 <th class="wrapped-header">SubjectArea</th>
-                                <th class="wrapped-header">Reporting Period</th>
+                                @* <th class="wrapped-header">Reporting Period</th> *@
                                 <th class="wrapped-header">Frequency</th>
                                 <th class="wrapped-header">ForTime</th>
                                 <th class="wrapped-header">Status</th>
@@ -47,10 +48,12 @@
                                 <tr>
                                     <td>@item.SpgSubfunction.SUBFUNCTION_NAME</td>
                                     <td>@item.SpgSubjectArea.SUBJECTAREA_NAME</td>
-                                    <td>@textInfo.ToTitleCase(item.SpgSubjectArea.REPORTING_PERIOD.ToLower())</td>
+                                    @* <td>@textInfo.ToTitleCase(item.SpgSubjectArea.REPORTING_PERIOD.ToLower())</td> *@
                                     <td>@textInfo.ToTitleCase(item.SpgSubjectArea.FREQUENCY.ToLower())</td>
                                     <td>@textInfo.ToTitleCase(item.SpgSubjectArea.TIME_LEVEL.ToLower())</td>
-                                    <td>@item.SpgSubjectArea.ACTIVE_FLAG</td>
+                                    <td style="color: @(@item.SpgSubjectArea.ACTIVE_FLAG == "Y" ? "green" : "red");">
+                                        @(@item.SpgSubjectArea.ACTIVE_FLAG == "Y" ? "Active" : "Inactive")
+                                    </td>
                                     <td>
                                         <a href="@Url.Action("EditSubjectArea", "SubjectArea", new {id = item.SpgSubjectArea.SUBJECTAREA_ID})" class="btn btn-outline-primary btn-icon-text">
                                             <i class="ti-file btn-icon-prepend"></i>
@@ -83,7 +86,7 @@
             "sEmptyTable": "No Data Found"
         },
         "aoColumnDefs": [
-            { "bSearchable": false, "bSortable": false, "aTargets": [6] }
+            { "bSearchable": false, "bSortable": false, "aTargets": [5] }
         ]
     });
     
