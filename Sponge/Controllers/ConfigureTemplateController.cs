@@ -342,6 +342,17 @@ namespace Sponge.Controllers
                 {
                     dimensionData.Add(dimension, names);
                 }
+                if (dimensionData.ContainsKey("Product"))
+                {
+                    var productValue = dimensionData["Product"];
+
+                    if (productValue.ContainsKey("Container Volume"))
+                    {
+                        productValue.Remove("Container Volume");
+                        dimensionData["Product"] = productValue;
+                    }
+
+                }
             }
             return Json(new { DimensionData = dimensionData, SavedMasterNames = savedMasterNames });
         }
