@@ -38,29 +38,7 @@ namespace Sponge.Controllers
         }
 
         // Fetching emails method
-        public IActionResult FetchEmailsAndCache()
-        {
-            List<string> emailList = new List<string>();
-
-            // Search for all UserPrincipal
-            using (var searcher = new PrincipalSearcher(new UserPrincipal(new PrincipalContext(ContextType.Domain))))
-            {
-                foreach (var result in searcher.FindAll())
-                {
-                    DirectoryEntry de = result.GetUnderlyingObject() as DirectoryEntry;
-                    if (de.Properties["mail"].Value != null)
-                    {
-                        emailList.Add(de.Properties["mail"].Value.ToString());
-                    }
-                }
-            }
-
-            // Cache it for 1 hour
-            _cache.Set("Emails", emailList, TimeSpan.FromHours(1));
-
-            return Ok("Emails fetched and cached successfully.");
-        }
-
+        
         public ActionResult GetEmailSuggestions(string email)
         {
             List<string> matchingEmails = new List<string>();

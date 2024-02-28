@@ -10,36 +10,36 @@
 <script src="~/assists/js/hoverable-collapse.js"></script>
 @using (Html.BeginForm("SaveManualSendResendExcel", "ManualSendResend", Model, FormMethod.Post))
 {
-<div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <p class="card-title">Manually Send/Resend Excel</p>
-                <div class="forms-sample">
-                    <div class="form-group row ">
-                        <div class="col">
-                            <label for="subjectArea">Subject Area</label>
-                            <input type="text" class="form-control" id="subjectArea"
-                                   value="@Model.SubjectAreaName" readonly>
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Manually Send/Resend Excel</p>
+                    <div class="forms-sample">
+                        <div class="form-group row ">
+                            <div class="col">
+                                <label for="subjectArea">Subject Area</label>
+                                <input type="text" class="form-control" id="subjectArea"
+                                       value="@Model.SubjectAreaName" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="assignToUser">Assign To User</label>
+                                <input type="text" class="form-control" id="assignToUser"
+                                       value="@Model.UserName" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="frequency">Frequency</label>
+                                <input type="text" class="form-control" id="frequency"
+                                       value="@Model.Frequency" readonly>
+
+                            </div>
                         </div>
-                        <div class="col">
-                            <label for="assignToUser">Assign To User</label>
-                            <input type="text" class="form-control" id="assignToUser"
-                                   value="@Model.UserName" readonly>
-                        </div>
-                        <div class="col">
-                            <label for="frequency">Frequency</label>
-                            <input type="text" class="form-control" id="frequency"
-                                   value="@Model.Frequency" readonly>
-                            
-                        </div>
-                    </div>
                         <div class="form-group row">
                             <div class="col-sm-4 col-md-4">
                                 <label for="onTime">On Time</label>
                                 @Html.DropDownList("onTime",
-                            ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>, 
-                            new { @class = "form-control", onchange = "OnChangeOnTime();" })
+                                         ViewBag.ForTimeOnTime as IEnumerable<SelectListItem>,
+                                         new { @class = "form-control", onchange = "OnChangeOnTime();" })
                             </div>
                             <input type="hidden" name="PeriodFrom" value="@Model.PeriodFrom" id="hdnPeriodFrom" />
                             <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
@@ -58,34 +58,36 @@
                                 </div>
                             }
                             @* else
-                            {
-                            <div class="col-sm-4 col-md-4">
-                                
-                            </div>
-                            } *@
+                        {
+                        <div class="col-sm-4 col-md-4">
+
                         </div>
-                    <div class="form-group row">
-                        <div class="col">
+                        } *@
+                        </div>
+                        <div class="form-group row">
+                            <div class="col">
                                 <label for="UploadReminderDate">Upload Reminder Date</label>
-                                <input min="@minDate"  type="date" class="form-control" asp-for="@Model.UploadReminderDate" id="UploadReminderDate" name="UploadReminderDate"
-                                   placeholder="DD/MM/YYYY">
-                        </div>
-                        <div class="col">
+                                <input min="@minDate" type="date" class="form-control" asp-for="@Model.UploadReminderDate" id="UploadReminderDate" name="UploadReminderDate"
+                                       placeholder="DD/MM/YYYY">
+                            </div>
+                            <div class="col">
                                 <label for="EscalationAlertDate">Escalation Alert Date</label>
                                 <input min="@minDate" type="date" class="form-control" asp-for="@Model.EscalationAlertDate" id="EscalationAlertDate" name="EscalationAlertDate"
-                                   placeholder="DD/MM/YYYY">
+                                       placeholder="DD/MM/YYYY">
+                            </div>
+                            <div class="col">
+                                <label for="lockDate">Lock Date <span style="color:red">*</span></label> <input min="@minDate" type="date" class="form-control"
+                                                                                                                asp-for="@Model.LockDate" id="lockDate" name="lockDate" placeholder="DD/MM/YYYY" required>
+                            </div>
                         </div>
-                        <div class="col"> <label for="lockDate">Lock Date <span style="color:red">*</span></label> <input min="@minDate" type="date" class="form-control" 
-                            asp-for="@Model.LockDate" id="lockDate" name="lockDate" placeholder="DD/MM/YYYY" required> </div>
-                    </div>
-                    <button class="btn btn-light mr-2" id="btnCancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Send</button>
+                        <a type="button" class="btn btn-light mr-2" href="/SearchTemplate/SearchTemplate" id="btnCancel">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Send</button>
 
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+        </div>
         @Html.Hidden("config_id", Model.ConfigId)
         @Html.Hidden("subjectAreaId", Model.SubjectAreaId)
         @Html.Hidden("version", Model.Version)
@@ -97,13 +99,17 @@
         @Html.Hidden("hdn_lockDate", Model.LockDate)
         @Html.Hidden("hdn_escalationAlertDate", Model.EscalationAlertDate)
         @Html.Hidden("hdn_uploadReminderDate", Model.UploadReminderDate)
-</div>
+    </div>
 }
 <script>
     $(document).ready(function () {
+
+
+
+
         var text = $("#onTime").find('option:selected').text();
         $('#hdnOnTimeText').val(text);
-        OnChangeOnTime();       
+        OnChangeOnTime();
 
     });
     $('#UploadReminderDate').keypress(function (e) {
@@ -115,23 +121,23 @@
     $('#lockDate').keypress(function (e) {
         e.preventDefault();
     });
-    var FillReportingStartEndDate = function () {        
-        
+    var FillReportingStartEndDate = function () {
+
         var frequency = $('#hdnFrequency').val();
         var reportingStartDate, reportingEndDate, pattern, date;
         pattern = $('#hdnOnTimeText').val();
         var granularityText = $("#GranularTime option:selected").text();
         $('#hdnGranularTime').val($("#GranularTime option:selected").val());
-       
+
         if (frequency == 'YEARLY') {
             var obj = pattern.split('-');
             reportingStartDate = new Date(obj[0], Common.MonthEnum.JANUARY, 1);
             reportingEndDate = new Date(obj[0], Common.MonthEnum.DECEMBER, 31);
-            
+
 
         }
         if (frequency == 'HALF_YEARLY') {
-           
+
             var obj = GetHalfYearlyStartEndDate(pattern);
             reportingStartDate = obj.periodicStartDate;
             reportingEndDate = obj.periodicEndDate;
@@ -215,7 +221,7 @@
         Common.selectedStartYear = arrayVal[0];
         arrayVal = arrayVal[1].split(',');
         Common.selectedEndYear = arrayVal[0];
-      
+
         if (arrayVal[1] == 'H1') {
             var H1 = Common.HalfYearlyEnum.H1();
             return {
@@ -286,7 +292,7 @@
             success: function (classesData) {
                 if (classesData && classesData.Error == 1) {
                     classesData = null;
-                }                
+                }
                 if (classesData == null) {
                     $('#UploadReminderDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
                     $('#lockDate').attr("value", "").val("").attr("placeholder", "DD/MM/YYYY");
@@ -314,7 +320,7 @@
     }
 
     $('#GranularTime').change(function () {
-       
+
         FillReportingStartEndDate();
         FillGranularDropdown();
         var hdnGranularity = $('#hdnGranularTime');
@@ -324,44 +330,40 @@
             }
         }
     });
-    $('#btnCancel').click(function () {
-        window.location.href = "@Url.Action("SearchTemplate", "SearchTemplate")";
-    })
+
 
     // To check the value of lock date with respect to Escalation and upload Reminder
     function validateDates() {
-    const lockDate = new Date($('#lockDate').val());
-    const escalationDate = new Date($('#EscalationAlertDate').val());
-    const uploadReminderDate = new Date($('#UploadReminderDate').val());
+        const lockDate = new Date($('#lockDate').val());
+        const escalationDate = new Date($('#EscalationAlertDate').val());
+        const uploadReminderDate = new Date($('#UploadReminderDate').val());
 
-    if (lockDate > new Date().setDate(new Date().getDate() + 30)) 
-    {
-        alert('Lock date cannot be greater than 30 days');
-        $('#lockDate').val('');
-        return;
-    } 
-    else 
-    {
-        if (escalationDate >= lockDate) {
-            alert('Escalation date cannot be greater than lock date');
+        if (lockDate > new Date().setDate(new Date().getDate() + 30)) {
+            alert('Lock date cannot be greater than 30 days');
             $('#lockDate').val('');
             return;
         }
-        if (uploadReminderDate >= lockDate) {
-            alert('Upload reminder date cannot be greater than lock date');
-            $('#UploadReminderDate').val('');
+        else {
+            if (escalationDate >= lockDate) {
+                alert('Escalation date cannot be greater than lock date');
+                $('#lockDate').val('');
+                return;
+            }
+            if (uploadReminderDate >= lockDate) {
+                alert('Upload reminder date cannot be greater than lock date');
+                $('#UploadReminderDate').val('');
+                return;
+            }
+        }
+
+        if (escalationDate <= uploadReminderDate) {
+            alert('Escalation date should be greater than upload reminder');
+            $('#EscalationAlertDate').val('');
             return;
         }
     }
 
-    if (escalationDate <= uploadReminderDate) {
-        alert('Escalation date should be greater than upload reminder');
-        $('#EscalationAlertDate').val('');
-        return;
-    }
-}
-
-$('#lockDate, #EscalationAlertDate, #UploadReminderDate').on('change', validateDates);
+    $('#lockDate, #EscalationAlertDate, #UploadReminderDate').on('change', validateDates);
 
 </script>
 
