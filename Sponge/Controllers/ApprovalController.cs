@@ -98,7 +98,8 @@ namespace Sponge.Controllers
                                     { "<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("MMM/dd/yyyy") },
                                     { "<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("MMM/dd/yyyy") },
                                     { "<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("MMM/dd/yyyy")},
-                                    { "<ApproverName>", HttpContext.Session.GetString("NAME") }
+                                    { "<ApproverName>", HttpContext.Session.GetString("NAME") },
+                                    { "<Comments>", document.COMMENTS }
                                 };
 
                                 string DataCollectionSubject = "[Sponge] - Template Status";
@@ -129,7 +130,8 @@ namespace Sponge.Controllers
                                     { "<ForTime>", Convert.ToDateTime(template.PERIOD_FROM).ToString("MMM/dd/yyyy") },
                                     { "<OnTime>", Convert.ToDateTime(template.PERIOD_TO).ToString("MMM/dd/yyyy") },
                                     { "<LockDate>", Convert.ToDateTime(template.LOCK_DATE).ToString("MMM/dd/yyyy")},
-                                    { "<ApproverName>", HttpContext.Session.GetString("NAME") }
+                                    { "<ApproverName>", HttpContext.Session.GetString("NAME") },
+                                    { "<Comments>", document.COMMENTS }
                                 };
 
                                 string DataCollectionSubject = "[Sponge] - Template Status";
