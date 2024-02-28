@@ -61,7 +61,7 @@ namespace Sponge.Controllers
                 result.SUBFUNCTION_NAME = item.SUBFUNCTION_NAME;
                 result.PENDING_BY = item.NAME;
                 result.TRIMMED_FILE_NAME = TrimFileName(item.FILE_NAME);
-                result.CONFIG_ID = item.CONFIG_ID;
+                result.CONFIG_ID = (int)item.CONFIG_ID;
                 result.FILE_CODE = item.FILE_CODE;
                 results.Add(result);
             }

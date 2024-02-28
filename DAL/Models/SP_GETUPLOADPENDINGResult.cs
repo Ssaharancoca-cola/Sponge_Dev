@@ -11,7 +11,7 @@ namespace DAL.Models
         public string NAME { get; set; }
         public string LOCK_DATE { get; set; }
         public string FILE_NAME { get; set; }
-        public int CONFIG_ID { get; set; }
+        public int? CONFIG_ID { get; set; }
         public string FILE_CODE { get; set; }
     }
 }

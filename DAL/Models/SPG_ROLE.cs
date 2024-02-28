@@ -12,6 +12,6 @@ namespace DAL.Models
         public string ACTIVE_FLAG { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime CREATED_ON { get; set; }
-        public int ROLE_PRIORITY { get; set; }
+        public int? ROLE_PRIORITY { get; set; }
     }
 }
