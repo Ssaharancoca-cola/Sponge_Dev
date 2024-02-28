@@ -396,7 +396,7 @@ namespace BatchJob
                             {
                                 var GetColumnNames = m.SPG_CONFIG_STRUCTURE.Where(w => w.CONFIG_ID == configId && w.COLLECTION_TYPE == "Measure" && w.GROUPCOLUMNNAME != null).Select(s => s.GROUPCOLUMNNAME).Distinct().FirstOrDefault();
 
-                                if (GetColumnNames.Length > 0)
+                                if (GetColumnNames != null && GetColumnNames.Length > 0)
                                 {
                                     IsGroupColumnNameExist = true;
                                 }
@@ -1297,29 +1297,22 @@ namespace BatchJob
         }
         private void CellsNumeric(ExcelWorksheet objWorksheet, char nextcharacter, int number)
         {
-
-            string resultchar = (nextcharacter.ToString() + ':' + nextcharacter.ToString()).ToString();
-            var val = objWorksheet.DataValidations.AddDecimalValidation(resultchar.ToString());
-            val.ShowErrorMessage = true;
-            IExcelDataValidation dataValidation;
+            string resultchar = nextcharacter.ToString() + ":" + nextcharacter.ToString();
             long minValue = Convert.ToInt64(_settings.NumberMin);
             long maxValue = Convert.ToInt64(_settings.NumberMax);
+            //objWorksheet.Cells[resultchar].Style.Numberformat.Format = "#.00000000";
 
-            // If UoM1 == 9Litres then Decimal else Integer
-
-            val.Formula.Value = minValue;
-            val.Formula2.Value = maxValue;
-            dataValidation = val;
-
-            dataValidation.Error = "Enter The Value between " + minValue + "  to  " + maxValue + "";
-            dataValidation.ErrorStyle = OfficeOpenXml.DataValidation.ExcelDataValidationWarningStyle.stop;
-            dataValidation.ErrorTitle = "Input Validation";
-            dataValidation.ShowErrorMessage = true;
-            dataValidation.AllowBlank = true;
-
-            objWorksheet.Cells[resultchar].Style.Numberformat.Format = "#.00";
-           // objWorksheet.Cells[resultchar].Style.Numberformat.Format = "####";
-
+            var val = objWorksheet.DataValidations.AddCustomValidation(resultchar);
+            val.ShowErrorMessage = true;
+            val.Formula.ExcelFormula = $"=AND({nextcharacter}1 >= {minValue}, {nextcharacter}1 <= {maxValue}, " +
+                                $"IF(ISERROR(FIND(\".\", {nextcharacter}1)), TRUE, " +
+                                $"LEN(MID(TEXT({nextcharacter}1, \"0.###############\"), " +
+                                $"FIND(\".\", TEXT({nextcharacter}1, \"0.###############\")) + 1, 255)) <= 10))";
+            val.Error = $"Enter a value between {minValue} and {maxValue} with no more than 8 digits after the decimal point.";
+            val.ErrorStyle = ExcelDataValidationWarningStyle.stop;
+            val.ErrorTitle = "Input Validation";
+            val.ShowErrorMessage = true;
+            val.AllowBlank = true;
         }
         private void DateNumeric(ExcelWorksheet objWorksheet, char nextcharacter, int number)
         {
@@ -1331,18 +1324,15 @@ namespace BatchJob
             DateTime minValue = DateTime.MinValue;
             DateTime maxValue = DateTime.MaxValue;
 
-            // If UoM1 == 9Litres then Decimal else Integer
-
             val.Formula.Value = minValue;
             val.Formula2.Value = maxValue;
             dataValidation = val;
 
             dataValidation.Error = "Error! Invalid date.Date format should be MM/DD/YYYY";//"Invalid Date! ";
-            dataValidation.ErrorStyle = OfficeOpenXml.DataValidation.ExcelDataValidationWarningStyle.stop;
+            dataValidation.ErrorStyle = ExcelDataValidationWarningStyle.stop;
             dataValidation.ErrorTitle = "Input Validation";
             dataValidation.ShowErrorMessage = true;
             dataValidation.AllowBlank = true;
-            //objWorksheet.Cells[resultchar].Value="MM/DD/YYYY";
             objWorksheet.Cells[resultchar].AutoFitColumns();
             objWorksheet.Cells[resultchar].Style.Numberformat.Format = "MM/DD/YYYY";
 
@@ -1361,15 +1351,12 @@ namespace BatchJob
             double minValue = Convert.ToDouble(_settings.NumberMin);
             double maxValue = Convert.ToDouble(_settings.NumberMax);
 
-
-            // If UoM1 == 9Litres then Decimal else Integer
-
             val.Formula.Value = minValue;
             val.Formula2.Value = maxValue;
             dataValidation = val;
 
             dataValidation.Error = "Enter The Value between " + minValue + " to " + maxValue + "";
-            dataValidation.ErrorStyle = OfficeOpenXml.DataValidation.ExcelDataValidationWarningStyle.stop;
+            dataValidation.ErrorStyle = ExcelDataValidationWarningStyle.stop;
             dataValidation.ErrorTitle = "Input Validation";
             dataValidation.ShowErrorMessage = true;
             dataValidation.AllowBlank = true;
