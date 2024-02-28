@@ -33,6 +33,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                
                                 @if (Model.Count != 0)
                                 {
                                     foreach (var item in Model)
@@ -44,7 +45,7 @@
                                             <td>@(item.Document.UPLOADDATE != null ? item.Document.UPLOADDATE.Value.ToString("MMM/dd/yyyy") : "")</td>
 
                                             <td>@item.SubjectArea.SUBJECTAREA_NAME</td>
-                                            <td>@Html.ActionLink("Download", "Download", new {configId = item.Configuration.CONFIG_ID, documentId = @item.Document.ID }, new { @class = "btn btn-primary" })</td>
+                                            <td>@Html.ActionLink("Download", "Download", new { configId = item.Configuration.CONFIG_ID, documentId = @item.Document.ID }, new { @class = "btn btn-primary" })</td>
                                         </tr>
                                     }
                                 }
@@ -91,9 +92,34 @@
 
         $('#selectAll').on('change', function () {
             var isChecked = $(this).prop("checked");
-            $('.selectItem').prop('checked', isChecked);
-            $("#btnApprove").prop('disabled', !isChecked);
-            $("#btnReject").prop('disabled', !isChecked);
+            var hasRows = $('.selectItem').length > 0; // Check if rows exist
+
+            $('.selectItem').prop('checked', isChecked && hasRows); // Only check if rows exist
+            $("#btnApprove").prop('disabled', !hasRows || !isChecked); // Keep disabled if no rows
+            $("#btnReject").prop('disabled', !hasRows || !isChecked); // Keep disabled if no rows
+        });
+        $('.selectItem').on('change', function () {
+            // If any of the individual checkboxes is unchecked, uncheck the 'select all' checkbox
+            if ($(this).prop('checked') === false) {
+                $('#selectAll').prop('checked', false);
+            }
+
+            // Check if all the individual checkboxes are checked, if they are, check the 'select all' checkbox
+            var allChecked = true;
+            $('.selectItem').each(function () {
+                if ($(this).prop('checked') === false) {
+                    allChecked = false;
+                }
+            });
+
+            if (allChecked) {
+                $('#selectAll').prop('checked', true);
+            }
+
+            // Enable/Disable the 'Approve' and 'Reject' buttons depending on if any checkbox is checked
+            var anyChecked = $('.selectItem:checked').length > 0;
+            $('#btnApprove').prop('disabled', !anyChecked);
+            $('#btnReject').prop('disabled', !anyChecked);
         });
 
         $('#ApprovalGrid table').DataTable();

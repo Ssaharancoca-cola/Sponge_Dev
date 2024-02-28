@@ -23,11 +23,12 @@ namespace Sponge.Controllers
                                join userFunc in context.SPG_USERS_FUNCTION on user.USER_ID equals userFunc.USER_ID
                                join role in context.SPG_ROLE on userFunc.ROLE_ID equals role.ROLE_ID
                                where user.USER_ID == userName[1]
-                               orderby role.ROLE_ID descending
+                               orderby role.ROLE_PRIORITY ascending
                                select new
                                {
                                    NAME = user.Name,
                                    ROLE = role.ROLE_NAME,
+                                   PRIORITY = role.ROLE_PRIORITY
                                }).FirstOrDefault();
 
             var activeFlag = (from user in context.SPG_USERS

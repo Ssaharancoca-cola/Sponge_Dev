@@ -28,7 +28,7 @@
                             </div>
                             <div class="col">
                                 <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME">SubjectArea <span style="color:red">*</span></label>
-                                <input required asp-for="SpgSubjectArea.SUBJECTAREA_NAME" maxlength="50" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-z0-9_]/i.test(event.key)" />
+                                <input required asp-for="SpgSubjectArea.SUBJECTAREA_NAME" maxlength="45" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-z0-9_]/i.test(event.key)" />
                                 <span style="font-size:10px">Please enter only uppercase A-Z, lowercase a-z, numbers 0-9, or underscore _</span>
                                 @* <span asp-validation-for="SpgSubjectArea.SUBJECTAREA_NAME" class="text-danger" style="font-size:10px"></span> *@
                             </div>
