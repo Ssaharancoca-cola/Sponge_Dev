@@ -810,8 +810,8 @@ namespace Sponge.Controllers
             string LookVal = "";
 
             string Dynamic_SP_name = "SP_GET_DYNAMIC_QUERY_RESULTS";
-            string dynamicsqlQuery = "Select distinct DATA_TYPE,  LOOKUP_VALUE,LOOKUP_DESC,Display_Name from DIM_LOOKUP  p, SPG_CONFIG_STRUCTURE C " +
-"WHERE c.config_id ='" + ConFigId + "' and C.LOOKUP_TYPE = p.LOOKUP_TYPE and c.DISPLAY_TYPE = 'DROPDOWN' and LookUp_DESC = '" + LookUp_DESC + "' order by DATA_TYPE asc";
+            string dynamicsqlQuery = "Select distinct DATA_TYPE,  p.LOOKUP_CODE,LOOKUP_DESC,Display_Name from DIM_LOOKUP  p, SPG_CONFIG_STRUCTURE C " +
+"WHERE c.config_id ='" + ConFigId + "' and C.LOOKUP_TYPE = p.LOOKUP_TYPE and c.DISPLAY_TYPE = 'DROPDOWN' and p.LOOKUP_DESC = '" + LookUp_DESC + "' order by DATA_TYPE asc";
             DataSet dsResults = new DataSet();
             using (GetDataSet objGetDataSetValue = new GetDataSet())
             {

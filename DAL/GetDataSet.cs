@@ -1093,7 +1093,7 @@ namespace DAL
                     {
                         ErrorLog lgerr = new ErrorLog();
                         lgerr.LogErrorInTextFile(ex);
-                        //SentErrorMail.SendEmailToError("InnerException: " + ex.InnerException?.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
+                        SentErrorMail.SentEmailtoError("InnerException: " + ex.InnerException?.ToString() + " StackTrace: " + ex.StackTrace.ToString() + " Message" + ex.Message);
                     }
                 }
             }
