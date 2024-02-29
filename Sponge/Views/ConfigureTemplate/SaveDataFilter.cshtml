@@ -45,25 +45,24 @@
                         <div class="tab-pane fade @show " id="@panelId" role="tabpanel" aria-labelledby="@panelId-tab">
                             @{
                                 // Order the master values so that the ones with special row at the end
-                                var sortedMasterValues = dimension.Value.OrderByDescending(master => master.Value.Any(item => item.ContainsKey("SpecialRow"))).ToList();
-
+                                var sortedMasterValues = dimension.Value.OrderBy(master => master.Value.Any(item => item.ContainsKey("SpecialRow"))).ToList();
                                 foreach (var master in sortedMasterValues)
                                 {
                                     {
-                                                <div class="forms-sample">
-                                                    <div class="form-group row">
-                                                        <div class="col-5">
-                                                    <label  for="selectedMaster">@master.Key values</label>
-                                                            @{
+                                        <div class="forms-sample">
+                                            <div class="form-group row">
+                                                <div class="col-5">
+                                                    <label for="selectedMaster">@master.Key values</label>
+                                                    @{
                                                         var specialRow = master.Value.FirstOrDefault(item => item.ContainsKey("SpecialRow"));
 
                                                         if (specialRow != null)
                                                         {
-                                                                            <input type="text" class="form-control" id="searchInput_@i" placeholder="Search..." />
+                                                            <input type="text" class="form-control" id="searchInput_@i" placeholder="Search..." />
                                                         }
-                                                            }
+                                                    }
                                                     <select data-idx="@master.Key" class="form-control select-lr leftSelect_@i" multiple>
-                                                                @foreach (var item in master.Value)
+                                                        @foreach (var item in master.Value)
                                                         {
                                                             var secondColumnCode = "";
                                                             var secondColumnValue = "";
@@ -74,33 +73,34 @@
                                                                 // indicate the special case
                                                                 secondColumnValue = item["SpecialRow"];
                                                             }
-                                                            else
+                                                            else if (item.Count >= 2)
                                                             {
                                                                 // normal case
-                                                                secondColumnCode = item.ElementAt(0).Value;
-                                                                secondColumnValue = item.ElementAt(1).Value;
+                                                                var keys = item.Keys.ToList();
+                                                                secondColumnCode = item[keys[0]]; // Accessing by key instead of index
+                                                                secondColumnValue = item[keys[1]];
                                                             }
 
-                                                                    <option value="@secondColumnCode">@secondColumnValue</option>
+                                                            <option value="@secondColumnCode">@secondColumnValue</option>
                                                         }
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-2 wrapper-btn-lr">
-                                                            <button class="moveRight btn btn-primary mb-4"> > </button>
-                                                            <button class="moveLeft btn btn-primary"> &lt; </button>
-                                                        </div>
-                                                        <div class="col-5">
-                                                            <label for="selectedMaster">Selected @master.Key values</label>
-                                                            @if (specialRow != null)
-                                                    {
-                                                                <input type="text" class="form-control" style="visibility:hidden" />
-                                                    }
-                                                            <select class="form-control select-lr rightSelect_@i" data-idx="@master.Key" multiple>
-                                                                <!-- Selected options will be moved here -->
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                                    </select>
                                                 </div>
+                                                <div class="col-2 wrapper-btn-lr">
+                                                    <button class="moveRight btn btn-primary mb-4"> > </button>
+                                                    <button class="moveLeft btn btn-primary"> &lt; </button>
+                                                </div>
+                                                <div class="col-5">
+                                                    <label for="selectedMaster">Selected @master.Key values</label>
+                                                    @if (specialRow != null)
+                                                    {
+                                                        <input type="text" class="form-control" style="visibility:hidden" />
+                                                    }
+                                                    <select class="form-control select-lr rightSelect_@i" data-idx="@master.Key" multiple>
+                                                        <!-- Selected options will be moved here -->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                         i++; // increment counter after each iteration
                                     }
                                 }
@@ -134,8 +134,14 @@
         var rightSelect = currentFormGroup.find('.rightSelect_' + counter);
 
         $(document).on('click', settings.moveRightButton, function () {
+            var selectedOptions = leftSelect.find('option:selected');
             if ($(this).closest('.form-group').is(currentFormGroup)) {
-                leftSelect.find('option:selected').appendTo(rightSelect);
+                selectedOptions.each(function () {
+                    var optionText = $(this).text();
+                    if (optionText !== "Please type 5 characters to search...") {
+                        $(this).appendTo(rightSelect);
+                    }
+                });
             }
         });
 
@@ -147,6 +153,37 @@
     };
 
     $(document).ready(function () {
+
+        $(document).ready(function () {
+            // Iterate over each select element whose class contains 'leftSelect'
+            $('select[class*="leftSelect"]').each(function () {
+                var $select = $(this);
+
+                // Check if there is an option with the specific text
+                var optionWithSpecificTextExists = $select.find('option').filter(function () {
+                    return $(this).text() === "Please type 5 characters to search...";
+                }).length > 0;
+
+                // If the specific option exists, do nothing
+                if (optionWithSpecificTextExists) {
+                    return;
+                }
+
+                // Remove the empty option if it exists
+                $select.find('option[value=""]').remove();
+
+                // Check if the select now has no option elements
+                if ($select.find('option').length === 0) {
+                    // Append the new option with the text 'No values for this dimension'
+                    $select.append($('<option>', {
+                        value: '', // Set value to empty string
+                        text: 'No values for this dimension',
+                        disabled: true // Make option disabled so it's not selectable
+                    }));
+                }
+            });
+        });
+
         $('#myTab a').on('shown.bs.tab', function (e) {
             var target = $(e.target).attr('href');
             var dimensionName = target.substring(1);
@@ -220,7 +257,7 @@
                 } else {
                     $selectElement.append($('<option>').text('Please type 5 characters to search...'));
                 }
-                
+
 
                 // Exit early if the searchTerm is empty
                 if (!$.trim(searchTerm)) {
@@ -232,11 +269,11 @@
                         url: '/ConfigureTemplate/SearchMasters',
                         type: 'POST',
                         dataType: 'json',
-                        data: 
+                        data:
                         {
-                                DimensionName: dimensionName,
-                                MasterKey: masterKey,
-                                SearchTerm: searchTerm
+                            DimensionName: dimensionName,
+                            MasterKey: masterKey,
+                            SearchTerm: searchTerm
                         },
                         success: function (response) {
                             var data = JSON.parse(response);
@@ -257,17 +294,17 @@
                                     }
                                 });
                             }
-                            
+
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.error('Search Error for input #' + inputIndex + ':', textStatus, errorThrown);
                         }
                     });
                 }
-                
+
             }
         });
-        
+
     });
     @for (int j = 0; j < i; j++)
     {
@@ -276,22 +313,21 @@
 
         $("#submit").click(function (e) {
 
-            var optionExists = false; 
+            var optionExists = false;
 
             $('select[class*="rightSelect_"]').each(function () {
                 if ($(this).find('option').length > 0) {
                     optionExists = true;
-                    return false; 
+                    return false;
                 }
             });
 
             // If no option exists in any select, preventing form submission and alert the user
             if (!optionExists) {
-                e.preventDefault(); 
+                e.preventDefault();
                 alert("Please select at least one option before submitting.");
             }
-            else
-            {
+            else {
                 var selectedValues = {};
                 $('select[class*="rightSelect_"]').each(function () {
                     var $select = $(this);
@@ -328,12 +364,12 @@
                 });
             }
 
-            
+
         });
 
     $("#cancelButton").click(function () {
         window.location.href = "ConfigureTemplate";
     });
 
-    
+
 </script>
