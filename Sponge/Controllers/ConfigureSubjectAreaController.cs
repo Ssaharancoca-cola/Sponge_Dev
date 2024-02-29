@@ -181,7 +181,7 @@ namespace Sponge.Controllers
                         SUBJECTAREA_ID = selectedSubjectArea,
                         IS_KEY = "Y",
                         IS_SHOW = "N",
-                        DISPLAY_NAME = master.DisplayName + " Code",
+                        DISPLAY_NAME = ((master.DisplayName).Trim() + " Code").Trim(),
                         MASTER_NAME = master.Master
                     };
 

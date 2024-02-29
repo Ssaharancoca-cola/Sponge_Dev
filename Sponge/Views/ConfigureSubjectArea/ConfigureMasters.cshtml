@@ -193,7 +193,7 @@
 
             // Build an object of lowercased values to arrays of inputs with that value
             allInputs.each(function () {
-                var lowerVal = $(this).val().toLowerCase();
+                var lowerVal = $(this).val().trim().toLowerCase();
                 if (lowerVal === '') return true; // Skip empty values
 
                 if (!inputValues[lowerVal]) {
