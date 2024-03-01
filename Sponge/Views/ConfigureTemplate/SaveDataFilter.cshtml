@@ -164,6 +164,10 @@
                     return $(this).text() === "Please type 5 characters to search...";
                 }).length > 0;
 
+                $select.find('option').filter(function () {
+                    return $(this).text() === "Please type 5 characters to search...";
+                }).prop('disabled', true);
+
                 // If the specific option exists, do nothing
                 if (optionWithSpecificTextExists) {
                     return;
