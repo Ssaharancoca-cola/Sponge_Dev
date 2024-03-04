@@ -1297,22 +1297,23 @@ namespace BatchJob
         }
         private void CellsNumeric(ExcelWorksheet objWorksheet, char nextcharacter, int number)
         {
-            string resultchar = nextcharacter.ToString() + ":" + nextcharacter.ToString();
+            string resultchar = (nextcharacter.ToString() + ':' + nextcharacter.ToString()).ToString();
+            var val = objWorksheet.DataValidations.AddDecimalValidation(resultchar.ToString());
+            val.ShowErrorMessage = true;
+            IExcelDataValidation dataValidation;
             long minValue = Convert.ToInt64(_settings.NumberMin);
             long maxValue = Convert.ToInt64(_settings.NumberMax);
-            //objWorksheet.Cells[resultchar].Style.Numberformat.Format = "#.00000000";
+            val.Formula.Value = minValue;
+            val.Formula2.Value = maxValue;
+            dataValidation = val;
 
-            var val = objWorksheet.DataValidations.AddCustomValidation(resultchar);
-            val.ShowErrorMessage = true;
-            val.Formula.ExcelFormula = $"=AND({nextcharacter}1 >= {minValue}, {nextcharacter}1 <= {maxValue}, " +
-                                $"IF(ISERROR(FIND(\".\", {nextcharacter}1)), TRUE, " +
-                                $"LEN(MID(TEXT({nextcharacter}1, \"0.###############\"), " +
-                                $"FIND(\".\", TEXT({nextcharacter}1, \"0.###############\")) + 1, 255)) <= 10))";
-            val.Error = $"Enter a value between {minValue} and {maxValue} with no more than 8 digits after the decimal point.";
-            val.ErrorStyle = ExcelDataValidationWarningStyle.stop;
-            val.ErrorTitle = "Input Validation";
-            val.ShowErrorMessage = true;
-            val.AllowBlank = true;
+            dataValidation.Error = "Enter The Value between " + minValue + "  to  " + maxValue + "";
+            dataValidation.ErrorStyle = ExcelDataValidationWarningStyle.stop;
+            dataValidation.ErrorTitle = "Input Validation";
+            dataValidation.ShowErrorMessage = true;
+            dataValidation.AllowBlank = true;
+
+            objWorksheet.Cells[resultchar].Style.Numberformat.Format = "0.####################################";
         }
         private void DateNumeric(ExcelWorksheet objWorksheet, char nextcharacter, int number)
         {
