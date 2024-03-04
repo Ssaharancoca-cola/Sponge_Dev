@@ -45,7 +45,7 @@
                             <input type="hidden" name="PeriodTo" value="@Model.PeriodTo" id="hdnPeriodTo" />
 
                             <input type="hidden" value="@ViewBag.OnTimeLevel" id="hdnOnTimeLevel" />
-                            @if (@Model.Version == "Y")
+                            @if (@Model.Version == "Y" && Model.Frequency.ToUpper() != "DAILY")
                             {
                                 <div class="col-sm-4 col-md-4">
                                     <label for="GranularTime">Granularity <span class="text-danger">*</span></label>
