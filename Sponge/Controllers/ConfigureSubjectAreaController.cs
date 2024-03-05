@@ -218,6 +218,7 @@ namespace Sponge.Controllers
                 (r, uom) => new { r.o, r.mpp, uom })
             .Select(r => new SPG_SUBJECT_DATACOLLECTION
             {
+                DATACOLLECT_ID = r.o.DATACOLLECT_ID,
                 DISPLAY_NAME = r.o.DISPLAY_NAME,
                 FIELD_NAME = r.o.FIELD_NAME,
                 IS_LOOKUP = r.o.IS_LOOKUP,
@@ -227,7 +228,7 @@ namespace Sponge.Controllers
             }).Distinct().ToList();
             selectedDataCollection.AddRange(selectedMaster);
 
-            ViewBag.SelectedDataCollection = selectedDataCollection.ToList();
+            ViewBag.SelectedDataCollection = selectedDataCollection.OrderBy(x => x.DATACOLLECT_ID).ToList();
 
             var subjectAreaName = HttpContext.Session.GetString("SubjectAreaName");
             ViewBag.SubjectAreaName = subjectAreaName;
