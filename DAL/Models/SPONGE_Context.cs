@@ -49,6 +49,7 @@ namespace DAL.Models
             {
                 optionsBuilder.UseSqlServer("Data Source=zwdmyad0001;Initial Catalog=SPONGE_DEV;Persist Security Info=True;User ID=SPONGE_DEV_APP;Password=SJX)^8nVYfQ#3D;TrustServerCertificate=True");
                 //optionsBuilder.UseSqlServer("Data Source=zwqmyad0001;Initial Catalog=SPONGE_QA;Persist Security Info=True;User ID=SPONGE_QA_APP;Password=Lw#Bbt/1sPBG;TrustServerCertificate=True");
+                //optionsBuilder.UseSqlServer("Data Source=zwpmyad0001;Initial Catalog=SPONGE_PROD;Persist Security Info=True;User ID=SPONGE_PROD_APP;Password=B?Wab9z-*J9=yc;TrustServerCertificate=True");
             }
         }
 
