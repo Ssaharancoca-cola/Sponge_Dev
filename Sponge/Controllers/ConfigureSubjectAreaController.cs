@@ -119,10 +119,16 @@ namespace Sponge.Controllers
                  .Where(x => x.MASTER_NAME == Masterdesc.MASTER_NAME)
                  .Select(o => o.MASTER_DISPLAY_NAME)
                  .FirstOrDefault(); 
-
+                var fieldName = sPONGE_Context.SPG_MPP_MASTER.Where(x => x.COLUMN_NAME == Masterdesc.FIELD_NAME)
+                 .Select(o => o.COLUMN_DISPLAY_NAME)
+                 .FirstOrDefault();
                 if (masterdisplayname != null)
                 {
                     Masterdesc.MASTER_NAME = masterdisplayname;
+                }
+                if (fieldName != null)
+                {
+                    Masterdesc.FIELD_NAME = fieldName;
                 }
 
             }
