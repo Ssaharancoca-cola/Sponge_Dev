@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.Common;
+using DAL.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -295,49 +296,48 @@ namespace Sponge.Controllers
         {
             SPONGE_Context objModel = new ();
             string[] userName = User.Identity.Name.Split(new[] { "\\" }, StringSplitOptions.None);
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
                     SPG_SENDORRESENDTASK sendresendtask = new SPG_SENDORRESENDTASK();
-                sendresendtask.ATTEMPTS = 0;
-                sendresendtask.CONFIG_ID = model.ConfigId;
-                sendresendtask.SENT = 0;
-                sendresendtask.LOCKDATE = model.LockDate;
-                sendresendtask.UPLOADREMINDERDATE = model.UploadReminderDate;
-                sendresendtask.ESCALATIONDATE = model.EscalationAlertDate;
-                sendresendtask.CREATEDDATE = DateTime.Now;
-                sendresendtask.CREATEDBY = userName[1];
-                sendresendtask.FORTIMECODE = model.OnTime;
-                sendresendtask.PERIOD_FROM = model.PeriodFrom;
-                sendresendtask.PERIOD_TO = model.PeriodTo;
-                sendresendtask.DATA_COLLECTION = "Offline";
-                sendresendtask.IS_POPULATED = "Y";
-                sendresendtask.ONTIMECODE = model.GranularTime == null ? model.OnTime : model.GranularTime;
-                sendresendtask.IS_AUTO_MANUAL = "Manual";
-                objModel.SPG_SENDORRESENDTASK.Add(sendresendtask);
-                objModel.SaveChanges();
-                return RedirectToAction("SearchTemplate", "SearchTemplate");
+                    sendresendtask.ATTEMPTS = 0;
+                    sendresendtask.CONFIG_ID = model.ConfigId;
+                    sendresendtask.SENT = 0;
+                    sendresendtask.LOCKDATE = model.LockDate;
+                    sendresendtask.UPLOADREMINDERDATE = model.UploadReminderDate;
+                    sendresendtask.ESCALATIONDATE = model.EscalationAlertDate;
+                    sendresendtask.CREATEDDATE = DateTime.Now;
+                    sendresendtask.CREATEDBY = userName[1];
+                    sendresendtask.FORTIMECODE = model.OnTime;
+                    sendresendtask.PERIOD_FROM = model.PeriodFrom;
+                    sendresendtask.PERIOD_TO = model.PeriodTo;
+                    sendresendtask.DATA_COLLECTION = "Offline";
+                    sendresendtask.IS_POPULATED = "Y";
+                    sendresendtask.ONTIMECODE = model.GranularTime == null ? model.OnTime : model.GranularTime;
+                    sendresendtask.IS_AUTO_MANUAL = "Manual";
+                    objModel.SPG_SENDORRESENDTASK.Add(sendresendtask);
+                    objModel.SaveChanges();
+                    return Json(new { success = true, message = "Template sent for generation successfully." });
+                }
+                else
+                {
+                    SPG_SUBJECTAREA subArea = objModel.SPG_SUBJECTAREA.Where(s => s.SUBJECTAREA_ID.Equals(model.SubjectAreaId)).FirstOrDefault();
+                    string currentOnTimeForTime = string.Empty;
+
+                    var forTimeOnTimeList = GetForTimeOnTime(subArea, subArea.REPORTING_PERIOD, ref currentOnTimeForTime);
+                    ViewBag.ForTimeOnTime = forTimeOnTimeList.Items;
+                    ViewBag.OnTimeLevel = objModel.SPG_SUBJECTAREA.Where(s => s.SUBJECTAREA_ID == model.SubjectAreaId).Select(s => s.ONTIMELEVEL).FirstOrDefault().ToString();
+
+                    return View("~/Views/ManualSendResend/ManualSendResend.cshtml", model);
+
+                }
             }
-            else
+            catch (Exception ex)
             {
-                SPG_SUBJECTAREA subArea = objModel.SPG_SUBJECTAREA.Where(s => s.SUBJECTAREA_ID.Equals(model.SubjectAreaId)).FirstOrDefault();
-                string currentOnTimeForTime = string.Empty;
-
-                var forTimeOnTimeList = GetForTimeOnTime(subArea, subArea.REPORTING_PERIOD, ref currentOnTimeForTime);
-                ViewBag.ForTimeOnTime = forTimeOnTimeList.Items;
-                ViewBag.OnTimeLevel = objModel.SPG_SUBJECTAREA.Where(s => s.SUBJECTAREA_ID == model.SubjectAreaId).Select(s => s.ONTIMELEVEL).FirstOrDefault().ToString();
-
-                
-                //else if (ModelState.IsValidField("lock_date") == false)
-                //{
-                //    ViewBag.ErrorMsg = "Enter a valid Lock Date";
-                //}
-                //else if (ModelState.IsValidField("IsPopluated") == false)
-                //{
-                //    ViewBag.ErrorMsg = "Select Is Pre Populated?";
-                //}
-
-                return View("~/Views/ManualSendResend/ManualSendResend.cshtml", model);
-
+                ErrorLog lgerr = new ErrorLog();
+                lgerr.LogErrorInTextFile(ex);
+                return Json(new { success = false, message = "An error occurred while sending template." });
             }
 
         }
