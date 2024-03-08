@@ -108,7 +108,7 @@ namespace Sponge.Controllers
             {
                 var selectedMaster = sPONGE_Context.SPG_SUBJECT_MASTER
                     .Where(x => x.DIMENSION_TABLE == Master.Key && x.SUBJECTAREA_ID == selectedSubjectArea && x.IS_SHOW == "Y")
-                    .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME = o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME })
+                    .Select(o => new SPG_SUBJECT_MASTER { MASTER_NAME = o.MASTER_NAME, FIELD_NAME = o.FIELD_NAME, DISPLAY_NAME = o.DISPLAY_NAME, SUBJECT_MASTER_ID = o.SUBJECT_MASTER_ID })
                         .Distinct().ToList();
                 selectedMasters.AddRange(selectedMaster);
 
@@ -133,7 +133,7 @@ namespace Sponge.Controllers
 
             }
             ViewBag.SPG_MASTER = new SelectList(spg_Masters.ToList(), "MASTER_NAME", "MASTER_DISPLAY_NAME");
-            ViewBag.SelectedMaster = selectedMasters.ToList();
+            ViewBag.SelectedMaster = selectedMasters.OrderBy(x=> x.SUBJECT_MASTER_ID).ToList();
 
             ViewBag.SubjectAreaName = subjectAreaName;
 

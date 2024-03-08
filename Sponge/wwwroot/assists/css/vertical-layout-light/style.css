@@ -14220,7 +14220,7 @@ code {
         }
 
     .card .card-title {
-        color: #DB7093;
+        color: black;
         margin-bottom: 1.2rem;
         text-transform: capitalize;
         font-size: 1.125rem;
@@ -18501,7 +18501,7 @@ body.avgrund-active {
 }
 
 .expandable-table thead tr th {
-    background: var(--primary);
+    background: var(--red);
     padding: 15px 10px;
     color: #ffffff;
     /*font-size: 14px;*/

@@ -18,7 +18,7 @@
                                 <th>Lock Date</th>
                                 <th>File Name</th>
                                 <th>Uploaded By</th>
-                                <th>Download</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -45,7 +45,10 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     new DataTable('#example', {
-        order: [[2, 'desc']]
+        order: [[2, 'desc']],
+        "aoColumnDefs": [
+            { "bSearchable": false, "bSortable": false, "aTargets": [4] }
+        ]
     });
 
     //Initialize the Multiselect Dropdown:
