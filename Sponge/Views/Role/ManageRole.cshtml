@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">
-                        Manage Role @* <a href="@Url.Action("CreateRole")">
+                        Role Definition @* <a href="@Url.Action("CreateRole")">
                             <svg viewBox="0 0 24 24"
                                  width="24" height="24" stroke="currentColor" stroke-width="2"
                                  fill="none" stroke-linecap="round" stroke-linejoin="round"
@@ -26,6 +26,7 @@
                             <thead>
                                 <tr>
                                     <th>Role Name</th>
+                                    <th>Role Definition</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -33,6 +34,7 @@
                                 {
                                     <tr>
                                         <td>@item.ROLE_NAME</td>
+                                        <td>@item.ROLE_DEFINITION</td>
                                     </tr>
                                 }
                             </tbody>
@@ -50,7 +52,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     new DataTable('#example', {
-        order: [[1, 'desc']]
+        order: [[2, 'desc']]
     });
     //Initialize the Multiselect Dropdown:
 

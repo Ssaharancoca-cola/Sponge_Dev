@@ -55,6 +55,7 @@
 
                             <div class="col-sm-3 col-md-3">
                                 <label for="lockDate">Lock</label>
+                                <span style="color:red">*</span>
                                 <input required type="number" min="1" max="30" value="@ViewBag.Result.LOCK_DATE" class="form-control" name="LOCK_DATE" id="lockDate">
                                 <span>days after template generation date</span>
                             </div>
@@ -111,6 +112,7 @@
                         <div class="form-group row">
                             <div class="col">
                                 <label for="approverEmailID">Approver Email ID</label>
+                                <span style="color:red">*</span>
                                 <input required type="email" value="@ViewBag.Result.APPROVER_EMAILD" class="form-control" name="APPROVER_EMAILID" id="approverEmailID" name="c">
                                 <div id="emailSuggestions" style="border:1px solid;display:none"></div>
                                 <div><label id="gettingDetailsLBL" style="display:none">Getting details...</label></div>
@@ -122,11 +124,13 @@
                         <div class="form-group row">
                             <div class="col">
                                 <label for="approverName">Approver Name</label>
+                                <span style="color:red">*</span>
                                 <input type="text" rquired value="@ViewBag.Result.APPROVER_NAME" class="form-control" name="APPROVER_NAME" id="approverName"
                                        readonly>
                             </div>
                             <div class="col">
                                 <label for="approverID">Approver ID</label>
+                                <span style="color:red">*</span>
                                 <input type="email" value="@ViewBag.Result.APPROVER_ID" class="form-control" name="APPROVER_ID" id="approverID"
                                        readonly>
                             </div>
