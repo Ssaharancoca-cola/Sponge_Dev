@@ -3,7 +3,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <head>
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <script src="~/assists/js/hoverable-collapse.js"></script>
     <script src="~/js/subjectarea/createsubjectarea.js"></script>
 </head>
@@ -30,46 +31,63 @@
                                 <label asp-for="SpgSubjectArea.SUBJECTAREA_NAME">SubjectArea <span style="color:red">*</span></label>
                                 <input required asp-for="SpgSubjectArea.SUBJECTAREA_NAME" maxlength="45" type="text" class="form-control" id="SubjectAreaName" name="SUBJECTAREA_NAME" onkeydown="return /[a-z0-9_]/i.test(event.key)" />
                                 <span style="font-size:10px">Please enter only uppercase A-Z, lowercase a-z, numbers 0-9, or underscore _</span>
-                                @* <span asp-validation-for="SpgSubjectArea.SUBJECTAREA_NAME" class="text-danger" style="font-size:10px"></span> *@
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col">
                                 <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period<span style="color:red">*</span></label>
-                                <select required asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
-                                    <option selected value="" disabled>Select</option>
-                                    <option value="CURRENT">Current</option>
-                                    <option value="NEXT">Next</option>
-                                    <option value="PREVIOUS">Previous</option>
-                                </select>
+                                <div class="input-group">
+                                    <select required asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
+                                        <option selected value="" disabled>Select</option>
+                                        <option value="CURRENT">Current</option>
+                                        <option value="NEXT">Next</option>
+                                        <option value="PREVIOUS">Previous</option>
+                                    </select>
+                                    <div class="input-group-append" aria-describedby="popover-basic">
+                                        <span class="input-group-text bg-white btn  btn-secondary btn-hover-primary" data-toggle="popover" data-placement="top" title="Help" data-content="ReportPeriod help text here.">
+                                            <i class="fas fa-question-circle text-primary"></i>
+                                        </span>
+                                    </div>
+                                </div>
                                 <span asp-validation-for="@Model.SpgSubjectArea.REPORTING_PERIOD" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
                                 <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency<span style="color:red">*</span></label>
-                                <select required asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
-                                    <option selected value="" disabled>Select</option>                                    
-                                    <option value="YEARLY">Yearly</option>
-                                    <option value="HALF_YEARLY">Half Yearly</option>
-                                    <option value="QUARTERLY">Quarterly</option>
-                                    <option value="MONTHLY">Monthly</option>
-                                    <option value="WEEKLY">Weekly</option>
-                                    <option value="DAILY">Daily</option>
-                                </select>
+                                <div class="input-group">
+                                    <select required asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
+                                        <option selected value="" disabled>Select</option>
+                                        <option value="YEARLY">Yearly</option>
+                                        <option value="HALF_YEARLY">Half Yearly</option>
+                                        <option value="QUARTERLY">Quarterly</option>
+                                        <option value="MONTHLY">Monthly</option>
+                                        <option value="WEEKLY">Weekly</option>
+                                        <option value="DAILY">Daily</option>
+                                    </select>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="popover" data-placement="top" title="Help" data-content="Frequency help text here.">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                </div>                               
                                 <span asp-validation-for="SpgSubjectArea.FREQUENCY" class="text-danger" style="font-size:10px"></span>
+                                
                             </div>
                             <div class="col-sm-4">
                                 <label for="ForTime">For Time<span style="color:red">*</span></label>
-                                <select required class="form-control" id="ForTime" name="TIME_LEVEL">
-                                    <option disabled selected value="">Select</option>
-                                    @if (Model != null)
-                                    {
-                                        @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @disabled = "disabled" })
-                                    }
-                                    else
-                                    {
-                                        @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
-                                    }
-                                </select>
+                                <div class="input-group">
+                                    <select required class="form-control" id="ForTime" name="TIME_LEVEL">
+                                        <option disabled selected value="">Select</option>
+                                        @if (Model != null)
+                                        {
+                                            @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @disabled = "disabled" })
+                                        }
+                                        else
+                                        {
+                                            @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
+                                        }                                    
+                                    </select>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="popover" data-placement="top" title="Help" data-content="ForeTime help text here.">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                </div>
                                 <span asp-validation-for="SpgSubjectArea.TIME_LEVEL" class="text-danger" style="font-size:10px"></span>
                             </div>
                         </div>
@@ -94,15 +112,14 @@
                             </div>
                             <div class="col-sm-4" id="OnTimeDiv" style="display:none;">
                                 <label for="OnTime">On Time</label>
-                                <select class="form-control" id="OnTime" name="ONTIMELEVEL"></select>
+                                <div class="input-group">
+                                    <select class="form-control" id="OnTime" name="ONTIMELEVEL"></select>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="popover" data-placement="top" title="Help" data-content="OnTime help text here.">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        @* 
-                        <div class="row">
-                            <div>
-                                <label class="label" style="color:red;">@ViewBag.ErrorMsg</label>
-                            </div>
-                        </div> *@
                         <button type="button" class="btn btn-light mr-2" onclick="location.href='@Url.Action("ManageSubjectArea", "SubjectArea")'">Cancel</button>
                         
                         <button id="saveFormData" type="submit" name="Command" value="Save"  class="btn btn-primary">Save</button>

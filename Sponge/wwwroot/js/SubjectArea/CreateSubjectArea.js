@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+
     $("#Frequency").change(function () {
         var selectedFrequency = $(this).val();
         if (selectedFrequency) {
