@@ -29,9 +29,9 @@ namespace Sponge.Controllers
         public IActionResult CreateUser()
         {
             SPONGE_Context spONGE_Context = new SPONGE_Context();
-            var lst = spONGE_Context.SPG_ROLE.Select(o => new { o.ROLE_NAME, o.ROLE_ID }).Distinct();
+            var lst = spONGE_Context.SPG_ROLE.Select(o => new { o.ROLE_NAME, o.ROLE_ID, o.ROLE_PRIORITY }).Distinct();
             var subFnList = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
-            ViewBag.Role = new SelectList(lst.ToList(), "ROLE_ID", "ROLE_NAME");
+            ViewBag.Role = new SelectList(lst.OrderBy(x => x.ROLE_PRIORITY).ToList(), "ROLE_ID", "ROLE_NAME");
             ViewBag.SubFunction = new SelectList(subFnList.ToList(), "SUBFUNCTION_ID", "SUBFUNCTION_NAME");
             //FetchEmailsAndCache();
             return View();
@@ -404,6 +404,7 @@ namespace Sponge.Controllers
                                 {
                                     RoleName = f.ROLE_NAME,
                                     RoleId = f.ROLE_ID,
+                                    RolePriority = f.ROLE_PRIORITY,
                                     Selected = c.ROLE_ID.HasValue,
                                 }).Distinct();
 
@@ -420,7 +421,7 @@ namespace Sponge.Controllers
                                 Status = u.ACTIVE_FLAG
                             }).FirstOrDefault();
                 userInfo.SubfunctionList = subFnList.ToList();
-                userInfo.RoleList = RoleList.ToList();
+                userInfo.RoleList = RoleList.OrderBy(x => x.RolePriority).ToList();
 
             }
             return View("~/Views/User/EditUser.cshtml", userInfo);

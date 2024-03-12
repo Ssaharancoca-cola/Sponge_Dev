@@ -20,7 +20,7 @@ namespace Sponge.Controllers
         public IActionResult ManageRole()
         {
             SPONGE_Context sPONGE_Context = new SPONGE_Context();
-            var roleList = sPONGE_Context.SPG_ROLE.Where(x => x.ACTIVE_FLAG == "Y").ToList();
+            var roleList = sPONGE_Context.SPG_ROLE.Where(x => x.ACTIVE_FLAG == "Y").OrderBy(x => x.ROLE_PRIORITY).ToList();
             return View(roleList);            
         }
         public IActionResult SaveRole(SPG_ROLE data)
