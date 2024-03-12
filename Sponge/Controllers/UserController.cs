@@ -30,7 +30,7 @@ namespace Sponge.Controllers
         {
             SPONGE_Context spONGE_Context = new SPONGE_Context();
             var lst = spONGE_Context.SPG_ROLE.Select(o => new { o.ROLE_NAME, o.ROLE_ID }).Distinct();
-            var subFnList = spONGE_Context.SPG_SUBFUNCTION.Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
+            var subFnList = spONGE_Context.SPG_SUBFUNCTION.Where(x=> x.ACTIVE_FLAG =="Y").Select(o => new { o.SUBFUNCTION_NAME, o.SUBFUNCTION_ID }).Distinct();
             ViewBag.Role = new SelectList(lst.ToList(), "ROLE_ID", "ROLE_NAME");
             ViewBag.SubFunction = new SelectList(subFnList.ToList(), "SUBFUNCTION_ID", "SUBFUNCTION_NAME");
             //FetchEmailsAndCache();
@@ -387,9 +387,8 @@ namespace Sponge.Controllers
             GetUserinfo userInfo = new GetUserinfo();
             using (SPONGE_Context sPONGE_Context = new SPONGE_Context())
             {
-                var subFnList = (from f in sPONGE_Context.SPG_SUBFUNCTION
+                var subFnList = (from f in sPONGE_Context.SPG_SUBFUNCTION.Where(x => x.ACTIVE_FLAG == "Y")
                                  from c in sPONGE_Context.SPG_USERS_FUNCTION.Where(user => user.SUB_FUNCTION_ID == f.SUBFUNCTION_ID && user.USER_ID == id).DefaultIfEmpty()
-
                                  select new SPGSubfuncion
                                  {
                                      SubfunctionName = f.SUBFUNCTION_NAME,
@@ -399,7 +398,6 @@ namespace Sponge.Controllers
 
                 var RoleList = (from f in sPONGE_Context.SPG_ROLE
                                 from c in sPONGE_Context.SPG_USERS_FUNCTION.Where(user => user.ROLE_ID == f.ROLE_ID && user.USER_ID == id).DefaultIfEmpty()
-
                                 select new SPGRole
                                 {
                                     RoleName = f.ROLE_NAME,
