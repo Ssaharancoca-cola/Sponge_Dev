@@ -259,9 +259,22 @@ table.dataTable thead tr th {
 .table-responsive {
     margin-bottom:16px;
 }
-
+.input-group-append, 
+.input-group-prepend {
+    margin-top: -1px;
+}
+    .input-group-append .input-group-text,
+    .input-group-prepend .input-group-text {
+        padding: .66rem 0.75rem !important;
+    }
+.text-primary {
+    color: var(--primary) !important;
+}
+.input-group-append:hover {
+    cursor:pointer;
+}
 .form-check .form-check-label {
-    margin-bottom:0px;
+    margin-bottom: 0px;
 }
 
 @media (max-width: 1280px) {

@@ -44,7 +44,7 @@
                                         <option value="PREVIOUS">Previous</option>
                                     </select>
                                     <div class="input-group-append" aria-describedby="popover-basic">
-                                        <span class="input-group-text bg-white btn  btn-secondary btn-hover-primary" data-toggle="popover" data-placement="top" title="Help" data-content="ReportPeriod help text here.">
+                                        <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="ReportPeriod help text here.">
                                             <i class="fas fa-question-circle text-primary"></i>
                                         </span>
                                     </div>
@@ -63,9 +63,11 @@
                                         <option value="WEEKLY">Weekly</option>
                                         <option value="DAILY">Daily</option>
                                     </select>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="popover" data-placement="top" title="Help" data-content="Frequency help text here.">
-                                        <i class="fas fa-question-circle"></i>
-                                    </button>
+                                    <div class="input-group-append" aria-describedby="popover-basic">
+                                    <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="Frequency help text here.">
+                                            <i class="fas fa-question-circle text-primary"></i>
+                                    </span>
+                                    </div>
                                 </div>                               
                                 <span asp-validation-for="SpgSubjectArea.FREQUENCY" class="text-danger" style="font-size:10px"></span>
                                 
@@ -84,9 +86,11 @@
                                             @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
                                         }                                    
                                     </select>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="popover" data-placement="top" title="Help" data-content="ForeTime help text here.">
-                                        <i class="fas fa-question-circle"></i>
-                                    </button>
+                                    <div class="input-group-append" aria-describedby="popover-basic">
+                                    <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="ForeTime help text here.">
+                                            <i class="fas fa-question-circle text-primary"></i>
+                                    </span>
+                                    </div>
                                 </div>
                                 <span asp-validation-for="SpgSubjectArea.TIME_LEVEL" class="text-danger" style="font-size:10px"></span>
                             </div>
@@ -114,9 +118,11 @@
                                 <label for="OnTime">On Time</label>
                                 <div class="input-group">
                                     <select class="form-control" id="OnTime" name="ONTIMELEVEL"></select>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="popover" data-placement="top" title="Help" data-content="OnTime help text here.">
-                                        <i class="fas fa-question-circle"></i>
-                                    </button>
+                                    <div class="input-group-append" aria-describedby="popover-basic">
+                                        <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="OnTime help text here.">
+                                        <i class="fas fa-question-circle text-primary"></i>
+                                    </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
