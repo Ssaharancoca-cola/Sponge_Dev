@@ -51,11 +51,7 @@
                                         <option value="NEXT">Next</option>
                                         <option value="PREVIOUS">Previous</option>
                                     </select>
-                                    <div class="input-group-append" aria-describedby="popover-basic">
-                                        <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="Reporting Period for which template should be generate.">
-                                            <i class="fas fa-question-circle text-primary"></i>
-                                        </span>
-                                    </div>
+                                    
                                 </div>
                                 <span asp-validation-for="@Model.SpgSubjectArea.REPORTING_PERIOD" class="text-danger" style="font-size:10px"></span>
                             </div>
@@ -79,11 +75,7 @@
                                         <option value="WEEKLY">Weekly</option>
                                         <option value="DAILY">Daily</option>
                                     </select>
-                                    <div class="input-group-append" aria-describedby="popover-basic">
-                                        <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="Frequency when template will be generated.">
-                                            <i class="fas fa-question-circle text-primary"></i>
-                                    </span>
-                                    </div>
+                                    
                                 </div>                               
                                 <span asp-validation-for="SpgSubjectArea.FREQUENCY" class="text-danger" style="font-size:10px"></span>
                             </div>
@@ -109,11 +101,7 @@
                                             @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
                                         }
                                     </select>
-                                    <div class="input-group-append" aria-describedby="popover-basic">
-                                        <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="Template will generate for which period.">
-                                            <i class="fas fa-question-circle text-primary"></i>
-                                    </span>
-                                    </div>
+                                    
                                 </div>
                                 <span asp-validation-for="SpgSubjectArea.TIME_LEVEL" class="text-danger" style="font-size:10px"></span>
                             </div>
@@ -138,14 +126,17 @@
                                 <span asp-validation-for="SpgSubjectArea.VERSION" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4" id="OnTimeDiv" style="display:none;">
-                                <label for="OnTime">On Time</label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label for="OnTime">
+                                        On Time
+                                        <span aria-describedby="popover-basic" class="help-icon ml-1">
+                                            <i class="fas fa-info-circle text-primary" data-toggle="popover" data-placement="top" data-content="Frequency of revision for generated template."></i>
+                                        </span>
+                                    </label>
+                                </div>
                                 <div class="input-group">
                                     <select class="form-control" id="OnTime" name="ONTIMELEVEL"></select>
-                                    <div class="input-group-append" aria-describedby="popover-basic">
-                                        <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="Ontime when template will be uploaded.">
-                                        <i class="fas fa-question-circle text-primary"></i>
-                                    </span>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
