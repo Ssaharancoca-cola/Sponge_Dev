@@ -1,7 +1,21 @@
 $(document).ready(function () {
     // Initialize all popovers
     $('[data-toggle="popover"]').popover();
-    $('[data-toggle="popover"]').on('click', function () { $('[data-toggle="popover"]').not(this).popover('hide'); });
+
+    // Toggle the popover on click event of the icon
+    $('[data-toggle="popover"]').on('click', function (e) {
+        e.preventDefault();  // Prevent default behavior of the element
+        $('[data-toggle="popover"]').not(this).popover('hide'); // Hide other popovers
+        $(this).popover('toggle'); // Show or hide the current popover
+    });
+
+    // Close popovers when clicking anywhere else on the page
+    $(document).on('click', function (e) {
+        // Check if the clicked area is not a popover or its trigger
+        if (!$(e.target).closest('.popover').length && !$(e.target).is('[data-toggle="popover"]')) {
+            $('[data-toggle="popover"]').popover('hide');
+        }
+    });
     $("#Frequency").change(function () {
         var selectedFrequency = $(this).val();
         if (selectedFrequency) {
