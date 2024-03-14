@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    // Initialize all popovers
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="popover"]').on('click', function () { $('[data-toggle="popover"]').not(this).popover('hide'); });
     $("#Frequency").change(function () {

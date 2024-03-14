@@ -35,7 +35,15 @@
                         </div>
                         <div class="form-group row">
                             <div class="col">
-                                <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">Report Period<span style="color:red">*</span></label>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label asp-for="SpgSubjectArea.REPORTING_PERIOD" for="ReportPeriod">
+                                        Reporting Period<span style="color:red">*</span>
+                                        <span aria-describedby="popover-basic" class="help-icon ml-1">
+                                            <i style="cursor:pointer" class="fas fa-info-circle text-primary" data-toggle="popover" data-placement="top" data-content="Period for which template is generated."></i>
+                                        </span>
+                                    </label>
+                                </div>
+
                                 <div class="input-group">
                                     <select required asp-for="SpgSubjectArea.REPORTING_PERIOD" class="form-control" id="ReportPeriod" name="REPORTING_PERIOD">
                                         <option selected value="" disabled>Select</option>
@@ -52,7 +60,15 @@
                                 <span asp-validation-for="@Model.SpgSubjectArea.REPORTING_PERIOD" class="text-danger" style="font-size:10px"></span>
                             </div>
                             <div class="col-sm-4">
-                                <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">Frequency<span style="color:red">*</span></label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label asp-for="SpgSubjectArea.FREQUENCY" for="Frequency">
+                                        Frequency<span style="color:red">*</span>
+                                        <span aria-describedby="popover-basic" class="help-icon ml-1">
+                                            <i style="cursor:pointer" class="fas fa-info-circle text-primary" data-toggle="popover" data-placement="top" data-content="Frequency of template generation and upload."></i>
+                                        </span>
+                                    </label>
+                                </div>
+
                                 <div class="input-group">
                                     <select required asp-for="SpgSubjectArea.FREQUENCY" class="form-control" id="Frequency" name="Frequency">
                                         <option selected value="" disabled>Select</option>
@@ -70,10 +86,17 @@
                                     </div>
                                 </div>                               
                                 <span asp-validation-for="SpgSubjectArea.FREQUENCY" class="text-danger" style="font-size:10px"></span>
-                                
                             </div>
                             <div class="col-sm-4">
-                                <label for="ForTime">For Time<span style="color:red">*</span></label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label for="ForTime">
+                                        For Time<span style="color:red">*</span>
+                                        <span aria-describedby="popover-basic" class="help-icon ml-1">
+                                            <i style="cursor:pointer" class="fas fa-info-circle text-primary" data-toggle="popover" data-placement="top" data-content="Time period granularity for the generated template."></i>
+                                        </span>
+                                    </label>
+                                </div>
+
                                 <div class="input-group">
                                     <select required class="form-control" id="ForTime" name="TIME_LEVEL">
                                         <option disabled selected value="">Select</option>
@@ -84,7 +107,7 @@
                                         else
                                         {
                                             @Html.DropDownListFor(m => m.SpgSubjectArea.TIME_LEVEL, ViewBag.Timelevel as List<SelectListItem>, new { @class = "form-control" })
-                                        }                                    
+                                        }
                                     </select>
                                     <div class="input-group-append" aria-describedby="popover-basic">
                                         <span class="input-group-text" data-toggle="popover" data-placement="top" title="Help" data-content="Template will generate for which period.">
