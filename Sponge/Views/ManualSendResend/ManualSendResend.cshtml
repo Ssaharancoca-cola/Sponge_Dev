@@ -105,6 +105,10 @@
 
         $('#btnSend').on('click', function (e) {
             e.preventDefault();
+            if ($('#lockDate').val() == '') {
+                alert('Lock date is a mandatory field.');
+                return;
+            }
             $.ajax({
                 url: '/ManualSendResend/SaveManualSendResendExcel',
                 type: 'POST',
@@ -349,7 +353,7 @@
         const lockDate = new Date($('#lockDate').val());
         const escalationDate = new Date($('#EscalationAlertDate').val());
         const uploadReminderDate = new Date($('#UploadReminderDate').val());
-
+        
         if (lockDate > new Date().setDate(new Date().getDate() + 30)) {
             alert('Lock date cannot be greater than 30 days');
             $('#lockDate').val('');
