@@ -589,8 +589,15 @@ namespace BatchJob
                         int MeasureColmnsCount = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { CONFIG_ID = s.CONFIG_ID }).Count();
                         var measurecolumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Measure").Select(s => new { Text = s.DATA_TYPE, Value = s.DISPLAY_TYPE, ConfigUserId = s.CONFIGUSER_ID }).OrderBy(s => s.ConfigUserId);
                         var MasterShowColumn = m.SPG_CONFIG_STRUCTURE.Where(y => y.CONFIG_ID == configId).Where(o => o.COLLECTION_TYPE == "Master").Select(s => new { DATA_TYPE = s.DATA_TYPE, IS_SHOW = s.IS_SHOW });
+                        if(ot_details.CONFIG_NAME != null)
+                        {
+                            FileName = ot_details.SubjectArea + "_" + ot_details.CONFIG_NAME + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
+                        }
+                        else 
+                        {
+                            FileName = ot_details.SubjectArea + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
+                        }
 
-                        FileName = ot_details.SubjectArea + "_" + ot_details.CONFIG_NAME + "_[T" + TemplateId + "]_[" + ForTime + "]_[" + OnTime + "]_[" + DateTime.Now.ToString("dd-MM-yyyy") + "-" + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + " " + DateTime.Now.ToString("tt ") + "]" + ".xlsx";
                         string FormedQuery4 = "SP_GETLOOKUPDATA";
                         DataSet ds4 = new DataSet();
                         try
