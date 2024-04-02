@@ -4,7 +4,7 @@
 
 
     
-        <div class="row">
+       @*  <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
@@ -25,7 +25,39 @@
         </div>
             </div>
 
+        </div> *@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                @*<div class="row" style="background-color:#48828e">
+                     <div class="col">
+                        <div class="welcome">
+                            <p class="txt-wel">Welcome to</p>
+                            <p class="txt-sponge">SPONGE</p>
+                            <p class="txt-app">a Data Collection Application</p>
+                        </div>
+                    </div>
+                    <div class="col text-right">
+                        <img src="assists/images/home/img-sponge.jpg" class="img-welcome" alt="">
+                    </div> 
+                   
+                </div>*@
+                <div class="d-flex welcome-bg-img">
+                    <div>
+                        <div class="welcome-message">
+                            <span>Welcome to</span>
+                            <p><img src="~/assists/images/home/img-logo-koine.png" alt="logo" class="welcome-logo" /><span>SPONGE</span></p>
+                        </div>
+                        @* <p>a Data Collection Application</p> *@
+                    </div>
+                    @* <img src="assists/images/home/img-sponge.jpg" class="img-welcome" alt=""> *@
+                </div>
+            </div>
         </div>
+    </div>
+
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="~/assists/js/hoverable-collapse.js"></script>
