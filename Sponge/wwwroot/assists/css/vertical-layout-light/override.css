@@ -316,7 +316,7 @@ table.dataTable thead tr th {
 }
 @media screen and (min-width: 1280px) and (max-width: 1680px) {
     .welcome-bg-img {
-        padding: 6rem 3rem 20rem;
+        padding: 6rem 3rem 15rem;
     }
 
     .welcome-logo {
